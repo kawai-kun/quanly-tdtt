@@ -1,0 +1,10 @@
+# System & editor files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*~
+
+# Temporary check files
+temp*
+check.ps1

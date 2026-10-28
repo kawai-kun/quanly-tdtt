@@ -1,0 +1,454 @@
+<!-- ============================================================
+     Stylesheet.html
+     Hệ thống Quản lý TDTT – UBND Phường Tân Khai
+     Bảng màu phân vai: Primary / Info / Warning / Danger / Accent
+     ============================================================
+<style>
+  /* =========================================================
+     1. BIẾN MÀU TOÀN CỤC (Design Tokens)
+     ========================================================= */
+  :root {
+    /* ---- Primary – Hành chính, chủ đạo (xanh lá đậm) ---- */
+    --app-primary:        #006948;
+    --app-primary-hover:  #005236;
+    --app-primary-soft:   #ECFDF5;
+    --app-primary-border: #A7F3D0;
+
+    /* ---- Info – Cấp thành phố / Dữ liệu (xanh dương) ---- */
+    --app-info:           #2563EB;
+    --app-info-hover:     #1D4ED8;
+    --app-info-soft:      #EFF6FF;
+    --app-info-border:    #BFDBFE;
+
+    /* ---- Warning – Huy chương vàng (hổ phách) ---- */
+    --app-warning:        #F59E0B;
+    --app-warning-hover:  #D97706;
+    --app-warning-soft:   #FFFBEB;
+    --app-warning-border: #FDE68A;
+
+    /* ---- Danger – Xóa / Hủy / Cảnh báo (đỏ) ---- */
+    --app-danger:         #DC2626;
+    --app-danger-hover:   #B91C1C;
+    --app-danger-soft:    #FEF2F2;
+    --app-danger-border:  #FECACA;
+
+    /* ---- Accent – CLB / Thể thao (tím) ---- */
+    --app-accent:         #7C3AED;
+    --app-accent-hover:   #6D28D9;
+    --app-accent-soft:    #F5F3FF;
+    --app-accent-border:  #DDD6FE;
+
+    /* ---- Medal (huy chương) ---- */
+    --medal-gold:   #F59E0B;
+    --medal-silver: #94A3B8;
+    --medal-bronze: #C2410C;
+
+    /* ---- Neutral – Nền & Chữ ---- */
+    --app-text:         #0F172A;
+    --app-text-muted:   #64748B;
+    --app-text-soft:    #94A3B8;
+    --app-border:       #E2E8F0;
+    --app-border-soft:  #F1F5F9;
+    --app-surface:      #FFFFFF;
+    --app-surface-alt:  #F8FAFC;
+
+    /* ---- Gradient nền trang ---- */
+    --app-gradient-start: #F0FDF4;
+    --app-gradient-mid:   #F8FAFC;
+    --app-gradient-end:   #E0F2FE;
+
+    /* ---- Shadow ---- */
+    --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+    --shadow-lg: 0 8px 32px -4px rgba(5, 150, 105, 0.08);
+    --shadow-xl: 0 20px 40px -12px rgba(15, 23, 42, 0.12);
+
+    /* ---- Radius ---- */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    /* ---- Transition ---- */
+    --t-fast: 0.15s ease;
+    --t-base: 0.25s ease;
+  }
+
+  /* =========================================================
+     2. RESET & BASE
+     ========================================================= */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,
+                var(--app-gradient-start) 0%,
+                var(--app-gradient-mid)   50%,
+                var(--app-gradient-end)   100%);
+    background-attachment: fixed;
+    color: var(--app-text);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.55;
+  }
+
+  /* Scrollbar tinh tế */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.25);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.45); background-clip: content-box; }
+
+  /* Selection */
+  ::selection { background: var(--app-primary-soft); color: var(--app-primary-hover); }
+
+  /* =========================================================
+     3. THÀNH PHẦN KÍNH MỜ
+     ========================================================= */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(209, 250, 229, 0.8);
+    box-shadow: var(--shadow-lg);
+    transition: box-shadow var(--t-base), transform var(--t-base);
+  }
+  .glass-card:hover {
+    box-shadow: 0 12px 40px -6px rgba(5, 150, 105, 0.14);
+  }
+
+  /* =========================================================
+     4. TIỆN ÍCH
+     ========================================================= */
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  .touch-target { min-height: 44px; min-width: 44px; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* =========================================================
+     5. NÚT HÀNH ĐỘNG
+     ========================================================= */
+  .btn-primary {
+    background: var(--app-primary);
+    color: #fff;
+    border: 1px solid var(--app-primary);
+    transition: background var(--t-fast), transform var(--t-fast);
+  }
+  .btn-primary:hover  { background: var(--app-primary-hover); border-color: var(--app-primary-hover); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-info {
+    background: var(--app-info);
+    color: #fff;
+    border: 1px solid var(--app-info);
+    transition: background var(--t-fast), transform var(--t-fast);
+  }
+  .btn-info:hover  { background: var(--app-info-hover); border-color: var(--app-info-hover); }
+  .btn-info:active { transform: scale(0.98); }
+
+  .btn-warning {
+    background: var(--app-warning);
+    color: #fff;
+    border: 1px solid var(--app-warning);
+    transition: background var(--t-fast), transform var(--t-fast);
+  }
+  .btn-warning:hover  { background: var(--app-warning-hover); border-color: var(--app-warning-hover); }
+  .btn-warning:active { transform: scale(0.98); }
+
+  .btn-danger {
+    background: var(--app-danger);
+    color: #fff;
+    border: 1px solid var(--app-danger);
+    transition: background var(--t-fast), transform var(--t-fast);
+  }
+  .btn-danger:hover  { background: var(--app-danger-hover); border-color: var(--app-danger-hover); }
+  .btn-danger:active { transform: scale(0.98); }
+
+  .btn-accent {
+    background: var(--app-accent);
+    color: #fff;
+    border: 1px solid var(--app-accent);
+    transition: background var(--t-fast), transform var(--t-fast);
+  }
+  .btn-accent:hover  { background: var(--app-accent-hover); border-color: var(--app-accent-hover); }
+  .btn-accent:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--app-text);
+    border: 1px solid var(--app-border);
+    transition: background var(--t-fast), border-color var(--t-fast);
+  }
+  .btn-ghost:hover { background: var(--app-surface-alt); border-color: var(--app-text-soft); }
+
+  /* =========================================================
+     6. BADGE PHÂN LOẠI
+     ========================================================= */
+  .badge-primary {
+    background: var(--app-primary-soft);
+    color: var(--app-primary);
+    border: 1px solid var(--app-primary-border);
+  }
+  .badge-info {
+    background: var(--app-info-soft);
+    color: var(--app-info);
+    border: 1px solid var(--app-info-border);
+  }
+  .badge-warning {
+    background: var(--app-warning-soft);
+    color: var(--app-warning-hover);
+    border: 1px solid var(--app-warning-border);
+  }
+  .badge-danger {
+    background: var(--app-danger-soft);
+    color: var(--app-danger);
+    border: 1px solid var(--app-danger-border);
+  }
+  .badge-accent {
+    background: var(--app-accent-soft);
+    color: var(--app-accent);
+    border: 1px solid var(--app-accent-border);
+  }
+
+  /* =========================================================
+     7. FORM CONTROLS
+     ========================================================= */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+  }
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--app-primary);
+    box-shadow: 0 0 0 3px rgba(0, 105, 72, 0.12);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--app-text-soft);
+  }
+
+  /* Focus ring cho button & link */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--app-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* =========================================================
+     8. TAB & SIDEBAR
+     ========================================================= */
+  .tab-active {
+    background: var(--app-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px -2px rgba(0, 105, 72, 0.35);
+  }
+  .tab-inactive {
+    color: var(--app-text);
+    transition: background var(--t-fast), color var(--t-fast);
+  }
+  .tab-inactive:hover {
+    background: var(--app-primary-soft);
+    color: var(--app-primary);
+  }
+
+  /* =========================================================
+     9. BẢNG DỮ LIỆU
+     ========================================================= */
+  table { border-collapse: collapse; }
+  thead th {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  tbody tr {
+    transition: background var(--t-fast);
+  }
+  tbody tr:hover {
+    background: var(--app-primary-soft);
+  }
+
+  /* =========================================================
+     10. HUY CHƯƠNG
+     ========================================================= */
+  .medal-gold   { color: var(--medal-gold);   }
+  .medal-silver { color: var(--medal-silver); }
+  .medal-bronze { color: var(--medal-bronze); }
+
+  /* =========================================================
+     11. HIỆU ỨNG PHỤ
+     ========================================================= */
+  .pulse-dot {
+    position: relative;
+  }
+  .pulse-dot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: pulse-ring 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    opacity: 0.6;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { transform: scale(1);   opacity: 0.6; }
+    50%      { transform: scale(1.6); opacity: 0; }
+  }
+
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in-up { animation: fade-in-up 0.35s ease-out both; }
+
+  /* =========================================================
+     12. RESPONSIVE TINH CHỈNH
+     ========================================================= */
+  @media (max-width: 640px) {
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+  }
+
+  /* =========================================================
+     13. IN ẤN
+     ========================================================= */
+  @media print {
+    body {
+      background: #fff !important;
+    }
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+  }
+</style>
+/* ═══════════════════════════════════════════════════════════════
+   VIỀN NỔI BẬT CHO TẤT CẢ CARD / KHUNG
+   Phân 3 cấp độ để dễ nhìn, không bị "viền chồng viền"
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ───── CẤP 1: CARD CHÍNH (thống kê, biểu đồ, filter bar) ─── viền đen đậm ───── */
+.rounded-2xl[class*="shadow-sm"],
+.rounded-2xl[class*="shadow-xl"],
+.rounded-2xl[class*="backdrop-blur"] {
+  border-color: #0f172a !important;
+  border-width: 1.5px !important;
+}
+
+/* ───── CẤP 2: CARD PHỤ (event card, club card, schedule, facility) ─── viền xám đậm ───── */
+.rounded-xl[class*="shadow-sm"],
+.rounded-2xl:not([class*="shadow"]) {
+  border-color: #475569 !important;
+  border-width: 1px !important;
+}
+
+/* ───── CẤP 3: HỘP NỘI BỘ (box trong modal, info box) ─── viền xám nhẹ ───── */
+.rounded-xl[class*="border-slate-100"]:not([class*="shadow"]) {
+  border-color: #64748b !important;
+  border-width: 1px !important;
+}
+
+/* ───── BẢNG DỮ LIỆU ───── */
+.rounded-2xl > table,
+table[class*="min-w-"] {
+  border: 1px solid #334155;
+}
+table thead tr {
+  border-bottom: 1.5px solid #0f172a !important;
+}
+table tbody tr {
+  border-bottom: 1px solid #cbd5e1 !important;
+}
+
+/* ───── SIDEBAR NAV ITEM ───── */
+aside nav button {
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  transition: all .15s ease;
+}
+aside nav button:hover {
+  border-color: #0f172a;
+}
+aside nav button.bg-emerald-700 {
+  border: 1.5px solid #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ───── MODAL ───── */
+.fixed.inset-0 > div[class*="bg-white"],
+.fixed.inset-0 > div[class*="rounded-2xl"],
+.fixed.inset-0 > div[class*="rounded-3xl"] {
+  border: 2px solid #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* ───── INPUT / SELECT / TEXTAREA (trong form modal) ───── */
+input[class*="bg-slate-50"],
+select[class*="bg-slate-50"],
+textarea[class*="bg-slate-50"],
+input[class*="bg-white"][class*="border-slate-200"],
+select[class*="bg-white"][class*="border-slate-200"] {
+  border-color: #64748b !important;
+  border-width: 1px !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #006948 !important;
+  box-shadow: 0 0 0 3px rgba(0, 105, 72, 0.15) !important;
+}
+
+/* ───── TOAST ───── */
+.toast, [id^="globalToast"], [id^="undoToast"] > div {
+  border: 1.5px solid #0f172a !important;
+}
+
+/* ───── BULK BAR (thanh xóa hàng loạt) ───── */
+.bulk-bar {
+  border: 1.5px solid #0f172a;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE – đổi màu viền sáng để nổi bật trên nền tối
+   ═══════════════════════════════════════════════════════════════ */
+html.dark .rounded-2xl[class*="shadow-sm"],
+html.dark .rounded-2xl[class*="shadow-xl"],
+html.dark .rounded-2xl[class*="backdrop-blur"] {
+  border-color: #94a3b8 !important;
+}
+
+html.dark .rounded-xl[class*="shadow-sm"],
+html.dark .rounded-2xl:not([class*="shadow"]) {
+  border-color: #64748b !important;
+}
+
+html.dark .rounded-xl[class*="border-slate-100"]:not([class*="shadow"]) {
+  border-color: #475569 !important;
+}
+
+html.dark table thead tr { border-bottom-color: #94a3b8 !important; }
+html.dark table tbody tr { border-bottom-color: #334155 !important; }
+
+html.dark input[class*="bg-slate-50"],
+html.dark select[class*="bg-slate-50"],
+html.dark textarea[class*="bg-slate-50"],
+html.dark input[class*="bg-white"][class*="border-slate-200"],
+html.dark select[class*="bg-white"][class*="border-slate-200"] {
+  border-color: #64748b !important;
+}
+
+html.dark aside nav button { border-color: rgba(148, 163, 184, 0.25); }
+html.dark aside nav button.bg-emerald-700 { border-color: #fff; }

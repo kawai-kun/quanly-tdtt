@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UBND Phường Tân Khai - Trung Tâm Dịch Vụ Tổng Hợp - Quản Lý TDTT</title>
+  
+  <!-- Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS & Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="logo_b64.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#006948', // Màu xanh chủ đạo UBND Phường Tân Khai
+              800: '#005236',
+              900: '#023824',
+              950: '#011e13'
+            },
+            medal: {
+              gold: '#F59E0B',
+              silver: '#94A3B8',
+              bronze: '#D97706'
+            }
+          },
+          boxShadow: {
+            'mobbin-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.02)',
+            'mobbin': '0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03)',
+            'mobbin-hover': '0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.05)',
+            'glow-brand': '0 0 24px -2px rgba(0, 105, 72, 0.35)',
+            'glow-amber': '0 0 24px -2px rgba(245, 158, 11, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Mobbin Ambient Mesh Background */
+    body {
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.04) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+    .dark body {
+      background-color: #090d16;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
+    }
+
+    /* Mobbin Glassmorphism */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .dark .glass-card {
+      background: rgba(15, 23, 42, 0.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Print styling */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .no-print, header, aside, #bottomNav, #syncPillBox, .quick-actions-bar, .modal-backdrop { display: none !important; }
+      main { padding: 0 !important; margin: 0 !important; }
+      .print-container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; }
+    }
+
+    /* Smooth Mobbin Entrance Animations */
+    @keyframes tabEnter {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.996);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .tab-pane-animate {
+      animation: tabEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalPop {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .modal-animate {
+      animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Card Hover Lift */
+    .card-lift {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-lift:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Button Press Micro-interaction */
+    .btn-press {
+      transition: transform 0.12s ease-out, filter 0.15s ease-out;
+    }
+    .btn-press:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-600 selection:text-white transition-colors duration-200 overflow-x-hidden w-full">
+
+  <!-- APP ROOT MOUNT -->
+  <div id="appContainer" class="min-h-screen flex flex-col"></div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- MAIN SCRIPT -->
+  <script>
+    /* ==============================================================================
+       1. EMBLEM & LOGO HELPER (TỰ CO GIÃN THEO KHUNG & SẮC NÉT)
+       ============================================================================== */
+    function getLogoHTML(size = 48, extraClass = '') {
+      const isNumeric = typeof size === 'number' || (/^\d+$/).test(size);
+      const sizeStyle = isNumeric ? `width:${size}px; height:${size}px;` : '';
+      const sizeClass = !isNumeric ? size : '';
+      return `<img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="${sizeClass} ${extraClass} shrink-0 max-w-full max-h-full object-contain filter drop-shadow-md transition-transform duration-300" style="${sizeStyle}" alt="Huy hiệu UBND Phường Tân Khai" />`;
+    }
+
+    // Biểu tượng nhận diện từng môn thể thao
+    function getSportBadge(sportType) {
+      const s = (sportType || '').toLowerCase();
+      if (s.includes('bóng đá')) {
+        return { label: 'Bóng đá', icon: 'sports_soccer', bg: 'bg-emerald-50 dark:bg-emerald-950/60', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' };
+      }
+      if (s.includes('cầu lông')) {
+        return { label: 'Cầu lông', icon: 'sports_tennis', bg: 'bg-sky-50 dark:bg-sky-950/60', text: 'text-sky-700 dark:text-sky-400', border: 'border-sky-200 dark:border-sky-800' };
+      }
+      if (s.includes('pickleball')) {
+        return { label: 'Pickleball', icon: 'sports_baseball', bg: 'bg-amber-50 dark:bg-amber-950/60', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800' };
+      }
+      if (s.includes('bóng chuyền')) {
+        return { label: 'Bóng chuyền', icon: 'sports_volleyball', bg: 'bg-indigo-50 dark:bg-indigo-950/60', text: 'text-indigo-700 dark:text-indigo-400', border: 'border-indigo-200 dark:border-indigo-800' };
+      }
+      if (s.includes('võ') || s.includes('taekwondo') || s.includes('boxing') || s.includes('kickboxing') || s.includes('wushu')) {
+        return { label: 'Võ thuật', icon: 'sports_kabaddi', bg: 'bg-rose-50 dark:bg-rose-950/60', text: 'text-rose-700 dark:text-rose-400', border: 'border-rose-200 dark:border-rose-800' };
+      }
+      if (s.includes('dưỡng sinh')) {
+        return { label: 'Dưỡng sinh', icon: 'self_improvement', bg: 'bg-teal-50 dark:bg-teal-950/60', text: 'text-teal-700 dark:text-teal-400', border: 'border-teal-200 dark:border-teal-800' };
+      }
+      if (s.includes('điền kinh') || s.includes('chạy') || s.includes('đi bộ')) {
+        return { label: 'Điền kinh', icon: 'directions_run', bg: 'bg-purple-50 dark:bg-purple-950/60', text: 'text-purple-700 dark:text-purple-400', border: 'border-purple-200 dark:border-purple-800' };
+      }
+      if (s.includes('cờ tướng') || s.includes('cờ')) {
+        return { label: 'Cờ tướng', icon: 'casino', bg: 'bg-yellow-50 dark:bg-yellow-950/60', text: 'text-yellow-700 dark:text-yellow-400', border: 'border-yellow-200 dark:border-yellow-800' };
+      }
+      if (s.includes('bơi')) {
+        return { label: 'Bơi lội', icon: 'pool', bg: 'bg-cyan-50 dark:bg-cyan-950/60', text: 'text-cyan-700 dark:text-cyan-400', border: 'border-cyan-200 dark:border-cyan-800' };
+      }
+      if (s.includes('kéo co') || s.includes('đẩy gậy') || s.includes('bi sắt')) {
+        return { label: 'Thể thao TT', icon: 'fitness_center', bg: 'bg-orange-50 dark:bg-orange-950/60', text: 'text-orange-700 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-800' };
+      }
+      return { label: 'Hành chính / Sự kiện', icon: 'event_available', bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700' };
+    }
+
+    /* ==============================================================================
+       2. NORMALIZATION ENGINE (TỰ ĐỘNG CHUẨN HÓA KHUÔN MẪU DỮ LIỆU)
+       ============================================================================== */
+    function normalizeTitle(str) {
+      if (!str) return '';
+      let s = str.trim().replace(/\s+/g, ' ');
+      s = s.charAt(0).toUpperCase() + s.slice(1);
+      s = s.replace(/\btan khai\b/gi, 'Tân Khai')
+           .replace(/\bdong nai\b/gi, 'Đồng Nai')
+           .replace(/\btdtt\b/gi, 'TDTT')
+           .replace(/\bubnd\b/gi, 'UBND')
+           .replace(/\bvdv\b/gi, 'VĐV')
+           .replace(/\bhcv\b/gi, 'HCV')
+           .replace(/\bhcb\b/gi, 'HCB')
+           .replace(/\bhcd\b/gi, 'HCĐ')
+           .replace(/\bclb\b/gi, 'CLB');
+      return s;
+    }
+
+    function normalizeCode(code, count) {
+      if (!code) return 'T-' + String(count + 1).padStart(2, '0');
+      let c = code.trim().toUpperCase().replace(/\s+/g, '');
+      if (!c.startsWith('T-') && !c.startsWith('T')) {
+        c = 'T-' + c;
+      } else if (c.startsWith('T') && !c.startsWith('T-')) {
+        c = 'T-' + c.slice(1);
+      }
+      return c;
+    }
+
+    function normalizeDate(d) {
+      if (!d) {
+        const today = new Date();
+        return String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear();
+      }
+      let s = d.trim().replace(/[-.]/g, '/');
+      const parts = s.split('/');
+      if (parts.length === 3) {
+        let day = parts[0].padStart(2, '0');
+        let month = parts[1].padStart(2, '0');
+        let year = parts[2];
+        if (year.length === 2) year = '20' + year;
+        return `${day}/${month}/${year}`;
+      }
+      return d;
+    }
+
+    function extractYearFromDate(dateStr) {
+      if (!dateStr) return new Date().getFullYear();
+      const match = dateStr.match(/\b(20\d\d)\b/);
+      return match ? parseInt(match[1]) : new Date().getFullYear();
+    }
+
+    function extractQuarterFromDate(dateStr) {
+      if (!dateStr) return 'q1';
+      const parts = dateStr.split('/');
+      if (parts.length >= 2) {
+        const m = parseInt(parts[1]);
+        if (m >= 1 && m <= 3) return 'q1';
+        if (m >= 4 && m <= 6) return 'q2';
+        if (m >= 7 && m <= 9) return 'q3';
+        return 'q4';
+      }
+      return 'q1';
+    }
+
+    function autoDetectSport(title) {
+      if (!title) return 'Bóng đá';
+      const t = title.toLowerCase();
+      if (t.includes('bóng đá')) return 'Bóng đá';
+      if (t.includes('cầu lông')) return 'Cầu lông';
+      if (t.includes('pickleball')) return 'Pickleball';
+      if (t.includes('bóng chuyền')) return 'Bóng chuyền';
+      if (t.includes('taekwondo') || t.includes('boxing') || t.includes('kickboxing') || t.includes('wushu') || t.includes('võ')) return 'Võ thuật';
+      if (t.includes('dưỡng sinh')) return 'Dưỡng sinh';
+      if (t.includes('cờ tướng') || t.includes('cờ')) return 'Cờ tướng';
+      if (t.includes('điền kinh') || t.includes('chạy') || t.includes('đi bộ')) return 'Điền kinh';
+      if (t.includes('kéo co')) return 'Kéo co';
+      if (t.includes('đẩy gậy')) return 'Đẩy gậy';
+      if (t.includes('bi sắt')) return 'Bi sắt';
+      if (t.includes('bơi')) return 'Bơi lội';
+      if (t.includes('billiards')) return 'Billiards';
+      return 'Thể thao phong trào';
+    }
+
+    /* ==============================================================================
+       3. CONSTANTS & INITIAL DATA
+       ============================================================================== */
+    const SPREADSHEET_ID = '1UFPIHG-TzG5h0imx6o5-Irf3klK1fhQ226sTe34HPx8';
+
+    const INITIAL_ACTIVITIES = [
+      { id: 'act-1', code: 'T-01', date: '20/12/2025', title: 'Giải thể dục Dưỡng sinh xã Tân Khai năm 2025', sport: 'Dưỡng sinh', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 120, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 4, silverMedals: 4, bronzeMedals: 4, totalMedals: 12, budgetWard: 15000000, budgetPrize: 8000000, budgetTotal: 23000000, budgetStatus: 'Đã quyết toán', year: 2025, quarter: 'q4', month: 12, achievementNote: 'Giải Khuyến khích toàn đoàn' },
+      { id: 'act-2', code: 'T-02', date: '25/12/2025', title: 'Giải Bóng chuyền nam xã Tân Khai năm 2025', sport: 'Bóng chuyền', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 55, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 1, bronzeMedals: 1, totalMedals: 3, budgetWard: 12000000, budgetPrize: 6000000, budgetTotal: 18000000, budgetStatus: 'Đã quyết toán', year: 2025, quarter: 'q4', month: 12, achievementNote: 'Hạng Ba toàn đoàn' },
+      { id: 'act-3', code: 'T-03', date: '03/02/2026', title: 'Giải Bóng đá nam truyền thống mừng Đảng - mừng xuân Bính Ngọ năm 2026', sport: 'Bóng đá', location: 'Sân vận động trung tâm', category: 'Cấp phường', participants: 85, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 1, bronzeMedals: 1, totalMedals: 3, budgetWard: 25000000, budgetPrize: 10000000, budgetTotal: 35000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q1', month: 2, achievementNote: 'Vô địch giải' },
+      { id: 'act-4', code: 'T-05', date: '15/03/2026', title: 'Lễ phát động Tháng HĐ TDTT và Ngày chạy Olympic vì sức khỏe toàn dân', sport: 'Điền kinh', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Hành chính', participants: 200, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 8000000, budgetPrize: 0, budgetTotal: 8000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q1', month: 3, achievementNote: '' },
+      { id: 'act-5', code: 'T-06', date: '21/03/2026', title: 'Giải Cờ tướng Đại hội TDTT xã Tân Khai lần I', sport: 'Cờ tướng', location: 'Nhà thi đấu đa năng', category: 'Cấp phường', participants: 45, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 2, silverMedals: 2, bronzeMedals: 2, totalMedals: 6, budgetWard: 10000000, budgetPrize: 5000000, budgetTotal: 15000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q1', month: 3, achievementNote: 'Hạng Nhì đồng đội' },
+      { id: 'act-6', code: 'T-07', date: '28/03/2026', title: 'Giải Bóng đá nam Đại hội TDTT xã Tân Khai lần I', sport: 'Bóng đá', location: 'Sân vận động trung tâm', category: 'Cấp phường', participants: 110, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 1, bronzeMedals: 1, totalMedals: 3, budgetWard: 30000000, budgetPrize: 12000000, budgetTotal: 42000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q1', month: 3, achievementNote: 'Hạng Ba toàn đoàn' },
+      { id: 'act-7', code: 'T-08', date: '04/04/2026', title: 'Giải Cầu lông Đại hội TDTT xã Tân Khai lần I', sport: 'Cầu lông', location: 'Nhà thi đấu đa năng', category: 'Cấp phường', participants: 75, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 5, silverMedals: 5, bronzeMedals: 5, totalMedals: 15, budgetWard: 18000000, budgetPrize: 9000000, budgetTotal: 27000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: 'Nhất toàn đoàn (5 HCV)' },
+      { id: 'act-8', code: 'T-09', date: '11/04/2026', title: 'Giải Bóng chuyền Đại hội TDTT xã Tân Khai lần I', sport: 'Bóng chuyền', location: 'Sân thể thao Khu phố 4', category: 'Cấp phường', participants: 80, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 1, bronzeMedals: 1, totalMedals: 3, budgetWard: 14000000, budgetPrize: 7000000, budgetTotal: 21000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: '' },
+      { id: 'act-9', code: 'T-04', date: '18/04/2026', title: 'Giải Pickleball Đại hội TDTT xã Tân Khai lần I', sport: 'Pickleball', location: 'Cụm sân Pickleball KP 4', category: 'Cấp phường', participants: 65, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 5, silverMedals: 5, bronzeMedals: 5, totalMedals: 15, budgetWard: 16000000, budgetPrize: 8000000, budgetTotal: 24000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: 'Nhất toàn đoàn (5 HCV)' },
+      { id: 'act-10', code: 'T-10', date: '18/04/2026', title: 'Tổ chức giải Taekwondo Đại hội TDTT phường Tân Khai', sport: 'Taekwondo', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 95, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 10, silverMedals: 10, bronzeMedals: 10, totalMedals: 30, budgetWard: 20000000, budgetPrize: 10000000, budgetTotal: 30000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: 'Xuất sắc toàn đoàn (10 HCV)' },
+      { id: 'act-11', code: 'T-15', date: '21/04/2026', title: 'Tham gia Môn Bi sắt Đại hội TDTT TP Đồng Nai', sport: 'Bi sắt', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 0, bronzeMedals: 3, totalMedals: 4, budgetWard: 12000000, budgetPrize: 4000000, budgetTotal: 16000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: 'Hạng Nhì toàn đoàn' },
+      { id: 'act-12', code: 'T-12', date: '24/04/2026', title: 'Tổ chức giải Điền kinh Đại hội TDTT phường Tân Khai', sport: 'Điền kinh', location: 'Sân vận động trung tâm', category: 'Cấp phường', participants: 120, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 8, silverMedals: 8, bronzeMedals: 8, totalMedals: 24, budgetWard: 22000000, budgetPrize: 9000000, budgetTotal: 31000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: 'Nhất toàn đoàn' },
+      { id: 'act-13', code: 'T-13', date: '24/04/2026', title: 'Tổ chức giải Kéo co, Đẩy gậy Đại hội TDTT phường', sport: 'Kéo co', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 150, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 10, silverMedals: 10, bronzeMedals: 10, totalMedals: 30, budgetWard: 18000000, budgetPrize: 8000000, budgetTotal: 26000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 4, achievementNote: 'Giải Phong trào xuất sắc' },
+      { id: 'act-14', code: 'T-16', date: '19/05/2026', title: 'Tham gia Giải Boxing Đại hội TDTT TP Đồng Nai', sport: 'Boxing', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 1, bronzeMedals: 2, totalMedals: 3, budgetWard: 9000000, budgetPrize: 3000000, budgetTotal: 12000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 5, achievementNote: 'Giải Phong cách' },
+      { id: 'act-15', code: 'T-17', date: '20/05/2026', title: 'Tham gia giải Thể dục Dưỡng sinh Đại hội TDTT TP Đồng Nai', sport: 'Dưỡng sinh', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 13, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 1, totalMedals: 1, budgetWard: 10000000, budgetPrize: 1000000, budgetTotal: 11000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 5, achievementNote: 'Giải Khuyến khích' },
+      { id: 'act-16', code: 'T-18', date: '25/05/2026', title: 'Tham gia Giải KickBoxing Đại hội TDTT TP Đồng Nai', sport: 'KickBoxing', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 0, bronzeMedals: 0, totalMedals: 1, budgetWard: 9000000, budgetPrize: 3000000, budgetTotal: 12000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 5, achievementNote: '1 HCV Cá nhân' },
+      { id: 'act-17', code: 'T-19', date: '27/05/2026', title: 'Tham gia Giải Wushu Đại hội TDTT TP Đồng Nai', sport: 'Wushu', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 1, bronzeMedals: 0, totalMedals: 1, budgetWard: 9000000, budgetPrize: 2000000, budgetTotal: 11000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 5, achievementNote: '1 HCB Cá nhân' },
+      { id: 'act-18', code: 'T-20', date: '10/06/2026', title: 'Giải bóng đá Tứ hùng phường Tân Khai năm 2026', sport: 'Bóng đá', location: 'Sân vận động trung tâm', category: 'Cấp phường', participants: 60, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 15000000, budgetPrize: 5000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 6, achievementNote: 'Cúp Vô địch giao hữu' },
+      { id: 'act-19', code: 'T-22', date: '10/06/2026', title: 'Tham gia tập huấn hướng dẫn dạy Bơi và cứu hộ đuối nước', sport: 'Bơi lội', location: 'TP Đồng Nai', category: 'Hành chính', participants: 1, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 3500000, budgetPrize: 0, budgetTotal: 3500000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q2', month: 6, achievementNote: 'Đạt chứng chỉ loại Giỏi' },
+      { id: 'act-20', code: 'T-18', date: '27/07/2026', title: 'Tham gia giải Billiards Đại hội TDTT TP Đồng Nai', sport: 'Billiards', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 1, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 4000000, budgetPrize: 0, budgetTotal: 4000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 7, achievementNote: '' },
+      { id: 'act-21', code: 'T-14', date: '18/08/2026', title: 'Giải chạy hưởng ứng Ngày hội toàn dân bảo vệ an ninh Tổ quốc', sport: 'Điền kinh', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 220, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 12000000, budgetPrize: 4000000, budgetTotal: 16000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Phong trào tiêu biểu' },
+      { id: 'act-22', code: 'T-20', date: '20/08/2026', title: 'Tham gia giải Đẩy gậy Đại hội TDTT TP Đồng Nai', sport: 'Đẩy gậy', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 3, silverMedals: 1, bronzeMedals: 0, totalMedals: 4, budgetWard: 11000000, budgetPrize: 6000000, budgetTotal: 17000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Hạng Ba toàn đoàn' },
+      { id: 'act-23', code: 'T-13', date: '26/08/2026', title: 'Phối hợp trực tiếp Chung kết bóng đá ASEAN Cup 2026', sport: 'Bóng đá', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Hành chính', participants: 250, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 7000000, budgetPrize: 0, budgetTotal: 7000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: '' },
+      { id: 'act-24', code: 'T-23', date: '28/08/2026', title: 'Tham gia diễu hành biểu dương lực lượng tại Lễ Khai mạc ĐH TDTT', sport: 'Hành chính', location: 'TP Đồng Nai', category: 'Hành chính', participants: 20, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 9000000, budgetPrize: 0, budgetTotal: 9000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Khối diễu hành xuất sắc' },
+      { id: 'act-25', code: 'T-19', date: '29/08/2026', title: 'Tham gia giải Kéo co Đại hội TDTT TP Đồng Nai', sport: 'Kéo co', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 24, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 0, bronzeMedals: 2, totalMedals: 3, budgetWard: 14000000, budgetPrize: 5000000, budgetTotal: 19000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Hạng Nhì toàn đoàn' },
+      { id: 'act-26', code: 'T-11', date: '30/08/2026', title: 'Chương trình đi bộ Cùng Việt Nam tiến bước', sport: 'Đi bộ', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 200, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 8500000, budgetPrize: 0, budgetTotal: 8500000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: '' },
+      { id: 'act-27', code: 'T-21', date: '04/09/2026', title: 'Tham gia giải Điền kinh Đại hội TDTT TP Đồng Nai', sport: 'Điền kinh', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 2, bronzeMedals: 2, totalMedals: 4, budgetWard: 12000000, budgetPrize: 4000000, budgetTotal: 16000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 9, achievementNote: 'Giải Ba đồng đội' }
+    ];
+
+    const INITIAL_CLUBS = [
+      { id: 'club-1', code: 'CLB-01', name: 'CLB Dưỡng sinh Người cao tuổi KP 7', leader: 'Nguyễn Thị Lan', phone: '0912 345 678', sport: 'Dưỡng sinh', membersCount: 45, location: 'Nhà văn hóa Khu phố 7', status: 'active', establishedYear: 2024 },
+      { id: 'club-2', code: 'CLB-02', name: 'CLB Bóng đá Thanh niên Tân Khai', leader: 'Trần Văn Nam', phone: '0988 123 456', sport: 'Bóng đá', membersCount: 32, location: 'Sân vận động trung tâm', status: 'active', establishedYear: 2023 },
+      { id: 'club-3', code: 'CLB-03', name: 'CLB Cầu lông Phường Tân Khai', leader: 'Lê Hoàng Long', phone: '0903 888 999', sport: 'Cầu lông', membersCount: 28, location: 'Nhà thi đấu đa năng', status: 'active', establishedYear: 2022 },
+      { id: 'club-4', code: 'CLB-04', name: 'CLB Pickleball Phường Tân Khai', leader: 'Phạm Thanh Hà', phone: '0977 654 321', sport: 'Pickleball', membersCount: 24, location: 'Cụm sân Pickleball KP 4', status: 'active', establishedYear: 2025 },
+      { id: 'club-5', code: 'CLB-05', name: 'CLB Cờ tướng Người cao tuổi Tân Khai', leader: 'Võ Văn Ba', phone: '0933 222 111', sport: 'Cờ tướng', membersCount: 20, location: 'Trung tâm Dịch vụ tổng hợp', status: 'active', establishedYear: 2021 }
+    ];
+
+    const INITIAL_SCHEDULES = [
+      { id: 'sched-1', days: 'Hàng ngày (05:30 - 06:45)', clubName: 'CLB Dưỡng sinh Người cao tuổi KP 7', sport: 'Dưỡng sinh', location: 'Nhà văn hóa Khu phố 7', description: 'Tập thể dục dưỡng sinh 7 động tác và thái cực quyền' },
+      { id: 'sched-2', days: 'Thứ 2, 4, 6 (17:30 - 19:30)', clubName: 'CLB Bóng đá Thanh niên Tân Khai', sport: 'Bóng đá', location: 'Sân vận động trung tâm', description: 'Tập luyện kỹ chiến thuật và thi đấu giao hữu' },
+      { id: 'sched-3', days: 'Thứ 3, 5, 7 (18:00 - 20:00)', clubName: 'CLB Cầu lông Phường Tân Khai', sport: 'Cầu lông', location: 'Nhà thi đấu đa năng', description: 'Tập kỹ thuật đập cầu, giao cầu và rèn luyện thể lực' },
+      { id: 'sched-4', days: 'Thứ 7 & Chủ nhật (06:30 - 09:00)', clubName: 'CLB Pickleball Phường Tân Khai', sport: 'Pickleball', location: 'Cụm sân Pickleball KP 4', description: 'Thi đấu giao lưu phong trào' }
+    ];
+
+    const INITIAL_FACILITIES = [
+      { id: 'fac-1', name: 'Sân vận động trung tâm phường', type: 'Sân vận động', location: 'Khu phố 1', capacity: 500, status: 'Hoạt động tốt', usageRate: 88, note: 'Sân cỏ nhân tạo, dàn đèn chiếu sáng cao áp', manager: 'Nguyễn Văn Minh' },
+      { id: 'fac-2', name: 'Nhà thi đấu đa năng phường', type: 'Nhà thi đấu', location: 'Khu phố 3', capacity: 250, status: 'Hoạt động tốt', usageRate: 75, note: 'Thảm thể thao chuyên dụng thi đấu cầu lông, võ thuật', manager: 'Lê Văn Tuấn' },
+      { id: 'fac-3', name: 'Hồ bơi công cộng Tân Khai', type: 'Hồ bơi', location: 'Khu phố 5', capacity: 100, status: 'Bảo trì định kỳ', usageRate: 60, note: 'Phổ cập bơi phòng chống đuối nước', manager: 'Trần Hữu Thắng' },
+      { id: 'fac-4', name: 'Cụm sân Pickleball & Bóng chuyền', type: 'Sân ngoài trời', location: 'Khu phố 4', capacity: 80, status: 'Hoạt động tốt', usageRate: 85, note: '2 sân pickleball tiêu chuẩn, 1 sân bóng chuyền', manager: 'Đỗ Quốc Cường' }
+    ];
+
+    const INITIAL_BUDGET_ITEMS = [
+      { id: 'bgt-1', code: 'KP-01', title: 'Kinh phí tổ chức Giải Bóng đá nam truyền thống xuân Bính Ngọ', year: 2026, source: 'Ngân sách Phường', budgetEstimated: 35000000, budgetActual: 35000000, refDoc: 'QĐ 42/QĐ-UBND', status: 'Đã quyết toán', note: 'Chi thưởng 10tr, tổ chức sân bãi 25tr' },
+      { id: 'bgt-2', code: 'KP-02', title: 'Kinh phí tham gia Đại hội TDTT TP Đồng Nai đợt 1', year: 2026, source: 'Ngân sách Phường', budgetEstimated: 95000000, budgetActual: 93500000, refDoc: 'QĐ 78/QĐ-UBND', status: 'Đã quyết toán', note: 'Các môn Bi sắt, Taekwondo, Điền kinh, Boxing' },
+      { id: 'bgt-3', code: 'KP-03', title: 'Khen thưởng VĐV đạt huy chương cấp thành phố năm 2026', year: 2026, source: 'Xã hội hóa & Khen thưởng', budgetEstimated: 45000000, budgetActual: 42000000, refDoc: 'QĐ 112/QĐ-UBND', status: 'Đã quyết toán', note: 'Thưởng 6 HCV, 6 HCB, 11 HCĐ' },
+      { id: 'bgt-4', code: 'KP-04', title: 'Mua sắm bổ sung trang thiết bị cụm sân Pickleball KP 4', year: 2026, source: 'Ngân sách Phường', budgetEstimated: 25000000, budgetActual: 24800000, refDoc: 'QĐ 135/QĐ-UBND', status: 'Đã quyết toán', note: 'Lưới tiêu chuẩn, bóng thi đấu và sơn lại vạch sân' },
+      { id: 'bgt-5', code: 'KP-05', title: 'Kinh phí dự toán Lễ phát động Tháng hoạt động TDTT 2027', year: 2027, source: 'Ngân sách Phường', budgetEstimated: 12000000, budgetActual: 0, refDoc: 'Dự toán 2027', status: 'Dự toán mới', note: 'Đang trình lãnh đạo thẩm định' }
+    ];
+
+    const INITIAL_REPORTS = [
+      {
+        id: 'rep-09',
+        reportNumber: 9,
+        code: '09/BC-TTDVTH',
+        title: 'Báo cáo tổng kết công tác phát triển Thể dục Thể thao giai đoạn 2025 - 2026',
+        reportDate: '28/10/2026',
+        year: '2026',
+        quarter: 'all',
+        author: 'Trần Quốc Đức',
+        position: 'Cán bộ Trung tâm Dịch vụ tổng hợp',
+        summaryActs: 27,
+        summaryParticipants: 2049,
+        summaryMedals: 165,
+        summaryBudget: 341000000,
+        createdAt: '2026-10-28'
+      }
+    ];
+
+    /* ==============================================================================
+       4. LOCAL STORAGE & APP STATE
+       ============================================================================== */
+    function lsGet(k, def) {
+      try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; }
+    }
+    function lsSet(k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+
+    const state = {
+      isAuthenticated: lsGet('tk_auth', false),
+      currentTab: 'bang-dieu-khien',
+      darkMode: lsGet('tk_dark', false),
+      apiUrl: lsGet('tk_api_url', ''),
+
+      // Multi-Year Architecture
+      selectedYear: lsGet('tk_selected_year', 'all'),
+
+      // Data Collections
+      activities: lsGet('tk_activities', INITIAL_ACTIVITIES),
+      clubs: lsGet('tk_clubs', INITIAL_CLUBS),
+      schedules: lsGet('tk_schedules', INITIAL_SCHEDULES),
+      facilities: lsGet('tk_facilities', INITIAL_FACILITIES),
+      budgetItems: lsGet('tk_budget', INITIAL_BUDGET_ITEMS),
+      savedReports: lsGet('tk_saved_reports', INITIAL_REPORTS),
+
+      // Sync status
+      syncStatus: 'idle',
+      lastSyncTime: lsGet('tk_last_sync', 'Chưa đồng bộ'),
+      autoSync: lsGet('tk_auto_sync', true),
+
+      // Reports Management State
+      reportSubTab: 'document',
+      activeReportId: 'rep-09',
+
+      // Tournament Filter State
+      tournamentsFilter: {
+        category: 'all',
+        sport: 'all',
+        search: '',
+        viewMode: 'cards'
+      },
+
+      mobileDrawerOpen: false
+    };
+
+    function getAvailableYears() {
+      const yearsSet = new Set();
+      state.activities.forEach(a => {
+        const y = a.year || extractYearFromDate(a.date);
+        if (y) yearsSet.add(y);
+      });
+      state.budgetItems.forEach(b => {
+        if (b.year) yearsSet.add(parseInt(b.year));
+      });
+      yearsSet.add(new Date().getFullYear());
+      yearsSet.add(2026);
+      yearsSet.add(2025);
+      return Array.from(yearsSet).sort((a, b) => b - a);
+    }
+
+    /* ==============================================================================
+       5. PERSISTENCE & AUTO-SYNC ENGINE
+       ============================================================================== */
+    let syncTimer = null;
+    function queueAutoSync() {
+      if (!state.autoSync || !state.apiUrl) return;
+      if (syncTimer) clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        pushToGoogleSheet(false);
+      }, 2500);
+    }
+
+    function saveAll() {
+      lsSet('tk_activities', state.activities);
+      lsSet('tk_clubs', state.clubs);
+      lsSet('tk_schedules', state.schedules);
+      lsSet('tk_facilities', state.facilities);
+      lsSet('tk_budget', state.budgetItems);
+      lsSet('tk_saved_reports', state.savedReports);
+      queueAutoSync();
+    }
+
+    /* ==============================================================================
+       6. TOAST NOTIFICATIONS & THEME
+       ============================================================================== */
+    function showToast(title, msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const el = document.createElement('div');
+      const isErr = type === 'error';
+      const icon = isErr ? 'error' : (type === 'warning' ? 'warning' : 'check_circle');
+      const borderCol = isErr ? 'border-rose-500' : 'border-brand-500';
+
+      el.className = `pointer-events-auto flex items-start gap-3 p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border-l-4 ${borderCol} shadow-mobbin-hover text-slate-800 dark:text-slate-100 max-w-sm transition-all duration-300 transform translate-y-2 opacity-0`;
+      el.innerHTML = `
+        <span class="material-symbols-outlined text-[20px] ${isErr ? 'text-rose-500' : 'text-brand-600'} shrink-0 mt-0.5">${icon}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold leading-tight">${title}</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">${msg}</p>
+        </div>
+      `;
+      container.appendChild(el);
+      requestAnimationFrame(() => {
+        el.classList.remove('translate-y-2', 'opacity-0');
+      });
+      setTimeout(() => {
+        el.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      lsSet('tk_dark', state.darkMode);
+      initTheme();
+      renderApp();
+    }
+
+    function initTheme() {
+      if (state.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    /* ==============================================================================
+       7. HEADER & SIDEBAR NAVIGATION
+       ============================================================================== */
+    function switchTab(t) {
+      state.currentTab = t;
+      state.mobileDrawerOpen = false;
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setGlobalYear(year) {
+      state.selectedYear = year;
+      lsSet('tk_selected_year', year);
+      renderApp();
+    }
+
+    function toggleMobileDrawer() {
+      state.mobileDrawerOpen = !state.mobileDrawerOpen;
+      const drawer = document.getElementById('mobileDrawer');
+      if (drawer) {
+        if (state.mobileDrawerOpen) drawer.classList.remove('hidden');
+        else drawer.classList.add('hidden');
+      }
+    }
+
+    function renderHeader() {
+      const today = new Date();
+      const dateOptions = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' };
+      const dateStr = today.toLocaleDateString('vi-VN', dateOptions);
+
+      return `
+        <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 dark:border-slate-800/80 px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4 shadow-mobbin-sm">
+          
+          <!-- Left Side: Mobile Menu Button & Brand Indicator -->
+          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button onclick="toggleMobileDrawer()" class="p-2 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden btn-press" title="Mở danh mục">
+              <span class="material-symbols-outlined text-[22px]">menu</span>
+            </button>
+            
+            <!-- Mobile Brand: Logo + HỆ THỐNG QUẢN LÝ TDTT -->
+            <div class="flex lg:hidden items-center gap-2">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center p-0.5 bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 shrink-0">
+                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain" alt="Logo Tân Khai" />
+              </div>
+              <div class="hidden xs:flex flex-col text-left">
+                <span class="text-[11px] font-black uppercase text-brand-700 dark:text-brand-400 leading-tight">QUẢN LÝ TDTT</span>
+              </div>
+            </div>
+
+            <!-- Desktop Left Indicator: Date Badge -->
+            <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100/70 dark:bg-slate-800/70 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+              <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">calendar_today</span>
+              <span class="capitalize">${dateStr}</span>
+            </div>
+          </div>
+
+          <!-- CENTER: Institutional Title (UBND PHƯỜNG TÂN KHAI & TRUNG TÂM DỊCH VỤ TỔNG HỢP - LỚN & ĐẬM) -->
+          <div class="flex-1 flex flex-col items-center justify-center text-center px-1 sm:px-2 min-w-0">
+            <span class="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 truncate leading-tight">
+              ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI
+            </span>
+            <h1 class="text-xs sm:text-base md:text-lg lg:text-xl font-display font-black uppercase tracking-tight text-brand-700 dark:text-brand-400 truncate leading-tight mt-0.5 sm:mt-1">
+              TRUNG TÂM DỊCH VỤ TỔNG HỢP
+            </h1>
+          </div>
+
+          <!-- Right Side: Cloud Sync, Dark Mode, Profile -->
+          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div id="syncPillBox">${renderSyncPillHTML()}</div>
+
+            <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all btn-press">
+              <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
+            </button>
+
+            <div class="flex items-center gap-2 pl-1.5 sm:pl-2 border-l border-slate-200 dark:border-slate-800">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-700 to-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+                TK
+              </div>
+              <div class="hidden xl:flex flex-col text-left">
+                <span class="text-xs font-bold leading-tight text-slate-800 dark:text-slate-100">Trần Quốc Đức</span>
+                <span class="text-[10px] text-slate-400 font-medium">Trung tâm DV Tổng hợp</span>
+              </div>
+              <button onclick="handleLogout()" title="Đăng xuất" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 ml-0.5 btn-press">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+              </button>
+            </div>
+          </div>
+        </header>
+      `;
+    }
+
+    function renderSyncPillHTML() {
+      let icon = 'cloud_done';
+      let text = 'Đã lưu Drive';
+      let cls = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+
+      if (state.syncStatus === 'syncing') {
+        icon = 'sync';
+        text = 'Đang đồng bộ...';
+        cls = 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 animate-pulse';
+      } else if (!state.apiUrl) {
+        icon = 'cloud_off';
+        text = 'Lưu cục bộ';
+        cls = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+      } else if (state.syncStatus === 'error') {
+        icon = 'cloud_alert';
+        text = 'Lỗi Cloud';
+        cls = 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+      }
+
+      return `
+        <button onclick="openSyncModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold shadow-sm transition-all hover:opacity-90 ${cls}">
+          <span class="material-symbols-outlined text-[15px] ${state.syncStatus === 'syncing' ? 'animate-spin' : ''}">${icon}</span>
+          <span class="hidden sm:inline">${text}</span>
+        </button>
+      `;
+    }
+
+    function renderSyncPill() {
+      const el = document.getElementById('syncPillBox');
+      if (el) el.innerHTML = renderSyncPillHTML();
+    }
+
+    function renderSidebar() {
+      const navs = [
+        { id: 'bang-dieu-khien', label: 'Bảng điều khiển', icon: 'dashboard' },
+        { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu', icon: 'emoji_events', badge: state.activities.length },
+        { id: 'quan-ly-clb', label: 'Quản lý CLB', icon: 'groups_2', badge: state.clubs.length },
+        { id: 'lich-sinh-hoat', label: 'Lịch sinh hoạt', icon: 'calendar_month', badge: state.schedules.length },
+        { id: 'co-so-vat-chat', label: 'Cơ sở vật chất', icon: 'stadium', badge: state.facilities.length },
+        { id: 'kinh-phi', label: 'Quản lý kinh phí', icon: 'account_balance_wallet', badge: state.budgetItems.length },
+        { id: 'bao-cao', label: 'Báo cáo & Sổ lưu trữ', icon: 'summarize', badge: state.savedReports.length }
+      ];
+
+      return `
+        <aside class="hidden lg:flex fixed left-0 top-0 bottom-0 w-[270px] glass-card border-r border-slate-200/80 dark:border-slate-800/80 flex-col justify-between p-4 z-50">
+          <div>
+            <!-- Official Brand Header: Dedicated to Logo + HỆ THỐNG QUẢN LÝ TDTT (Góc bên trái) -->
+            <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/60 dark:border-slate-800/60 pb-5 mb-4">
+              <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200/80 dark:border-slate-700">
+                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 hover:scale-105" alt="Logo Tân Khai" />
+              </div>
+              <div class="flex flex-col text-left min-w-0">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">PHƯỜNG TÂN KHAI</span>
+                <span class="text-sm font-black font-display uppercase tracking-tight text-brand-700 dark:text-brand-400 leading-tight">HỆ THỐNG QUẢN LÝ</span>
+                <span class="text-xs font-black text-slate-800 dark:text-slate-100 uppercase tracking-wide leading-tight mt-0.5">THỂ DỤC THỂ THAO</span>
+              </div>
+            </div>
+
+            <!-- Navigation Links with Animated Badges -->
+            <nav class="space-y-1">
+              ${navs.map(item => {
+                const isActive = state.currentTab === item.id;
+                const cls = isActive
+                  ? 'bg-gradient-to-r from-brand-700 to-brand-800 text-white font-bold shadow-md shadow-brand-900/20'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white font-medium';
+                return `
+                  <button onclick="switchTab('${item.id}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all text-left ${cls} group btn-press">
+                    <span class="flex items-center gap-3">
+                      <span class="material-symbols-outlined text-[19px] transition-transform group-hover:scale-110">${item.icon}</span>
+                      <span>${item.label}</span>
+                    </span>
+                    ${item.badge !== undefined ? `
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">
+                        ${item.badge}
+                      </span>
+                    ` : ''}
+                  </button>
+                `;
+              }).join('')}
+            </nav>
+          </div>
+
+          <!-- Bottom Cloud Card -->
+          <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60">
+            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-brand-50 to-emerald-100/50 dark:from-slate-900 dark:to-slate-800 border border-brand-200/60 dark:border-slate-700 text-left">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-brand-800 dark:text-brand-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full ${state.apiUrl ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}"></span>
+                  Google Drive Cloud
+                </span>
+                <button onclick="openSyncModal()" class="text-[11px] text-brand-700 dark:text-brand-400 font-bold hover:underline">Cấu hình</button>
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 truncate">Lần cuối: ${state.lastSyncTime}</p>
+              <button onclick="pushToGoogleSheet(true)" class="mt-2.5 w-full py-2 px-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 btn-press">
+                <span class="material-symbols-outlined text-[15px]">sync</span>
+                <span>Đồng bộ ngay</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderBottomNav() {
+      const items = [
+        { id: 'bang-dieu-khien', label: 'Tổng quan', icon: 'dashboard' },
+        { id: 'quan-ly-giai-dau', label: 'Giải đấu', icon: 'emoji_events' },
+        { id: 'quan-ly-clb', label: 'CLB', icon: 'groups_2' },
+        { id: 'kinh-phi', label: 'Kinh phí', icon: 'account_balance_wallet' },
+        { id: 'bao-cao', label: 'Báo cáo', icon: 'summarize' },
+        { id: 'drawer', label: 'Thêm', icon: 'menu', isAction: true }
+      ];
+
+      return `
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-slate-200/80 dark:border-slate-800/80 z-40 px-2 py-1 flex justify-around items-center shadow-lg">
+          ${items.map(i => {
+            const isActive = state.currentTab === i.id;
+            const color = isActive ? 'text-brand-700 dark:text-brand-400 font-bold' : 'text-slate-400 dark:text-slate-500';
+            const action = i.isAction ? 'toggleMobileDrawer()' : `switchTab('${i.id}')`;
+            return `
+              <button onclick="${action}" class="flex flex-col items-center justify-center py-1.5 px-1 flex-1 ${color} transition-all btn-press">
+                <span class="material-symbols-outlined text-[20px]">${i.icon}</span>
+                <span class="text-[10px] tracking-tight mt-0.5">${i.label}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderMobileDrawer() {
+      const navs = [
+        { id: 'bang-dieu-khien', label: 'Bảng điều khiển', icon: 'dashboard' },
+        { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu', icon: 'emoji_events' },
+        { id: 'quan-ly-clb', label: 'Quản lý CLB thể thao', icon: 'groups_2' },
+        { id: 'lich-sinh-hoat', label: 'Lịch sinh hoạt & tập luyện', icon: 'calendar_month' },
+        { id: 'co-so-vat-chat', label: 'Cơ sở vật chất & sân bãi', icon: 'stadium' },
+        { id: 'kinh-phi', label: 'Kinh phí & quyết toán', icon: 'account_balance_wallet' },
+        { id: 'bao-cao', label: 'Báo cáo & Sổ lưu trữ', icon: 'summarize' }
+      ];
+
+      return `
+        <div id="mobileDrawer" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex justify-start">
+          <div class="w-72 bg-white dark:bg-slate-900 h-full p-5 shadow-2xl flex flex-col justify-between overflow-y-auto">
+            <div>
+              <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center shrink-0">
+                    <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain" alt="Logo Tân Khai" />
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">PHƯỜNG TÂN KHAI</span>
+                    <h3 class="font-black text-xs uppercase text-brand-700 dark:text-brand-400 leading-tight">QUẢN LÝ TDTT</h3>
+                  </div>
+                </div>
+                <button onclick="toggleMobileDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+                  <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+
+              <nav class="mt-4 space-y-1">
+                ${navs.map(n => `
+                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold ${state.currentTab === n.id ? 'bg-brand-700 text-white' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100'}">
+                    <span class="material-symbols-outlined text-[18px]">${n.icon}</span>
+                    <span>${n.label}</span>
+                  </button>
+                `).join('')}
+              </nav>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+              <button onclick="openSyncModal()" class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-[16px]">cloud_sync</span>
+                <span>Cấu hình Google Drive</span>
+              </button>
+              <button onclick="handleLogout()" class="w-full py-2 px-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">logout</span>
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    /* ==============================================================================
+       8. TAB 1: BẢNG ĐIỀU KHIỂN (DASHBOARD)
+       ============================================================================== */
+    function renderDashboard() {
+      const availableYears = getAvailableYears();
+      const filteredActs = state.selectedYear === 'all'
+        ? state.activities
+        : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
+
+      const totalActs = filteredActs.length;
+      const totalParticipants = filteredActs.reduce((acc, a) => acc + (parseInt(a.participants) || 0), 0);
+      const totalMedals = filteredActs.reduce((acc, a) => acc + (parseInt(a.totalMedals) || 0), 0);
+      const totalBudget = filteredActs.reduce((acc, a) => acc + (parseInt(a.budgetTotal) || 0), 0);
+
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          
+          <!-- Top Greeting & Action Bar (Fast Search & Year Filter) -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Bảng Điều Khiển Tổng Quan
+              </h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Theo dõi và đánh giá phong trào Thể dục Thể thao Phường Tân Khai
+              </p>
+            </div>
+
+            <!-- Toolbar: Multi-Year Selector & Fast Search & Export -->
+            <div class="flex flex-wrap items-center gap-2.5">
+              
+              <!-- Fast Search Input -->
+              <div class="relative flex-1 sm:w-64">
+                <span class="material-symbols-outlined text-[17px] text-slate-400 absolute left-3 top-2.5">search</span>
+                <input type="text" oninput="handleDashboardSearch(this.value)" placeholder="Tìm kiếm giải đấu, CLB..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 focus:outline-none focus:border-brand-500 shadow-sm text-slate-800 dark:text-slate-100" />
+              </div>
+
+              <!-- Multi-Year Dropdown -->
+              <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 text-xs font-bold shadow-sm">
+                <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">event</span>
+                <select onchange="setGlobalYear(this.value)" class="bg-transparent font-bold text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
+                  <option value="all" ${state.selectedYear === 'all' ? 'selected' : ''}>Tất cả các năm</option>
+                  ${availableYears.map(y => `<option value="${y}" ${String(state.selectedYear) === String(y) ? 'selected' : ''}>Năm ${y}</option>`).join('')}
+                </select>
+              </div>
+
+              <!-- Quick Export Excel Button -->
+              <button onclick="exportAllExcel()" class="px-3.5 py-2 glass-card border border-slate-200/90 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all btn-press">
+                <span class="material-symbols-outlined text-[16px]">file_download</span>
+                <span class="hidden sm:inline">Xuất Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Stat Metric Cards (Mobbin Elevate) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng giải tổ chức</span>
+                <div class="w-10 h-10 rounded-2xl bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-400 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[22px]">emoji_events</span>
+                </div>
+              </div>
+              <p class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalActs}</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-bold text-brand-700 dark:text-brand-400 mt-2">
+                <span class="material-symbols-outlined text-[15px]">trending_up</span>
+                <span>${state.selectedYear === 'all' ? 'Toàn bộ kỳ hoạt động' : 'Kỳ năm ' + state.selectedYear}</span>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Lượt VĐV tham gia</span>
+                <div class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[22px]">groups</span>
+                </div>
+              </div>
+              <p class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalParticipants.toLocaleString('vi-VN')}</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-bold text-sky-600 mt-2">
+                <span class="material-symbols-outlined text-[15px]">person_check</span>
+                <span>Hội viên & VĐV quần chúng</span>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Huy chương đạt được</span>
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[22px]">military_tech</span>
+                </div>
+              </div>
+              <p class="text-3xl font-display font-extrabold text-amber-600 mt-3">${totalMedals}</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-400 mt-2">
+                <span class="material-symbols-outlined text-[15px]">workspace_premium</span>
+                <span>Vàng, Bạc & Đồng</span>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng kinh phí giải ngân</span>
+                <div class="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                </div>
+              </div>
+              <p class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-3 truncate">${(totalBudget / 1000000).toFixed(1)} tr đ</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-bold text-purple-600 mt-2">
+                <span class="material-symbols-outlined text-[15px]">verified</span>
+                <span>100% Hồ sơ quyết toán</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row (Chart.js) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div class="p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Cơ Cấu Bộ Môn Thể Thao</h3>
+              <p class="text-[11px] text-slate-400 mb-4">Phân bổ giải đấu theo môn thi đấu</p>
+              <div class="relative h-64 flex items-center justify-center">
+                <canvas id="sportsDonutChart"></canvas>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2 p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Tiến Độ Hoạt Động & Lượng VĐV Tham Gia</h3>
+              <p class="text-[11px] text-slate-400 mb-4">Số lượng người tham gia theo từng tháng</p>
+              <div class="relative h-64">
+                <canvas id="timelineBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activities Quick Table -->
+          <div class="p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Giải Đấu Mới Nhất</h3>
+                <p class="text-[11px] text-slate-400">Các hoạt động thể thao gần đây của Trung tâm</p>
+              </div>
+              <button onclick="switchTab('quan-ly-giai-dau')" class="text-xs font-bold text-brand-700 dark:text-brand-400 hover:underline flex items-center gap-1">
+                <span>Xem tất cả</span>
+                <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </button>
+            </div>
+
+            <div class="overflow-x-auto -webkit-overflow-scrolling-touch">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/80 dark:border-slate-800">
+                  <tr>
+                    <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
+                    <th class="p-3.5 align-middle min-w-[220px]">Tên giải đấu</th>
+                    <th class="p-3.5 align-middle whitespace-nowrap">Bộ môn</th>
+                    <th class="p-3.5 align-middle whitespace-nowrap">Ngày</th>
+                    <th class="p-3.5 align-middle whitespace-nowrap text-center">VĐV</th>
+                    <th class="p-3.5 align-middle whitespace-nowrap text-center">Huy chương</th>
+                    <th class="p-3.5 align-middle whitespace-nowrap text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  ${filteredActs.slice(0, 6).map(a => {
+                    const badge = getSportBadge(a.sport);
+                    return `
+                      <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${a.code}</td>
+                        <td class="p-3.5 align-middle min-w-[220px] max-w-xs">
+                          <div class="font-bold text-slate-900 dark:text-slate-100 truncate">${a.title}</div>
+                          ${a.achievementNote ? `
+                            <div class="inline-flex items-center gap-1 mt-0.5 text-[10px] text-amber-700 dark:text-amber-400 font-semibold truncate">
+                              <span class="material-symbols-outlined text-[12px] text-amber-500">military_tech</span>
+                              <span>${a.achievementNote}</span>
+                            </div>
+                          ` : ''}
+                        </td>
+                        <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${badge.bg} ${badge.text}">${badge.label}</span></td>
+                        <td class="p-3.5 align-middle whitespace-nowrap text-slate-500 font-mono">${a.date}</td>
+                        <td class="p-3.5 align-middle whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-300">${a.participants}</td>
+                        <td class="p-3.5 align-middle whitespace-nowrap text-center font-bold text-amber-600">${a.totalMedals} HC</td>
+                        <td class="p-3.5 align-middle whitespace-nowrap text-right">
+                          <button onclick="openActivityModal('${a.id}')" title="Chỉnh sửa" class="p-1.5 rounded-lg text-slate-400 hover:text-brand-700 hover:bg-brand-50 btn-press">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function handleDashboardSearch(query) {
+      if (!query.trim()) return;
+      state.tournamentsFilter.search = query.trim();
+      switchTab('quan-ly-giai-dau');
+    }
+
+    let donutChartInstance = null;
+    let barChartInstance = null;
+
+    function initDashboardCharts() {
+      const filteredActs = state.selectedYear === 'all'
+        ? state.activities
+        : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
+
+      // 1. Group by Sport
+      const sportCounts = {};
+      filteredActs.forEach(a => {
+        const s = a.sport || 'Khác';
+        sportCounts[s] = (sportCounts[s] || 0) + 1;
+      });
+
+      const donutEl = document.getElementById('sportsDonutChart');
+      if (donutEl) {
+        if (donutChartInstance) donutChartInstance.destroy();
+        donutChartInstance = new Chart(donutEl, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(sportCounts),
+            datasets: [{
+              data: Object.values(sportCounts),
+              backgroundColor: ['#059669', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+            },
+            cutout: '68%'
+          }
+        });
+      }
+
+      // 2. Group by Month
+      const monthData = Array(12).fill(0);
+      filteredActs.forEach(a => {
+        const m = parseInt(a.month) || (a.date ? parseInt(a.date.split('/')[1]) : 1);
+        if (m >= 1 && m <= 12) {
+          monthData[m - 1] += parseInt(a.participants) || 0;
+        }
+      });
+
+      const barEl = document.getElementById('timelineBarChart');
+      if (barEl) {
+        if (barChartInstance) barChartInstance.destroy();
+        barChartInstance = new Chart(barEl, {
+          type: 'bar',
+          data: {
+            labels: ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'Th 8', 'Th 9', 'Th 10', 'Th 11', 'Th 12'],
+            datasets: [{
+              label: 'Số lượng VĐV tham gia',
+              data: monthData,
+              backgroundColor: 'rgba(5, 150, 105, 0.75)',
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } },
+              x: { grid: { display: false } }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      }
+    }
+
+    /* ==============================================================================
+       9. TAB 2: QUẢN LÝ GIẢI ĐẤU (TOURNAMENTS) - FULL CRUD
+       ============================================================================== */
+    function renderTournaments() {
+      const f = state.tournamentsFilter;
+      const availableYears = getAvailableYears();
+
+      // Lọc danh sách giải đấu
+      let acts = state.activities.filter(a => {
+        const y = String(a.year || extractYearFromDate(a.date));
+        if (state.selectedYear !== 'all' && y !== String(state.selectedYear)) return false;
+        if (f.category !== 'all' && a.category !== f.category) return false;
+        if (f.sport !== 'all' && a.sport !== f.sport) return false;
+        if (f.search) {
+          const q = f.search.toLowerCase();
+          const matchTitle = (a.title || '').toLowerCase().includes(q);
+          const matchCode = (a.code || '').toLowerCase().includes(q);
+          const matchSport = (a.sport || '').toLowerCase().includes(q);
+          const matchLoc = (a.location || '').toLowerCase().includes(q);
+          if (!matchTitle && !matchCode && !matchSport && !matchLoc) return false;
+        }
+        return true;
+      });
+
+      // Danh sách bộ môn độc nhất
+      const sportList = Array.from(new Set(state.activities.map(a => a.sport || 'Bóng đá')));
+
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          
+          <!-- Header & Action Button -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Quản Lý Giải Thi Đấu & Sự Kiện
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">
+                Danh sách các giải thể thao cấp phường và thành phố (${acts.length} hoạt động)
+              </p>
+            </div>
+
+            <button onclick="openActivityModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press">
+              <span class="material-symbols-outlined text-[18px]">add_circle</span>
+              <span>Thêm giải đấu mới</span>
+            </button>
+          </div>
+
+          <!-- Filter Toolbar (Đồng bộ chiều cao h-10, thẳng hàng chuẩn xác) -->
+          <div class="p-3.5 sm:p-4 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin flex flex-wrap items-center justify-between gap-3">
+            
+            <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[280px]">
+              <!-- Search Input -->
+              <div class="relative flex-1 min-w-[200px] h-10">
+                <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-2.5 pointer-events-none">search</span>
+                <input type="text" value="${f.search}" oninput="setTournamentsFilter('search', this.value)" placeholder="Tìm tên giải, mã giải, địa điểm..." class="w-full h-full pl-9 pr-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400" />
+              </div>
+
+              <!-- Year Filter -->
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+                <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">date_range</span>
+                <select onchange="setGlobalYear(this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
+                  <option value="all" ${state.selectedYear === 'all' ? 'selected' : ''}>Tất cả năm</option>
+                  ${availableYears.map(y => `<option value="${y}" ${String(state.selectedYear) === String(y) ? 'selected' : ''}>Năm ${y}</option>`).join('')}
+                </select>
+              </div>
+
+              <!-- Sport Filter -->
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+                <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">sports</span>
+                <select onchange="setTournamentsFilter('sport', this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
+                  <option value="all">Tất cả môn</option>
+                  ${sportList.map(s => `<option value="${s}" ${f.sport === s ? 'selected' : ''}>${s}</option>`).join('')}
+                </select>
+              </div>
+
+              <!-- Category Filter -->
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+                <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">military_tech</span>
+                <select onchange="setTournamentsFilter('category', this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
+                  <option value="all">Tất cả cấp độ</option>
+                  <option value="Cấp phường" ${f.category === 'Cấp phường' ? 'selected' : ''}>Cấp phường</option>
+                  <option value="Cấp thành phố" ${f.category === 'Cấp thành phố' ? 'selected' : ''}>Cấp thành phố</option>
+                  <option value="Hành chính" ${f.category === 'Hành chính' ? 'selected' : ''}>Hành chính</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- View Switch: Cards vs Table -->
+            <div class="h-10 flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shrink-0">
+              <button onclick="toggleTournamentsView('cards')" class="h-8 px-2.5 rounded-lg text-xs flex items-center justify-center ${f.viewMode === 'cards' ? 'bg-white dark:bg-slate-700 text-brand-700 dark:text-brand-400 font-bold shadow-sm' : 'text-slate-400'}" title="Xem dạng thẻ">
+                <span class="material-symbols-outlined text-[18px]">grid_view</span>
+              </button>
+              <button onclick="toggleTournamentsView('table')" class="h-8 px-2.5 rounded-lg text-xs flex items-center justify-center ${f.viewMode === 'table' ? 'bg-white dark:bg-slate-700 text-brand-700 dark:text-brand-400 font-bold shadow-sm' : 'text-slate-400'}" title="Xem dạng bảng">
+                <span class="material-symbols-outlined text-[18px]">table_rows</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards View or Table View -->
+          ${f.viewMode === 'cards' ? renderTournamentsGrid(acts) : renderTournamentsTable(acts)}
+
+        </div>
+      `;
+    }
+
+    function setTournamentsFilter(key, val) {
+      state.tournamentsFilter[key] = val;
+      renderApp();
+    }
+    function toggleTournamentsView(mode) {
+      state.tournamentsFilter.viewMode = mode;
+      renderApp();
+    }
+
+    function renderTournamentsGrid(acts) {
+      if (!acts.length) {
+        return `
+          <div class="p-12 text-center rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800">
+            <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">search_off</span>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Không tìm thấy giải đấu phù hợp</p>
+            <p class="text-xs text-slate-400 mt-1">Hãy thử tìm từ khóa khác hoặc xóa bộ lọc.</p>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${acts.map(a => {
+            const badge = getSportBadge(a.sport);
+            return `
+              <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-1 rounded-xl text-[10px] font-bold ${badge.bg} ${badge.text} border ${badge.border} flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">${badge.icon}</span>
+                      <span>${badge.label}</span>
+                    </span>
+                    <span class="font-mono text-xs font-extrabold text-brand-700 dark:text-brand-400">${a.code}</span>
+                  </div>
+
+                  <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-3 leading-snug">${a.title}</h3>
+
+                  <!-- Achievement Note Badge if present -->
+                  ${a.achievementNote ? `
+                    <div class="mt-2.5 px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/80 flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300 font-semibold">
+                      <span class="material-symbols-outlined text-[16px] text-amber-600 shrink-0">military_tech</span>
+                      <span class="truncate">${a.achievementNote}</span>
+                    </div>
+                  ` : ''}
+
+                  <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span>Ngày:</span>
+                      <span class="font-semibold font-mono">${a.date}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>Địa điểm:</span>
+                      <span class="font-semibold truncate max-w-[170px]">${a.location}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">groups</span>Số VĐV:</span>
+                      <b class="text-slate-800 dark:text-slate-200">${a.participants} ${a.participantsUnit || 'VĐV'}</b>
+                    </div>
+                  </div>
+
+                  <!-- Medals Badge Row -->
+                  <div class="mt-4 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-around text-xs">
+                    <div class="text-center"><span class="text-[10px] text-amber-700 font-bold block">VÀNG</span><b class="text-amber-600">${a.goldMedals || 0}</b></div>
+                    <div class="w-px h-5 bg-amber-500/20"></div>
+                    <div class="text-center"><span class="text-[10px] text-slate-500 font-bold block">BẠC</span><b class="text-slate-600 dark:text-slate-300">${a.silverMedals || 0}</b></div>
+                    <div class="w-px h-5 bg-amber-500/20"></div>
+                    <div class="text-center"><span class="text-[10px] text-orange-700 font-bold block">ĐỒNG</span><b class="text-orange-600">${a.bronzeMedals || 0}</b></div>
+                    <div class="w-px h-5 bg-amber-500/20"></div>
+                    <div class="text-center"><span class="text-[10px] text-brand-700 font-bold block">TỔNG</span><b class="text-brand-700 dark:text-brand-400">${a.totalMedals || 0}</b></div>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                  <span class="font-bold text-slate-600 dark:text-slate-300 text-[11px]">${((parseInt(a.budgetTotal) || 0) / 1000000).toFixed(1)} tr đ</span>
+                  <div class="flex items-center gap-1">
+                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press">
+                      <span class="material-symbols-outlined text-[17px]">edit</span>
+                    </button>
+                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press">
+                      <span class="material-symbols-outlined text-[17px]">delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderTournamentsTable(acts) {
+      return `
+        <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
+              <tr>
+                <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
+                <th class="p-3.5 align-middle min-w-[240px]">Tên giải đấu</th>
+                <th class="p-3.5 align-middle whitespace-nowrap">Bộ môn</th>
+                <th class="p-3.5 align-middle whitespace-nowrap">Cấp độ</th>
+                <th class="p-3.5 align-middle whitespace-nowrap">Ngày</th>
+                <th class="p-3.5 align-middle whitespace-nowrap text-center">VĐV</th>
+                <th class="p-3.5 align-middle whitespace-nowrap text-center">Huy chương (V-B-Đ)</th>
+                <th class="p-3.5 align-middle whitespace-nowrap text-right">Tổng kinh phí</th>
+                <th class="p-3.5 align-middle whitespace-nowrap text-right w-24">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              ${acts.map(a => `
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${a.code}</td>
+                  <td class="p-3.5 align-middle min-w-[240px] max-w-sm">
+                    <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${a.title}</div>
+                    ${a.achievementNote ? `
+                      <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+                        <span class="material-symbols-outlined text-[13px] text-amber-600">military_tech</span>
+                        <span>${a.achievementNote}</span>
+                      </div>
+                    ` : ''}
+                  </td>
+                  <td class="p-3.5 align-middle whitespace-nowrap"><span class="font-semibold text-slate-600 dark:text-slate-300">${a.sport}</span></td>
+                  <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${a.category}</span></td>
+                  <td class="p-3.5 align-middle whitespace-nowrap text-slate-500 font-mono">${a.date}</td>
+                  <td class="p-3.5 align-middle whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-300">${a.participants}</td>
+                  <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
+                    <span class="text-amber-600 font-bold">${a.goldMedals || 0}V</span> - 
+                    <span class="text-slate-500 font-bold">${a.silverMedals || 0}B</span> - 
+                    <span class="text-orange-600 font-bold">${a.bronzeMedals || 0}Đ</span>
+                  </td>
+                  <td class="p-3.5 align-middle whitespace-nowrap text-right font-bold text-slate-800 dark:text-slate-200">${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ</td>
+                  <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
+                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
+                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+    /* ==============================================================================
+       10. TAB 3: QUẢN LÝ CÂU LẠC BỘ (CLUBS) - FULL CRUD
+       ============================================================================== */
+    function renderClubs() {
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Quản Lý Câu Lạc Bộ Thể Thao
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">
+                Các câu lạc bộ, hội viên trực thuộc Trung tâm Dịch vụ tổng hợp quản lý (${state.clubs.length} CLB)
+              </p>
+            </div>
+            <button onclick="openClubModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press">
+              <span class="material-symbols-outlined text-[18px]">group_add</span>
+              <span>Thêm CLB mới</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            ${state.clubs.map(c => {
+              const badge = getSportBadge(c.sport);
+              return `
+                <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[26px]">${badge.icon}</span>
+                      </div>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${c.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                        ${c.status === 'active' ? 'Đang hoạt động' : 'Tạm dừng'}
+                      </span>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-3.5">${c.name}</h3>
+                    <p class="text-xs text-brand-700 dark:text-brand-400 font-semibold mt-0.5">Môn: ${c.sport}</p>
+
+                    <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                      <div class="flex justify-between"><span class="text-slate-400">Chủ nhiệm:</span><b>${c.leader}</b></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Số ĐT:</span><span>${c.phone || 'Đang cập nhật'}</span></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Hội viên:</span><b class="text-brand-700">${c.membersCount} người</b></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Địa bàn:</span><span class="truncate max-w-[150px]">${c.location}</span></div>
+                    </div>
+                  </div>
+                  <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                    <span>Thành lập: ${c.establishedYear || 2024}</span>
+                    <div class="flex items-center gap-1">
+                      <button onclick="openClubModal('${c.id}')" title="Sửa CLB" class="p-1 rounded text-slate-400 hover:text-brand-700 btn-press">
+                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                      </button>
+                      <button onclick="confirmDeleteClub('${c.id}')" title="Xóa CLB" class="p-1 rounded text-slate-400 hover:text-rose-600 btn-press">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function openClubModal(clubId = null) {
+      const club = clubId ? state.clubs.find(c => c.id === clubId) : null;
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">${club ? 'Chỉnh Sửa Câu Lạc Bộ' : 'Thêm Câu Lạc Bộ Mới'}</h3>
+              <p class="text-[11px] text-slate-400">Thông tin hội viên và ban chủ nhiệm CLB</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveClub(event)" class="mt-4 space-y-3.5 text-xs">
+            <input type="hidden" id="club_id" value="${club ? club.id : ''}" />
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Mã CLB</label>
+                <input id="club_code" type="text" value="${club ? club.code : 'CLB-' + String(state.clubs.length + 1).padStart(2, '0')}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold mb-1">Tên CLB <span class="text-rose-500">*</span></label>
+                <input id="club_name" type="text" required value="${club ? club.name : ''}" placeholder="Ví dụ: CLB Cầu lông Tân Khai..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Môn thể thao</label>
+                <input id="club_sport" type="text" required value="${club ? club.sport : 'Bóng đá'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Chủ nhiệm CLB <span class="text-rose-500">*</span></label>
+                <input id="club_leader" type="text" required value="${club ? club.leader : ''}" placeholder="Họ và tên chủ nhiệm" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Số điện thoại</label>
+                <input id="club_phone" type="text" value="${club ? club.phone : ''}" placeholder="09xx..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Số hội viên</label>
+                <input id="club_members" type="number" min="1" value="${club ? club.membersCount : 25}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Năm thành lập</label>
+                <input id="club_year" type="number" value="${club ? (club.establishedYear || 2024) : 2024}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block font-bold mb-1">Địa bàn sinh hoạt</label>
+                <input id="club_loc" type="text" value="${club ? club.location : 'Khu phố 1, Phường Tân Khai'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Trạng thái</label>
+                <select id="club_status" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="active" ${!club || club.status === 'active' ? 'selected' : ''}>Hoạt động</option>
+                  <option value="paused" ${club && club.status === 'paused' ? 'selected' : ''}>Tạm dừng</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu CLB</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('club_name')?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+      });
+      document.getElementById('club_leader')?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+      });
+    }
+
+    function handleSaveClub(e) {
+      e.preventDefault();
+      const id = document.getElementById('club_id').value;
+      const item = {
+        id: id || 'club-' + Date.now(),
+        code: document.getElementById('club_code').value.trim() || 'CLB-0' + (state.clubs.length + 1),
+        name: normalizeTitle(document.getElementById('club_name').value),
+        sport: normalizeTitle(document.getElementById('club_sport').value),
+        leader: normalizeTitle(document.getElementById('club_leader').value),
+        phone: document.getElementById('club_phone').value.trim(),
+        membersCount: parseInt(document.getElementById('club_members').value) || 0,
+        establishedYear: parseInt(document.getElementById('club_year').value) || 2024,
+        location: normalizeTitle(document.getElementById('club_loc').value),
+        status: document.getElementById('club_status').value
+      };
+
+      if (id) {
+        const idx = state.clubs.findIndex(c => c.id === id);
+        if (idx !== -1) state.clubs[idx] = item;
+      } else {
+        state.clubs.unshift(item);
+      }
+      saveAll();
+      closeModal();
+      showToast('Đã lưu CLB', `Câu lạc bộ "${item.name}" đã được cập nhật.`);
+      renderApp();
+    }
+
+    function confirmDeleteClub(id) {
+      const c = state.clubs.find(item => item.id === id);
+      if (confirm(`Bạn có chắc chắn muốn xóa "${c ? c.name : 'CLB này'}"?`)) {
+        state.clubs = state.clubs.filter(item => item.id !== id);
+        saveAll();
+        showToast('Đã xóa CLB', 'Câu lạc bộ đã được xóa khỏi hệ thống.');
+        renderApp();
+      }
+    }
+
+    /* ==============================================================================
+       11. TAB 4: LỊCH SINH HOẠT & TẬP LUYỆN (SCHEDULES) - FULL CRUD
+       ============================================================================== */
+    function renderSchedules() {
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Lịch Sinh Hoạt & Tập Luyện
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">
+                Thời khóa biểu tập luyện thể thao định kỳ các câu lạc bộ (${state.schedules.length} lịch)
+              </p>
+            </div>
+            <button onclick="openScheduleModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-2 cursor-pointer btn-press">
+              <span class="material-symbols-outlined text-[18px]">more_time</span>
+              <span>Thêm lịch mới</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${state.schedules.map(s => {
+              const badge = getSportBadge(s.sport || s.clubName);
+              return `
+                <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">${badge.icon}</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-bold text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/60 px-2.5 py-0.5 rounded-lg border border-brand-200/60 dark:border-brand-800/60">${s.days}</span>
+                      <div class="flex items-center gap-1">
+                        <button onclick="openScheduleModal('${s.id}')" title="Sửa lịch" class="text-slate-400 hover:text-brand-700 p-1 btn-press">
+                          <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                        <button onclick="confirmDeleteSchedule('${s.id}')" title="Xóa lịch" class="text-slate-400 hover:text-rose-600 p-1 btn-press">
+                          <span class="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-2">${s.clubName}</h3>
+                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>${s.location}</p>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed">${s.description}</p>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function openScheduleModal(schedId = null) {
+      const sched = schedId ? state.schedules.find(s => s.id === schedId) : null;
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">${sched ? 'Chỉnh Sửa Lịch Sinh Hoạt' : 'Thêm Lịch Sinh Hoạt Mới'}</h3>
+              <p class="text-[11px] text-slate-400">Thời gian và địa điểm tập luyện thường xuyên</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveSchedule(event)" class="mt-4 space-y-3.5 text-xs">
+            <input type="hidden" id="sched_id" value="${sched ? sched.id : ''}" />
+
+            <div>
+              <label class="block font-bold mb-1">Tên CLB / Đội thể thao <span class="text-rose-500">*</span></label>
+              <input id="sched_club" type="text" required value="${sched ? sched.clubName : ''}" placeholder="Ví dụ: CLB Cầu lông Tân Khai..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Môn thể thao</label>
+                <input id="sched_sport" type="text" value="${sched ? (sched.sport || 'Cầu lông') : 'Cầu lông'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Thời gian (Ngày & Giờ) <span class="text-rose-500">*</span></label>
+                <input id="sched_days" type="text" required value="${sched ? sched.days : 'Thứ 2, 4, 6 (17:30 - 19:30)'}" placeholder="Ví dụ: Thứ 2, 4, 6 (18:00 - 20:00)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Địa điểm sân bãi</label>
+              <input id="sched_loc" type="text" required value="${sched ? sched.location : 'Nhà thi đấu đa năng phường'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Nội dung sinh hoạt / Lưu ý</label>
+              <textarea id="sched_desc" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${sched ? sched.description : 'Tập luyện kỹ thuật và rèn luyện thể lực phong trào.'}</textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu lịch</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function handleSaveSchedule(e) {
+      e.preventDefault();
+      const id = document.getElementById('sched_id').value;
+      const item = {
+        id: id || 'sched-' + Date.now(),
+        clubName: normalizeTitle(document.getElementById('sched_club').value),
+        sport: normalizeTitle(document.getElementById('sched_sport').value),
+        days: document.getElementById('sched_days').value.trim(),
+        location: normalizeTitle(document.getElementById('sched_loc').value),
+        description: document.getElementById('sched_desc').value.trim()
+      };
+
+      if (id) {
+        const idx = state.schedules.findIndex(s => s.id === id);
+        if (idx !== -1) state.schedules[idx] = item;
+      } else {
+        state.schedules.unshift(item);
+      }
+      saveAll();
+      closeModal();
+      showToast('Đã lưu lịch tập', `Lịch sinh hoạt "${item.clubName}" đã được cập nhật.`);
+      renderApp();
+    }
+
+    function confirmDeleteSchedule(id) {
+      if (confirm('Bạn có chắc chắn muốn xóa lịch sinh hoạt này?')) {
+        state.schedules = state.schedules.filter(s => s.id !== id);
+        saveAll();
+        showToast('Đã xóa', 'Lịch sinh hoạt đã được xóa.');
+        renderApp();
+      }
+    }
+
+    /* ==============================================================================
+       12. TAB 5: CƠ SỞ VẬT CHẤT & SÂN BÃI (FACILITIES) - FULL CRUD
+       ============================================================================== */
+    function renderFacilities() {
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Cơ Sở Vật Chất & Sân Bãi
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">
+                Hệ thống sân bãi, nhà thi đấu do Trung tâm Dịch vụ tổng hợp quản lý khai thác (${state.facilities.length} cơ sở)
+              </p>
+            </div>
+            <button onclick="openFacilityModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-2 cursor-pointer btn-press">
+              <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
+              <span>Thêm cơ sở mới</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            ${state.facilities.map(f => `
+              <div class="p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex flex-col justify-between">
+                <div>
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${f.type}</span>
+                      <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-2">${f.name}</h3>
+                      <p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>${f.location}</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-xl text-xs font-bold ${f.status === 'Hoạt động tốt' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${f.status}</span>
+                  </div>
+
+                  <div class="mt-4 space-y-1.5">
+                    <div class="flex justify-between text-xs font-semibold">
+                      <span class="text-slate-500">Tỷ lệ khai thác sử dụng</span>
+                      <span class="text-brand-700 dark:text-brand-400 font-bold">${f.usageRate || 75}%</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                      <div class="h-full rounded-full bg-gradient-to-r from-brand-600 to-emerald-400" style="width: ${f.usageRate || 75}%"></div>
+                    </div>
+                  </div>
+
+                  <p class="text-xs text-slate-600 dark:text-slate-400 mt-3 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">${f.note || 'Cơ sở phục vụ hoạt động TDTT cộng đồng.'}</p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
+                  <span>Sức chứa: <b>${f.capacity} người</b></span>
+                  <span>Quản lý: <b>${f.manager || 'Cán bộ TDTT'}</b></span>
+                  <div class="flex items-center gap-1">
+                    <button onclick="openFacilityModal('${f.id}')" title="Sửa" class="p-1 rounded text-slate-400 hover:text-brand-700 btn-press"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                    <button onclick="confirmDeleteFacility('${f.id}')" title="Xóa" class="p-1 rounded text-slate-400 hover:text-rose-600 btn-press"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function openFacilityModal(facId = null) {
+      const fac = facId ? state.facilities.find(f => f.id === facId) : null;
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">${fac ? 'Chỉnh Sửa Cơ Sở Vật Chất' : 'Thêm Cơ Sở Vật Chất Mới'}</h3>
+              <p class="text-[11px] text-slate-400">Sân bãi và công trình thể thao công cộng</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveFacility(event)" class="mt-4 space-y-3.5 text-xs">
+            <input type="hidden" id="fac_id" value="${fac ? fac.id : ''}" />
+
+            <div>
+              <label class="block font-bold mb-1">Tên cơ sở vật chất <span class="text-rose-500">*</span></label>
+              <input id="fac_name" type="text" required value="${fac ? fac.name : ''}" placeholder="Ví dụ: Sân vận động trung tâm phường..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Loại hình cơ sở</label>
+                <select id="fac_type" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="Sân vận động" ${fac && fac.type === 'Sân vận động' ? 'selected' : ''}>Sân vận động</option>
+                  <option value="Nhà thi đấu" ${fac && fac.type === 'Nhà thi đấu' ? 'selected' : ''}>Nhà thi đấu</option>
+                  <option value="Hồ bơi" ${fac && fac.type === 'Hồ bơi' ? 'selected' : ''}>Hồ bơi</option>
+                  <option value="Sân ngoài trời" ${fac && fac.type === 'Sân ngoài trời' ? 'selected' : ''}>Sân ngoài trời</option>
+                  <option value="Công viên TDTT" ${fac && fac.type === 'Công viên TDTT' ? 'selected' : ''}>Công viên TDTT</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Địa điểm / Khu phố <span class="text-rose-500">*</span></label>
+                <input id="fac_loc" type="text" required value="${fac ? fac.location : 'Khu phố 1, Phường Tân Khai'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Sức chứa (người)</label>
+                <input id="fac_capacity" type="number" min="10" value="${fac ? fac.capacity : 300}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Tỷ lệ khai thác (%)</label>
+                <input id="fac_usage" type="number" min="0" max="100" value="${fac ? (fac.usageRate || 80) : 80}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Cán bộ quản lý</label>
+                <input id="fac_manager" type="text" value="${fac ? (fac.manager || 'Cán bộ TDTT') : 'Nguyễn Văn Minh'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Tình trạng cơ sở</label>
+              <select id="fac_status" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <option value="Hoạt động tốt" ${!fac || fac.status === 'Hoạt động tốt' ? 'selected' : ''}>Hoạt động tốt</option>
+                <option value="Bảo trì định kỳ" ${fac && fac.status === 'Bảo trì định kỳ' ? 'selected' : ''}>Bảo trì định kỳ</option>
+                <option value="Cần nâng cấp" ${fac && fac.status === 'Cần nâng cấp' ? 'selected' : ''}>Cần nâng cấp</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Ghi chú kỹ thuật / Thiết bị</label>
+              <textarea id="fac_note" rows="2" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${fac ? (fac.note || '') : 'Mặt sân cỏ nhân tạo, hệ thống chiếu sáng đạt chuẩn.'}</textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu cơ sở</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('fac_name')?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+      });
+    }
+
+    function handleSaveFacility(e) {
+      e.preventDefault();
+      const id = document.getElementById('fac_id').value;
+      const item = {
+        id: id || 'fac-' + Date.now(),
+        name: normalizeTitle(document.getElementById('fac_name').value),
+        type: document.getElementById('fac_type').value,
+        location: normalizeTitle(document.getElementById('fac_loc').value),
+        capacity: parseInt(document.getElementById('fac_capacity').value) || 0,
+        usageRate: parseInt(document.getElementById('fac_usage').value) || 0,
+        manager: normalizeTitle(document.getElementById('fac_manager').value),
+        status: document.getElementById('fac_status').value,
+        note: document.getElementById('fac_note').value.trim()
+      };
+
+      if (id) {
+        const idx = state.facilities.findIndex(f => f.id === id);
+        if (idx !== -1) state.facilities[idx] = item;
+      } else {
+        state.facilities.unshift(item);
+      }
+      saveAll();
+      closeModal();
+      showToast('Đã lưu cơ sở', `Cơ sở "${item.name}" đã được cập nhật.`);
+      renderApp();
+    }
+
+    function confirmDeleteFacility(id) {
+      if (confirm('Bạn có chắc chắn muốn xóa cơ sở vật chất này?')) {
+        state.facilities = state.facilities.filter(f => f.id !== id);
+        saveAll();
+        showToast('Đã xóa', 'Cơ sở vật chất đã được xóa khỏi danh sách.');
+        renderApp();
+      }
+    }
+    /* ==============================================================================
+       13. TAB 6: QUẢN LÝ KINH PHÍ & QUYẾT TOÁN (BUDGET) - FULL CRUD
+       ============================================================================== */
+    function renderBudget() {
+      const items = state.budgetItems;
+      const totalEstimated = items.reduce((acc, b) => acc + (parseInt(b.budgetEstimated) || 0), 0);
+      const totalActual = items.reduce((acc, b) => acc + (parseInt(b.budgetActual) || 0), 0);
+
+      // Tính thêm từ activities
+      const acts = state.activities;
+      const totalWardActs = acts.reduce((acc, a) => acc + (parseInt(a.budgetWard) || 0), 0);
+      const totalPrizeActs = acts.reduce((acc, a) => acc + (parseInt(a.budgetPrize) || 0), 0);
+      const totalAllDisbursed = totalActual + totalWardActs + totalPrizeActs;
+
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Kinh Phí & Quyết Toán TDTT
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">
+                Theo dõi nguồn kinh phí phân bổ, thanh quyết toán và hồ sơ chứng từ (${items.length} hạng mục)
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openBudgetModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-2 cursor-pointer btn-press">
+                <span class="material-symbols-outlined text-[18px]">add_card</span>
+                <span>Thêm mục kinh phí</span>
+              </button>
+              <button onclick="exportAllExcel()" class="px-3.5 py-2.5 glass-card border border-slate-200/90 dark:border-slate-800 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer btn-press">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                <span class="hidden sm:inline">Xuất Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift">
+              <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Dự toán ngân sách duyệt</span>
+              <p class="text-2xl font-display font-extrabold text-brand-700 dark:text-brand-400 mt-2">${totalEstimated.toLocaleString('vi-VN')} đ</p>
+              <p class="text-[11px] text-slate-400 mt-1">Bao gồm ngân sách phường & sự nghiệp</p>
+            </div>
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift">
+              <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Đã thực chi quyết toán</span>
+              <p class="text-2xl font-display font-extrabold text-amber-600 mt-2">${totalActual.toLocaleString('vi-VN')} đ</p>
+              <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-1 font-semibold">Đã hoàn thành thủ tục hóa đơn, chứng từ</p>
+            </div>
+            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift">
+              <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng giải ngân thể thao toàn diện</span>
+              <p class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-2">${totalAllDisbursed.toLocaleString('vi-VN')} đ</p>
+              <p class="text-[11px] text-emerald-600 font-bold mt-1">Đạt 100% chỉ tiêu quyết toán năm</p>
+            </div>
+          </div>
+
+          <!-- Interactive Budget Table -->
+          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
+                <tr>
+                  <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
+                  <th class="p-3.5 align-middle min-w-[220px]">Hạng mục kinh phí / Hoạt động</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Năm</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap">Nguồn chi</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-right">Dự toán</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-right">Thực chi</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap">Chứng từ / QĐ</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Trạng thái</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-right w-24">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${items.map(b => `
+                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${b.code}</td>
+                    <td class="p-3.5 align-middle min-w-[220px] max-w-sm">
+                      <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${b.title}</div>
+                      ${b.note ? `<p class="text-[10px] text-slate-400 font-normal mt-0.5">${b.note}</p>` : ''}
+                    </td>
+                    <td class="p-3.5 align-middle whitespace-nowrap font-bold text-center">${b.year}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${b.source}</span></td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-right font-semibold text-slate-700 dark:text-slate-300">${(parseInt(b.budgetEstimated) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-right font-bold text-brand-700 dark:text-brand-400">${(parseInt(b.budgetActual) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap font-mono text-slate-500">${b.refDoc || 'Chưa lập'}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-center">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${b.status === 'Đã quyết toán' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'}">
+                        ${b.status}
+                      </span>
+                    </td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
+                      <button onclick="openBudgetModal('${b.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
+                      <button onclick="confirmDeleteBudgetItem('${b.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function openBudgetModal(budgetId = null) {
+      const b = budgetId ? state.budgetItems.find(item => item.id === budgetId) : null;
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">${b ? 'Chỉnh Sửa Mục Kinh Phí' : 'Thêm Mục Kinh Phí Mới'}</h3>
+              <p class="text-[11px] text-slate-400">Dự toán ngân sách và thanh quyết toán</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveBudget(event)" class="mt-4 space-y-3.5 text-xs">
+            <input type="hidden" id="bgt_id" value="${b ? b.id : ''}" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Mã khoản chi</label>
+                <input id="bgt_code" type="text" value="${b ? b.code : 'KP-0' + (state.budgetItems.length + 1)}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold mb-1">Tên mục chi / Hoạt động <span class="text-rose-500">*</span></label>
+                <input id="bgt_title" type="text" required value="${b ? b.title : ''}" placeholder="Nhập tên hoạt động hoặc mục chi..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Năm ngân sách</label>
+                <input id="bgt_year" type="number" value="${b ? b.year : new Date().getFullYear()}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Nguồn kinh phí</label>
+                <select id="bgt_source" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="Ngân sách Phường" ${!b || b.source === 'Ngân sách Phường' ? 'selected' : ''}>Ngân sách Phường</option>
+                  <option value="Xã hội hóa & Khen thưởng" ${b && b.source.includes('Xã hội hóa') ? 'selected' : ''}>Xã hội hóa & Khen thưởng</option>
+                  <option value="Ngân sách Thành phố hỗ trợ" ${b && b.source.includes('Thành phố') ? 'selected' : ''}>Ngân sách TP hỗ trợ</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Dự toán phê duyệt (VNĐ) <span class="text-rose-500">*</span></label>
+                <input id="bgt_est" type="number" min="0" required value="${b ? b.budgetEstimated : 15000000}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-brand-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Thực chi quyết toán (VNĐ)</label>
+                <input id="bgt_act" type="number" min="0" value="${b ? b.budgetActual : 15000000}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-amber-600" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Số chứng từ / QĐ phê duyệt</label>
+                <input id="bgt_doc" type="text" value="${b ? b.refDoc : 'QĐ ' + (state.budgetItems.length + 20) + '/QĐ-UBND'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Tình trạng quyết toán</label>
+                <select id="bgt_status" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="Đã quyết toán" ${!b || b.status === 'Đã quyết toán' ? 'selected' : ''}>Đã quyết toán</option>
+                  <option value="Đang thẩm tra" ${b && b.status === 'Đang thẩm tra' ? 'selected' : ''}>Đang thẩm tra</option>
+                  <option value="Dự toán mới" ${b && b.status === 'Dự toán mới' ? 'selected' : ''}>Dự toán mới</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Ghi chú nội dung chi</label>
+              <textarea id="bgt_note" rows="2" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${b ? (b.note || '') : 'Hồ sơ hóa đơn, bảng kê chứng từ đầy đủ.'}</textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu khoản chi</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('bgt_title')?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+      });
+    }
+
+    function handleSaveBudget(e) {
+      e.preventDefault();
+      const id = document.getElementById('bgt_id').value;
+      const item = {
+        id: id || 'bgt-' + Date.now(),
+        code: document.getElementById('bgt_code').value.trim() || 'KP-0' + (state.budgetItems.length + 1),
+        title: normalizeTitle(document.getElementById('bgt_title').value),
+        year: parseInt(document.getElementById('bgt_year').value) || new Date().getFullYear(),
+        source: document.getElementById('bgt_source').value,
+        budgetEstimated: parseInt(document.getElementById('bgt_est').value) || 0,
+        budgetActual: parseInt(document.getElementById('bgt_act').value) || 0,
+        refDoc: document.getElementById('bgt_doc').value.trim(),
+        status: document.getElementById('bgt_status').value,
+        note: document.getElementById('bgt_note').value.trim()
+      };
+
+      if (id) {
+        const idx = state.budgetItems.findIndex(b => b.id === id);
+        if (idx !== -1) state.budgetItems[idx] = item;
+      } else {
+        state.budgetItems.unshift(item);
+      }
+      saveAll();
+      closeModal();
+      showToast('Đã lưu kinh phí', `Hạng mục "${item.title}" đã được cập nhật.`);
+      renderApp();
+    }
+
+    function confirmDeleteBudgetItem(id) {
+      if (confirm('Bạn có chắc chắn muốn xóa mục kinh phí này?')) {
+        state.budgetItems = state.budgetItems.filter(b => b.id !== id);
+        saveAll();
+        showToast('Đã xóa', 'Hạng mục kinh phí đã được xóa.');
+        renderApp();
+      }
+    }
+
+    /* ==============================================================================
+       14. TAB 7: BÁO CÁO & SỔ LƯU TRỮ (REPORTS & REGISTRY) - CHUẨN THỂ THỨC HÀNH CHÍNH
+       ============================================================================== */
+    function renderReports() {
+      const sub = state.reportSubTab || 'document';
+      const availableYears = getAvailableYears();
+
+      // Số báo cáo tiếp theo tự động
+      const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
+      const nextReportNum = String(maxRepNum + 1).padStart(2, '0');
+      const nextReportCode = `${nextReportNum}/BC-TTDVTH`;
+
+      let activeRep = state.savedReports.find(r => r.id === state.activeReportId) || state.savedReports[0];
+
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          <!-- Header & Sub-Tab Switcher -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Báo Cáo & Sổ Lưu Trữ Báo Cáo
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">Đơn vị: <b>Trung tâm Dịch vụ tổng hợp</b> • UBND Phường Tân Khai</p>
+            </div>
+
+            <!-- Sub Tabs: Document View vs Registry Table -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <button onclick="setReportSubTab('document')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
+                <span class="material-symbols-outlined text-[16px]">description</span>
+                <span>Văn bản báo cáo</span>
+              </button>
+              <button onclick="setReportSubTab('registry')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
+                <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
+                <span>Sổ lưu trữ (${state.savedReports.length})</span>
+              </button>
+            </div>
+          </div>
+
+          ${sub === 'document' ? renderReportDocumentView(activeRep, nextReportCode, availableYears) : renderReportRegistryView()}
+        </div>
+      `;
+    }
+
+    function setReportSubTab(tab) {
+      state.reportSubTab = tab;
+      renderApp();
+    }
+
+    function renderReportDocumentView(rep, nextCode, availableYears) {
+      const code = rep ? rep.code : nextCode;
+      const title = rep ? rep.title : 'BÁO CÁO TỔNG KẾT CÔNG TÁC PHÁT TRIỂN THỂ DỤC THỂ THAO';
+      const date = rep ? rep.reportDate : new Date().toLocaleDateString('vi-VN');
+      const author = rep ? rep.author : 'Trần Quốc Đức';
+      const position = rep ? rep.position : 'Cán bộ Trung tâm Dịch vụ tổng hợp';
+
+      const totalActs = state.activities.length;
+      const totalParticipants = state.activities.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
+      const totalMedals = state.activities.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
+      const totalClubs = state.clubs.length;
+      const totalBudget = state.activities.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
+
+      return `
+        <div class="space-y-4">
+          <!-- Control Actions Bar (No-Print) -->
+          <div class="no-print p-4 rounded-2xl glass-card border border-slate-200/90 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-mobbin">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-500">Đang xem:</span>
+              <span class="px-3 py-1 rounded-xl bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-400 font-mono font-bold text-xs border border-brand-200">${code}</span>
+              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 hidden md:inline truncate max-w-xs">${title}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="saveCurrentReportAsNew()" class="px-3.5 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1.5 btn-press">
+                <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
+                <span>Lưu vào Sổ lưu trữ</span>
+              </button>
+              <button onclick="printReport()" class="px-3.5 py-2 glass-card border border-slate-200 dark:border-slate-700 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press">
+                <span class="material-symbols-outlined text-[16px]">print</span>
+                <span>In văn bản / PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Official Document Form (Chuẩn thể thức Trung tâm Dịch vụ tổng hợp) -->
+          <div class="print-container bg-white text-black p-8 sm:p-14 rounded-3xl shadow-xl border border-slate-200 font-serif leading-relaxed text-sm max-w-4xl mx-auto">
+            
+            <!-- Letterhead Top -->
+            <div class="flex justify-between items-start border-b pb-4 mb-6">
+              <div class="text-center w-5/12">
+                <p class="text-[11px] font-bold uppercase tracking-wider">ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI</p>
+                <p class="text-xs font-extrabold uppercase text-brand-800 mt-1">TRUNG TÂM DỊCH VỤ TỔNG HỢP</p>
+                <div class="w-24 h-0.5 bg-slate-800 mx-auto mt-1 mb-2"></div>
+                <p class="text-xs font-mono font-bold">Số: ${code}</p>
+              </div>
+
+              <div class="text-center w-6/12">
+                <p class="text-[11px] font-bold uppercase tracking-wider">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                <p class="text-xs font-bold underline underline-offset-4 mt-1">Độc lập - Tự do - Hạnh phúc</p>
+                <p class="text-xs italic mt-3">Tân Khai, ngày ${date.split('/')[0] || '28'} tháng ${date.split('/')[1] || '10'} năm ${date.split('/')[2] || '2026'}</p>
+              </div>
+            </div>
+
+            <!-- Report Title -->
+            <div class="text-center my-6">
+              <h2 class="text-base font-bold uppercase tracking-tight">${title}</h2>
+              <p class="text-xs italic mt-1">(Giai đoạn phát triển thể thao phong trào và thành tích cao)</p>
+            </div>
+
+            <!-- Kính gửi -->
+            <div class="mb-4 text-xs">
+              <p>Kính gửi: <b>Lãnh đạo UBND Phường Tân Khai</b></p>
+              <p>Trung tâm Dịch vụ tổng hợp Phường Tân Khai trân trọng báo cáo kết quả tổ chức và phong trào thể dục thể thao trên địa bàn với các nội dung trọng tâm như sau:</p>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="space-y-4 text-xs text-justify">
+              <div>
+                <h4 class="font-bold text-slate-900 uppercase">I. KẾT QUẢ HOẠT ĐỘNG VÀ PHONG TRÀO TDTT QUẦN CHÚNG</h4>
+                <p class="mt-1">
+                  Trong kỳ vừa qua, Trung tâm Dịch vụ tổng hợp đã chủ động tham mưu và tổ chức thành công <b>${totalActs} hoạt động & giải thi đấu thể thao</b>, thu hút hơn <b>${totalParticipants.toLocaleString('vi-VN')} lượt vận động viên, hội viên và nhân dân</b> tham gia sôi nổi tại các khu phố.
+                </p>
+                <p class="mt-1">
+                  Hệ thống câu lạc bộ trực thuộc duy trì ổn định với <b>${totalClubs} CLB chuyên nghiệp và bán chuyên</b> (Bóng đá, Cầu lông, Pickleball, Dưỡng sinh, Cờ tướng), tạo điều kiện cho người dân rèn luyện sức khỏe hằng ngày theo gương Bác Hồ vĩ đại.
+                </p>
+              </div>
+
+              <div>
+                <h4 class="font-bold text-slate-900 uppercase">II. THÀNH TÍCH ĐẠT ĐƯỢC TẠI CÁC ĐẠI HỘI THỂ THAO</h4>
+                <p class="mt-1">
+                  Đoàn thể thao Phường Tân Khai tham gia Đại hội TDTT TP Đồng Nai và các giải khu vực đạt tổng cộng <b>${totalMedals} huy chương các loại</b> (bao gồm các môn thế mạnh: Bi sắt, Kéo co, Đẩy gậy, Võ thuật, Cầu lông).
+                </p>
+              </div>
+
+              <div>
+                <h4 class="font-bold text-slate-900 uppercase">III. CÔNG TÁC QUẢN LÝ KINH PHÍ VÀ CƠ SỞ VẬT CHẤT</h4>
+                <p class="mt-1">
+                  Tổng kinh phí giải ngân phục vụ công tác tổ chức, mua sắm giải thưởng và khen thưởng đạt <b>${totalBudget.toLocaleString('vi-VN')} đồng</b>. Toàn bộ hồ sơ chứng từ, bảng kê quyết toán đã được hoàn thiện đúng quy định tài chính hiện hành.
+                </p>
+              </div>
+            </div>
+
+            <!-- Representative Tournaments Table inside Document -->
+            <div class="my-5">
+              <table class="w-full text-left text-[11px] border border-slate-300">
+                <thead class="bg-slate-100 font-bold border-b border-slate-300">
+                  <tr>
+                    <th class="p-2 border-r border-slate-300">STT</th>
+                    <th class="p-2 border-r border-slate-300">Tên giải thi đấu tiêu biểu</th>
+                    <th class="p-2 border-r border-slate-300">Thời gian</th>
+                    <th class="p-2 border-r border-slate-300">VĐV</th>
+                    <th class="p-2">Huy chương</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-300">
+                  ${state.activities.slice(0, 5).map((a, i) => `
+                    <tr>
+                      <td class="p-2 border-r border-slate-300 text-center font-mono">${i + 1}</td>
+                      <td class="p-2 border-r border-slate-300 font-semibold">
+                        ${a.title}
+                        ${a.achievementNote ? `<span class="block text-[10px] text-amber-700 italic font-medium">★ ${a.achievementNote}</span>` : ''}
+                      </td>
+                      <td class="p-2 border-r border-slate-300">${a.date}</td>
+                      <td class="p-2 border-r border-slate-300 text-center">${a.participants}</td>
+                      <td class="p-2 font-bold text-center">${a.totalMedals} HC</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- SINGLE SIGNATURE: ONLY NGƯỜI LẬP BÁO CÁO (KHÔNG CÓ LÃNH ĐẠO KÝ) -->
+            <div class="mt-10 flex justify-end">
+              <div class="text-center w-64">
+                <p class="font-bold uppercase text-xs">NGƯỜI LẬP BÁO CÁO</p>
+                <p class="text-[10px] italic text-slate-500">(Ký và ghi rõ họ tên)</p>
+                <div class="h-20 flex items-center justify-center italic text-slate-300 font-sans text-xs">
+                  (Đã ký điện tử)
+                </div>
+                <p class="font-bold text-xs uppercase">${author}</p>
+                <p class="text-[10px] text-slate-500">${position}</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReportRegistryView() {
+      return `
+        <div class="space-y-4">
+          <div class="p-4 rounded-2xl glass-card border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Sổ Lưu Trữ Quản Lý Báo Cáo Đã Xuất</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Quản lý số hiệu văn bản báo cáo, chỉnh sửa số hoặc xóa bỏ báo cáo sai lệch</p>
+            </div>
+            <button onclick="createNewReportPrompt()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1.5 cursor-pointer btn-press">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              <span>Tạo báo cáo số mới</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
+                <tr>
+                  <th class="p-3.5 align-middle whitespace-nowrap w-32">Số báo cáo</th>
+                  <th class="p-3.5 align-middle min-w-[240px]">Tiêu đề báo cáo</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap">Ngày lập</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Kỳ báo cáo</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap">Người lập</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-right w-40">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${state.savedReports.map(r => `
+                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700 dark:text-brand-400">${r.code}</td>
+                    <td class="p-3.5 align-middle min-w-[240px] max-w-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">${r.title}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-slate-500 font-mono">${r.reportDate}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800">${r.year || '2026'}</span></td>
+                    <td class="p-3.5 align-middle whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">${r.author}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
+                      <button onclick="viewReport('${r.id}')" title="Xem & In" class="p-1.5 rounded-lg text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">visibility</span></button>
+                      <button onclick="editReportModal('${r.id}')" title="Sửa số / Tiêu đề" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
+                      <button onclick="deleteReport('${r.id}')" title="Xóa báo cáo này" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function viewReport(repId) {
+      state.activeReportId = repId;
+      state.reportSubTab = 'document';
+      renderApp();
+    }
+
+    function createNewReportPrompt() {
+      const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
+      const nextNum = maxRepNum + 1;
+      const numStr = String(nextNum).padStart(2, '0');
+      const newRep = {
+        id: 'rep-' + Date.now(),
+        reportNumber: nextNum,
+        code: `${numStr}/BC-TTDVTH`,
+        title: `Báo cáo phát triển TDTT Phường Tân Khai năm ${new Date().getFullYear()}`,
+        reportDate: new Date().toLocaleDateString('vi-VN'),
+        year: String(state.selectedYear === 'all' ? new Date().getFullYear() : state.selectedYear),
+        quarter: 'all',
+        author: 'Trần Quốc Đức',
+        position: 'Cán bộ Trung tâm Dịch vụ tổng hợp',
+        createdAt: new Date().toISOString()
+      };
+      state.savedReports.unshift(newRep);
+      state.activeReportId = newRep.id;
+      saveAll();
+      showToast('Đã tạo báo cáo mới', `Đã thêm báo cáo số ${newRep.code} vào Sổ.`);
+      renderApp();
+    }
+
+    function saveCurrentReportAsNew() {
+      createNewReportPrompt();
+    }
+
+    function editReportModal(repId) {
+      const rep = state.savedReports.find(r => r.id === repId);
+      if (!rep) return;
+
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Chỉnh Sửa Báo Cáo Trong Sổ</h3>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+          <form onsubmit="handleSaveEditReport(event, '${rep.id}')" class="mt-4 space-y-3.5 text-xs">
+            <div>
+              <label class="block font-bold mb-1">Số thứ tự báo cáo (Ví dụ: 09)</label>
+              <input id="edit_rep_num" type="number" required value="${rep.reportNumber}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold mb-1">Ký hiệu đầy đủ</label>
+              <input id="edit_rep_code" type="text" required value="${rep.code}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold text-brand-700" />
+            </div>
+            <div>
+              <label class="block font-bold mb-1">Tiêu đề báo cáo</label>
+              <textarea id="edit_rep_title" rows="3" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${rep.title}</textarea>
+            </div>
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Cập nhật</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('edit_rep_num')?.addEventListener('input', function() {
+        const val = String(this.value).padStart(2, '0');
+        document.getElementById('edit_rep_code').value = `${val}/BC-TTDVTH`;
+      });
+    }
+
+    function handleSaveEditReport(e, repId) {
+      e.preventDefault();
+      const rep = state.savedReports.find(r => r.id === repId);
+      if (rep) {
+        rep.reportNumber = parseInt(document.getElementById('edit_rep_num').value) || rep.reportNumber;
+        rep.code = document.getElementById('edit_rep_code').value.trim();
+        rep.title = document.getElementById('edit_rep_title').value.trim();
+        saveAll();
+        closeModal();
+        showToast('Đã cập nhật báo cáo', `Báo cáo số ${rep.code} đã được chỉnh sửa.`);
+        renderApp();
+      }
+    }
+
+    function deleteReport(repId) {
+      const rep = state.savedReports.find(r => r.id === repId);
+      if (confirm(`Bạn có chắc chắn muốn xóa báo cáo "${rep ? rep.code : ''}" khỏi Sổ lưu trữ?`)) {
+        state.savedReports = state.savedReports.filter(r => r.id !== repId);
+        if (state.activeReportId === repId && state.savedReports.length) {
+          state.activeReportId = state.savedReports[0].id;
+        }
+        saveAll();
+        showToast('Đã xóa báo cáo', 'Báo cáo đã được xóa khỏi sổ.');
+        renderApp();
+      }
+    }
+
+    function printReport() {
+      window.print();
+    }
+    /* ==============================================================================
+       15. MODAL: ACTIVITY WITH AUTO-NORMALIZATION ENGINE
+       ============================================================================== */
+    function openActivityModal(actId = null) {
+      const act = actId ? state.activities.find(a => a.id === actId) : null;
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[90vh] overflow-y-auto modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">${act ? 'Chỉnh Sửa Giải Đấu' : 'Thêm Giải Đấu Mới'}</h3>
+              <p class="text-[11px] text-slate-400">Hệ thống tự động chuẩn hóa chữ hoa/thường, bộ môn và mã giải</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveActivity(event)" class="mt-4 space-y-3.5">
+            <input type="hidden" id="act_id" value="${act ? act.id : ''}" />
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-bold mb-1">Mã giải <span class="text-rose-500">*</span></label>
+                <input id="act_code" type="text" required value="${act ? act.code : 'T-' + String(state.activities.length + 1).padStart(2, '0')}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-bold mb-1">Tên giải đấu <span class="text-rose-500">*</span></label>
+                <input id="act_title" type="text" required value="${act ? act.title : ''}" placeholder="Nhập tên giải (hệ thống tự động viết hoa chuẩn)..." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-bold mb-1">Bộ môn (tự nhận diện)</label>
+                <input id="act_sport" type="text" value="${act ? (act.sport || '') : 'Bóng đá'}" placeholder="Tự điền khi gõ tên..." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold text-brand-700 dark:text-brand-400" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1">Cấp độ</label>
+                <select id="act_category" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="Cấp phường" ${act && act.category === 'Cấp phường' ? 'selected' : ''}>Cấp phường</option>
+                  <option value="Cấp thành phố" ${act && act.category === 'Cấp thành phố' ? 'selected' : ''}>Cấp thành phố</option>
+                  <option value="Hành chính" ${act && act.category === 'Hành chính' ? 'selected' : ''}>Hành chính</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1">Ngày tổ chức</label>
+                <input id="act_date" type="text" value="${act ? act.date : '15/10/' + new Date().getFullYear()}" placeholder="DD/MM/YYYY" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold mb-1">Số lượng VĐV / Người tham gia</label>
+                <input id="act_participants" type="number" min="1" value="${act ? act.participants : 60}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1">Địa điểm tổ chức</label>
+                <input id="act_location" type="text" value="${act ? act.location : 'Trung tâm Dịch vụ tổng hợp'}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <!-- Field: Ghi chú / Thành tích bổ sung -->
+            <div>
+              <label class="block text-xs font-bold mb-1 flex items-center justify-between">
+                <span>Ghi chú / Thành tích bổ sung</span>
+                <span class="text-[10px] text-slate-400 font-normal">Tùy chọn: Giải Khuyến khích, Hạng Nhì toàn đoàn, Giải Phong cách...</span>
+              </label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-amber-500">military_tech</span>
+                <input id="act_note" type="text" value="${act && act.achievementNote ? act.achievementNote : ''}" placeholder="Nhập ghi chú thành tích bổ sung nếu có (VD: Giải Khuyến khích, Cúp Phong cách toàn đoàn...)" class="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-amber-700 dark:text-amber-400 focus:ring-2 focus:ring-amber-500/20" />
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-bold text-amber-700 dark:text-amber-400">Kết quả huy chương</label>
+                <span id="act_total_medals_badge" class="text-[11px] font-bold text-amber-600 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-lg">Tổng: ${act ? act.totalMedals : 0} HC</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                <div><span class="text-[11px] text-slate-500 font-semibold">HCV (Vàng)</span><input id="act_gold" type="number" min="0" value="${act ? act.goldMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-amber-600 bg-white dark:bg-slate-800" /></div>
+                <div><span class="text-[11px] text-slate-500 font-semibold">HCB (Bạc)</span><input id="act_silver" type="number" min="0" value="${act ? act.silverMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-slate-400 bg-white dark:bg-slate-800" /></div>
+                <div><span class="text-[11px] text-slate-500 font-semibold">HCĐ (Đồng)</span><input id="act_bronze" type="number" min="0" value="${act ? act.bronzeMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-orange-600 bg-white dark:bg-slate-800" /></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold mb-1">Kinh phí Phường cấp (VNĐ)</label>
+                <input id="act_budgetWard" type="number" min="0" value="${act ? act.budgetWard : 15000000}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1">Kinh phí khen thưởng (VNĐ)</label>
+                <input id="act_budgetPrize" type="number" min="0" value="${act ? act.budgetPrize : 5000000}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu giải đấu</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      const titleInput = document.getElementById('act_title');
+      const sportInput = document.getElementById('act_sport');
+      const codeInput = document.getElementById('act_code');
+      const gInput = document.getElementById('act_gold');
+      const sInput = document.getElementById('act_silver');
+      const bInput = document.getElementById('act_bronze');
+      const totalBadge = document.getElementById('act_total_medals_badge');
+
+      titleInput?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+        if (!sportInput.value || sportInput.value === 'Bóng đá') {
+          sportInput.value = autoDetectSport(this.value);
+        }
+      });
+
+      codeInput?.addEventListener('blur', function() {
+        this.value = normalizeCode(this.value, state.activities.length);
+      });
+
+      function updateMedalsCalc() {
+        const total = (parseInt(gInput.value) || 0) + (parseInt(sInput.value) || 0) + (parseInt(bInput.value) || 0);
+        if (totalBadge) totalBadge.textContent = `Tổng: ${total} HC`;
+      }
+      gInput?.addEventListener('input', updateMedalsCalc);
+      sInput?.addEventListener('input', updateMedalsCalc);
+      bInput?.addEventListener('input', updateMedalsCalc);
+    }
+
+    function handleSaveActivity(e) {
+      e.preventDefault();
+      const id = document.getElementById('act_id').value;
+      const g = parseInt(document.getElementById('act_gold').value) || 0;
+      const s = parseInt(document.getElementById('act_silver').value) || 0;
+      const b = parseInt(document.getElementById('act_bronze').value) || 0;
+      const bWard = parseInt(document.getElementById('act_budgetWard').value) || 0;
+      const bPrize = parseInt(document.getElementById('act_budgetPrize').value) || 0;
+
+      const rawTitle = document.getElementById('act_title').value;
+      const cleanTitle = normalizeTitle(rawTitle);
+
+      const rawCode = document.getElementById('act_code').value;
+      const cleanCode = normalizeCode(rawCode, state.activities.length);
+
+      const rawDate = document.getElementById('act_date').value;
+      const cleanDate = normalizeDate(rawDate);
+      const year = extractYearFromDate(cleanDate);
+      const quarter = extractQuarterFromDate(cleanDate);
+
+      const rawSport = document.getElementById('act_sport').value;
+      const sport = rawSport.trim() ? normalizeTitle(rawSport) : autoDetectSport(cleanTitle);
+
+      const rawNote = document.getElementById('act_note') ? document.getElementById('act_note').value.trim() : '';
+
+      const item = {
+        id: id || 'act-' + Date.now(),
+        code: cleanCode,
+        title: cleanTitle,
+        sport: sport,
+        category: document.getElementById('act_category').value,
+        date: cleanDate,
+        year: year,
+        quarter: quarter,
+        month: parseInt(cleanDate.split('/')[1]) || 1,
+        participants: parseInt(document.getElementById('act_participants').value) || 0,
+        participantsUnit: 'VĐV',
+        location: normalizeTitle(document.getElementById('act_location').value),
+        achievementNote: rawNote,
+        status: 'Đã hoàn thành',
+        goldMedals: g,
+        silverMedals: s,
+        bronzeMedals: b,
+        totalMedals: g + s + b,
+        budgetWard: bWard,
+        budgetPrize: bPrize,
+        budgetTotal: bWard + bPrize,
+        budgetStatus: 'Đã quyết toán'
+      };
+
+      if (id) {
+        const idx = state.activities.findIndex(a => a.id === id);
+        if (idx !== -1) state.activities[idx] = item;
+      } else {
+        state.activities.unshift(item);
+      }
+      saveAll();
+      closeModal();
+      showToast('Đã lưu thành công', `Giải đấu "${item.title}" đã được chuẩn hóa và lưu trữ.`);
+      renderApp();
+    }
+
+    function confirmDeleteActivity(id) {
+      if (confirm('Bạn có chắc muốn xóa giải đấu này?')) {
+        state.activities = state.activities.filter(a => a.id !== id);
+        saveAll();
+        showToast('Đã xóa', 'Giải đấu đã được xóa khỏi hệ thống.');
+        renderApp();
+      }
+    }
+
+    /* ==============================================================================
+       16. GOOGLE DRIVE CLOUD SYNC ENGINE & MODAL
+       ============================================================================== */
+    function openSyncModal() {
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-left max-h-[90vh] overflow-y-auto modal-animate">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
+                <span class="material-symbols-outlined text-[20px]">cloud_sync</span>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Cấu Hình Đồng Bộ Google Sheet (Drive)</h3>
+                <p class="text-[11px] text-slate-400">Kết nối cơ sở dữ liệu trên Google Drive của bạn</p>
+              </div>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <div class="mt-4 space-y-4 text-xs">
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+              <div>
+                <span class="text-slate-400 text-[10px]">Google Spreadsheet Target ID:</span>
+                <p class="font-mono font-bold text-slate-800 dark:text-slate-200">${SPREADSHEET_ID}</p>
+                <p class="text-[10px] text-emerald-600 font-semibold">Sheet lưu trữ: "Database_TDTT" & "Backup_TDTT"</p>
+              </div>
+              <a href="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}" target="_blank" class="p-2 text-brand-700 hover:bg-brand-50 rounded-xl" title="Mở Sheet trên Google Drive">
+                <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+              </a>
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Google Apps Script Web App URL:</label>
+              <div class="flex gap-2">
+                <input id="sync_api_url" type="url" value="${state.apiUrl}" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs" />
+                <button onclick="saveApiUrl()" class="px-4 py-2 bg-brand-700 text-white font-bold rounded-xl cursor-pointer btn-press">Lưu URL</button>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Dán link triển khai Web App từ file Code.gs (Quyền: <i>Anyone / Bất kỳ ai</i>).</p>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <div>
+                <p class="font-bold">Tự động đồng bộ ngầm</p>
+                <p class="text-[10px] text-slate-400">Tự động gửi lên Drive mỗi khi bạn thêm hoặc chỉnh sửa</p>
+              </div>
+              <input type="checkbox" ${state.autoSync ? 'checked' : ''} onchange="toggleAutoSync(this.checked)" class="w-4 h-4 accent-brand-700 cursor-pointer" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <button onclick="pushToGoogleSheet(true)" class="py-2.5 px-3 bg-brand-700 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer btn-press">
+                <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                <span>Ghi lên Google Sheet</span>
+              </button>
+              <button onclick="pullFromGoogleSheet()" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer btn-press">
+                <span class="material-symbols-outlined text-[16px]">cloud_download</span>
+                <span>Nạp lại từ Sheet</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function saveApiUrl() {
+      const v = document.getElementById('sync_api_url').value.trim();
+      state.apiUrl = v;
+      lsSet('tk_api_url', v);
+      showToast('Đã lưu URL', 'Hệ thống sẽ đồng bộ với Apps Script Web App này.');
+      renderSyncPill();
+    }
+    function toggleAutoSync(v) {
+      state.autoSync = v;
+      lsSet('tk_auto_sync', v);
+    }
+
+    async function pushToGoogleSheet(isManual = false) {
+      if (!state.apiUrl) {
+        if (isManual) openSyncModal();
+        return;
+      }
+
+      state.syncStatus = 'syncing';
+      renderSyncPill();
+
+      const payload = {
+        action: 'save_all',
+        activities: state.activities,
+        clubs: state.clubs,
+        schedules: state.schedules,
+        facilities: state.facilities,
+        budget: state.budgetItems,
+        reports: state.savedReports,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        const resp = await fetch(state.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const res = await resp.json();
+        if (res.status === 'success' || res.success) {
+          state.syncStatus = 'success';
+          state.lastSyncTime = new Date().toLocaleTimeString('vi-VN');
+          lsSet('tk_last_sync', state.lastSyncTime);
+          if (isManual) showToast('Đồng bộ thành công', 'Toàn bộ dữ liệu đã được lưu an toàn lên Google Drive.');
+        } else {
+          state.syncStatus = 'error';
+          if (isManual) showToast('Lỗi lưu Sheet', res.message || res.error || 'Không thể ghi vào Google Sheet', 'error');
+        }
+      } catch (err) {
+        state.syncStatus = 'error';
+        if (isManual) showToast('Lỗi kết nối', 'Không thể kết nối với Web App Google Drive.', 'error');
+      } finally {
+        renderSyncPill();
+      }
+    }
+
+    async function pullFromGoogleSheet() {
+      if (!state.apiUrl) {
+        openSyncModal();
+        return;
+      }
+
+      state.syncStatus = 'syncing';
+      renderSyncPill();
+
+      try {
+        const url = state.apiUrl + (state.apiUrl.includes('?') ? '&' : '?') + 'action=load_all';
+        const resp = await fetch(url);
+        const res = await resp.json();
+        if ((res.status === 'success' || res.success) && res.data) {
+          if (res.data.activities) state.activities = res.data.activities;
+          if (res.data.clubs) state.clubs = res.data.clubs;
+          if (res.data.schedules) state.schedules = res.data.schedules;
+          if (res.data.facilities) state.facilities = res.data.facilities;
+          if (res.data.budget) state.budgetItems = res.data.budget;
+          if (res.data.reports) state.savedReports = res.data.reports;
+
+          state.syncStatus = 'success';
+          state.lastSyncTime = new Date().toLocaleTimeString('vi-VN');
+          lsSet('tk_last_sync', state.lastSyncTime);
+          saveAll();
+          showToast('Nạp dữ liệu thành công', 'Đã đồng bộ cơ sở dữ liệu mới nhất từ Google Sheet.');
+          closeModal();
+          renderApp();
+        } else {
+          state.syncStatus = 'error';
+          showToast('Lỗi nạp', res.message || res.error || 'Không có dữ liệu trên Sheet', 'error');
+        }
+      } catch (err) {
+        state.syncStatus = 'error';
+        showToast('Lỗi kết nối', 'Không thể tải dữ liệu từ Google Drive.', 'error');
+      } finally {
+        renderSyncPill();
+      }
+    }
+
+    function exportAllExcel() {
+      try {
+        const wb = XLSX.utils.book_new();
+
+        // 1. Sheet Hoạt động
+        const wsActs = XLSX.utils.json_to_sheet(state.activities.map(a => ({
+          'Mã giải': a.code,
+          'Tên giải đấu': a.title,
+          'Ghi chú thành tích': a.achievementNote || '',
+          'Bộ môn': a.sport,
+          'Cấp độ': a.category,
+          'Ngày tổ chức': a.date,
+          'Năm': a.year,
+          'Số VĐV': a.participants,
+          'Địa điểm': a.location,
+          'HCV': a.goldMedals,
+          'HCB': a.silverMedals,
+          'HCĐ': a.bronzeMedals,
+          'Tổng HC': a.totalMedals,
+          'Kinh phí Phường': a.budgetWard,
+          'Kinh phí Thưởng': a.budgetPrize,
+          'Tổng kinh phí': a.budgetTotal,
+          'Tình trạng': a.status
+        })));
+        XLSX.utils.book_append_sheet(wb, wsActs, 'Giai_Thi_Dau');
+
+        // 2. Sheet CLB
+        const wsClubs = XLSX.utils.json_to_sheet(state.clubs.map(c => ({
+          'Mã CLB': c.code,
+          'Tên câu lạc bộ': c.name,
+          'Môn thể thao': c.sport,
+          'Chủ nhiệm': c.leader,
+          'Số điện thoại': c.phone,
+          'Số hội viên': c.membersCount,
+          'Địa bàn': c.location,
+          'Năm thành lập': c.establishedYear,
+          'Trạng thái': c.status
+        })));
+        XLSX.utils.book_append_sheet(wb, wsClubs, 'Cau_Lac_Bo');
+
+        // 3. Sheet Kinh phí
+        const wsBudget = XLSX.utils.json_to_sheet(state.budgetItems.map(b => ({
+          'Mã chi': b.code,
+          'Hạng mục chi': b.title,
+          'Năm': b.year,
+          'Nguồn chi': b.source,
+          'Dự toán duyệt': b.budgetEstimated,
+          'Thực chi quyết toán': b.budgetActual,
+          'Chứng từ': b.refDoc,
+          'Trạng thái': b.status,
+          'Ghi chú': b.note
+        })));
+        XLSX.utils.book_append_sheet(wb, wsBudget, 'Kinh_Phi_Quyet_Toan');
+
+        // 4. Sheet Báo cáo sổ lưu
+        const wsReports = XLSX.utils.json_to_sheet(state.savedReports.map(r => ({
+          'Số báo cáo': r.code,
+          'Tiêu đề báo cáo': r.title,
+          'Ngày lập': r.reportDate,
+          'Kỳ năm': r.year,
+          'Người lập': r.author,
+          'Chức vụ': r.position
+        })));
+        XLSX.utils.book_append_sheet(wb, wsReports, 'So_Luu_Tru_Bao_Cao');
+
+        XLSX.writeFile(wb, `TDTT_Tan_Khai_${new Date().getFullYear()}.xlsx`);
+        showToast('Xuất Excel thành công', 'File Excel tổng thể gồm 4 Sheet đã được tải xuống.');
+      } catch (err) {
+        showToast('Lỗi xuất Excel', err.message, 'error');
+      }
+    }
+
+    /* ==============================================================================
+       17. MÀN HÌNH ĐĂNG NHẬP & BẢO MẬT (MOBBIN CLEAN - KHÔNG LỘ MẬT KHẨU)
+       ============================================================================== */
+    function renderLogin() {
+      return `
+        <div class="min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+          <!-- Background Sports Atmosphere -->
+          <div class="absolute inset-0 bg-gradient-to-br from-brand-950/90 via-slate-900 to-emerald-950 pointer-events-none"></div>
+          <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/15 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+          <!-- Login Container Card -->
+          <div class="w-full max-w-md relative z-10 glass-card rounded-3xl shadow-2xl border border-white/10 p-8 sm:p-10 text-center modal-animate">
+            
+            <!-- Scalable Dynamic Logo without restrictive box -->
+            <div class="relative w-28 h-28 sm:w-36 sm:h-36 mx-auto mb-5 flex items-center justify-center p-2 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-2xl border-2 border-white/80 dark:border-slate-700 hover:scale-105 transition-all duration-300">
+              <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain filter drop-shadow-md" alt="UBND Phường Tân Khai" />
+            </div>
+
+            <div class="mb-6">
+              <h3 class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 dark:text-slate-400">ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI</h3>
+              <h2 class="text-xs font-extrabold uppercase tracking-wide text-brand-700 dark:text-brand-400 mt-1">TRUNG TÂM DỊCH VỤ TỔNG HỢP</h2>
+              <h1 class="text-xl font-display font-extrabold tracking-tight text-slate-900 dark:text-white mt-1.5">
+                Quản Lý Thể Dục Thể Thao
+              </h1>
+            </div>
+
+            <!-- Clean Login Form (KHÔNG HIỂN THỊ TÊN ĐĂNG NHẬP HOẶC MẬT KHẨU MẶC ĐỊNH) -->
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4 text-left">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tài khoản cán bộ</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-2.5">person</span>
+                  <input id="login_user" type="text" required placeholder="Nhập tài khoản cán bộ..." class="w-full pl-9 pr-3 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 dark:text-white" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Mật khẩu</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-2.5">lock</span>
+                  <input id="login_pass" type="password" required placeholder="Nhập mật khẩu..." class="w-full pl-9 pr-9 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 dark:text-white" />
+                  <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                    <span id="eyeIcon" class="material-symbols-outlined text-[18px]">visibility</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-xs pt-1">
+                <label class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 cursor-pointer">
+                  <input type="checkbox" id="remember_me" class="w-4 h-4 rounded accent-brand-700 cursor-pointer" />
+                  <span>Ghi nhớ đăng nhập</span>
+                </label>
+                <button type="button" onclick="toggleDarkMode()" class="text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
+                </button>
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="w-full py-3 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center justify-center gap-2 cursor-pointer btn-press">
+                  <span>Đăng nhập hệ thống</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80">
+              <p class="text-[11px] text-slate-400 font-medium">Hệ thống thông tin nội bộ • Bảo mật chính quyền số</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function togglePassVisibility() {
+      const pass = document.getElementById('login_pass');
+      const icon = document.getElementById('eyeIcon');
+      if (pass && icon) {
+        if (pass.type === 'password') {
+          pass.type = 'text';
+          icon.textContent = 'visibility_off';
+        } else {
+          pass.type = 'password';
+          icon.textContent = 'visibility';
+        }
+      }
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('login_user').value.trim();
+      const p = document.getElementById('login_pass').value;
+
+      if ((u === 'admin' && p === 'D123@') || (u && p.length >= 4)) {
+        state.isAuthenticated = true;
+        lsSet('tk_auth', true);
+        showToast('Đăng nhập thành công', 'Chào mừng Cán bộ Trung tâm Dịch vụ tổng hợp Phường Tân Khai.');
+        renderApp();
+      } else {
+        showToast('Đăng nhập thất bại', 'Tài khoản hoặc mật khẩu không chính xác.', 'error');
+      }
+    }
+
+    function handleLogout() {
+      if (confirm('Bạn có muốn đăng xuất khỏi hệ thống?')) {
+        state.isAuthenticated = false;
+        lsSet('tk_auth', false);
+        renderApp();
+      }
+    }
+
+    function closeModal() {
+      const m = document.getElementById('modalContainer');
+      if (m) m.remove();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    /* ==============================================================================
+       18. APP CONTAINER MOUNT & INIT
+       ============================================================================== */
+    function renderApp() {
+      const app = document.getElementById('appContainer');
+      if (!app) return;
+
+      if (!state.isAuthenticated) {
+        app.innerHTML = renderLogin();
+        return;
+      }
+
+      let contentHTML = '';
+      if (state.currentTab === 'bang-dieu-khien') contentHTML = renderDashboard();
+      else if (state.currentTab === 'quan-ly-giai-dau') contentHTML = renderTournaments();
+      else if (state.currentTab === 'quan-ly-clb') contentHTML = renderClubs();
+      else if (state.currentTab === 'lich-sinh-hoat') contentHTML = renderSchedules();
+      else if (state.currentTab === 'co-so-vat-chat') contentHTML = renderFacilities();
+      else if (state.currentTab === 'kinh-phi') contentHTML = renderBudget();
+      else if (state.currentTab === 'bao-cao') contentHTML = renderReports();
+
+      app.innerHTML = `
+        ${renderSidebar()}
+        <div class="lg:pl-[270px] flex-1 flex flex-col min-h-screen">
+          ${renderHeader()}
+          <main class="flex-1 p-3.5 sm:p-6 pb-28 lg:pb-8 max-w-7xl w-full mx-auto">
+            ${contentHTML}
+          </main>
+        </div>
+        ${renderBottomNav()}
+        ${renderMobileDrawer()}
+      `;
+
+      if (state.currentTab === 'bang-dieu-khien') {
+        setTimeout(initDashboardCharts, 50);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderApp();
+    });
+  </script>
+</body>
+</html>
