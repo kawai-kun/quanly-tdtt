@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UBND Phường Tân Khai - Trung Tâm Dịch Vụ Tổng Hợp - Quản Lý TDTT</title>
+  <link rel="icon" type="image/png" href="logo.png" />
   
   <!-- Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -167,7 +168,7 @@
       const isNumeric = typeof size === 'number' || (/^\d+$/).test(size);
       const sizeStyle = isNumeric ? `width:${size}px; height:${size}px;` : '';
       const sizeClass = !isNumeric ? size : '';
-      return `<img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="${sizeClass} ${extraClass} shrink-0 max-w-full max-h-full object-contain filter drop-shadow-md transition-transform duration-300" style="${sizeStyle}" alt="Huy hiệu UBND Phường Tân Khai" />`;
+      return `<img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="${sizeClass} ${extraClass} shrink-0 max-w-full max-h-full object-contain rounded-full transition-transform duration-300" style="${sizeStyle}" alt="Huy hiệu UBND Phường Tân Khai" />`;
     }
 
     // Biểu tượng nhận diện từng môn thể thao
@@ -543,8 +544,8 @@
             
             <!-- Mobile Brand: Logo + HỆ THỐNG QUẢN LÝ TDTT -->
             <div class="flex lg:hidden items-center gap-2">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center p-0.5 bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 shrink-0">
-                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain" alt="Logo Tân Khai" />
+              <div class="w-9 h-9 rounded-full flex items-center justify-center p-0.5 bg-white/95 dark:bg-slate-800/95 shadow-sm border border-slate-200/80 dark:border-slate-700 shrink-0 overflow-hidden">
+                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Logo Phường Tân Khai" />
               </div>
               <div class="hidden xs:flex flex-col text-left">
                 <span class="text-[11px] font-black uppercase text-brand-700 dark:text-brand-400 leading-tight">QUẢN LÝ TDTT</span>
@@ -641,8 +642,8 @@
           <div>
             <!-- Official Brand Header: Dedicated to Logo + HỆ THỐNG QUẢN LÝ TDTT (Góc bên trái) -->
             <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/60 dark:border-slate-800/60 pb-5 mb-4">
-              <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200/80 dark:border-slate-700">
-                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 hover:scale-105" alt="Logo Tân Khai" />
+              <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-full bg-white/95 dark:bg-slate-800/95 shadow-md border border-slate-200/80 dark:border-slate-700 overflow-hidden group">
+                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105" alt="Huy hiệu UBND Phường Tân Khai" />
               </div>
               <div class="flex flex-col text-left min-w-0">
                 <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">PHƯỜNG TÂN KHAI</span>
@@ -740,8 +741,8 @@
             <div>
               <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div class="flex items-center gap-3">
-                  <div class="w-11 h-11 rounded-2xl p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center shrink-0">
-                    <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain" alt="Logo Tân Khai" />
+                  <div class="w-11 h-11 rounded-full p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
+                    <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Huy hiệu UBND Phường Tân Khai" />
                   </div>
                   <div>
                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">PHƯỜNG TÂN KHAI</span>
@@ -2831,9 +2832,9 @@
           <!-- Login Container Card -->
           <div class="w-full max-w-md relative z-10 glass-card rounded-3xl shadow-2xl border border-white/10 p-8 sm:p-10 text-center modal-animate">
             
-            <!-- Scalable Dynamic Logo without restrictive box -->
-            <div class="relative w-28 h-28 sm:w-36 sm:h-36 mx-auto mb-5 flex items-center justify-center p-2 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-2xl border-2 border-white/80 dark:border-slate-700 hover:scale-105 transition-all duration-300">
-              <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain filter drop-shadow-md" alt="UBND Phường Tân Khai" />
+            <!-- Pristine Official Circular Emblem -->
+            <div class="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-5 rounded-full p-1 bg-white/95 dark:bg-slate-800/95 shadow-xl ring-4 ring-brand-700/10 dark:ring-white/10 flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 group">
+              <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Huy hiệu UBND Phường Tân Khai" />
             </div>
 
             <div class="mb-6">
