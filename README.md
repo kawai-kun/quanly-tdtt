@@ -17,7 +17,7 @@ Hệ thống Quản lý & Điều hành Thể dục Thể thao Phường Tân Kh
 1. **Bảo mật màn hình Đăng nhập:**
    * Tuyệt đối không hiển thị lộ tài khoản và mật khẩu trên giao diện bên ngoài.
    * Ô mật khẩu có nút ẩn/hiện mắt (`visibility`), ô nhập sạch sẽ và hỗ trợ ghi nhớ đăng nhập.
-   * *Tài khoản nội bộ:* `admin` | *Mật khẩu:* `D123@`.
+   * *Tài khoản nội bộ:* `admin` | *Mật khẩu:* ``.
 
 2. **Tự động chuẩn hóa khuôn mẫu (Data Normalization):**
    * Tự động viết hoa chữ cái đầu và danh từ riêng (Tân Khai, TDTT, UBND, VĐV, HCV...).
