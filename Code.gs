@@ -14,7 +14,17 @@ const DB_CELL           = 'A1';
 const DB_META_CELL      = 'B1';
 const CHUNK_SIZE        = 45000;
 const MAX_BACKUPS       = 3;
-const CURRENT_VERSION   = '4.0';
+const CURRENT_VERSION   = '4.1';
+
+/**
+ * ==============================================================================
+ * HÀM CẤP QUYỀN KẾT NỐI INTERNET & TELEGRAM (CHẠY ĐÚNG 1 LẦN DUY NHẤT)
+ * ==============================================================================
+ */
+function capQuyenTelegram() {
+  var resp = UrlFetchApp.fetch('https://api.telegram.org');
+  Logger.log('🎉 ĐÃ CẤP QUYỀN TELEGRAM THÀNH CÔNG! Mã: ' + resp.getResponseCode());
+}
 
 /**
  * ==============================================================================
@@ -1055,15 +1065,4 @@ function generateKpiStatusMessage(data) {
     '📌 <i>Phong trào TDTT Phường Tân Khai đã hoàn thành và vượt mức toàn bộ các chỉ tiêu kế hoạch năm được giao.</i>';
 
   return msg;
-}
-
-/**
- * ==============================================================================
- * HÀM KÍCH HOẠT ỦY QUYỀN GOOGLE (BẮT BUỘC CHẠY 1 LẦN)
- * ==============================================================================
- */
-function capQuyenTelegram() {
-  // Lệnh gọi trực tiếp không dùng try-catch để buộc Google bật cửa sổ cấp quyền
-  var resp = UrlFetchApp.fetch('https://api.telegram.org');
-  Logger.log('Đã cấp quyền kết nối Telegram thành công! Mã: ' + resp.getResponseCode());
 }
