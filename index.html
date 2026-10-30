@@ -3761,7 +3761,8 @@
 
     function renderTelegramCommandsTabHtml() {
       const settings = state.telegramSettings || {};
-      const botToken = settings.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+      const botToken = settings.botToken || '';
+      const currentApiUrl = state.apiUrl || '';
 
       return `
         <div class="space-y-4">
@@ -3782,11 +3783,27 @@
                   </p>
                 </div>
               </div>
+            </div>
 
-              <button onclick="activateTelegramWebhook()" class="shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md btn-press" title="Kích hoạt Webhook để Bot nhận được tin nhắn ra lệnh từ anh">
-                <span class="material-symbols-outlined text-[17px]">bolt</span>
-                <span>Kích hoạt nhận lệnh 1 chạm</span>
-              </button>
+            <!-- Cấu hình đường link Google Apps Script để kết nối Telegram Webhook -->
+            <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-amber-200 dark:border-amber-900/60 space-y-2">
+              <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                Đường link Web App Google Apps Script của anh (kết thúc bằng /exec) <span class="text-rose-500">*</span>:
+              </label>
+              <div class="flex items-center gap-2">
+                <input id="tg_webhook_api_url" type="url" value="${currentApiUrl}" placeholder="Ví dụ: https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-slate-900 dark:text-white focus:outline-none focus:border-amber-500" />
+                <button onclick="activateTelegramWebhook()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shrink-0 btn-press">
+                  <span class="material-symbols-outlined text-[17px]">bolt</span>
+                  <span>Kích hoạt Webhook</span>
+                </button>
+                <button onclick="checkTelegramWebhookStatus()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1 shrink-0 btn-press" title="Kiểm tra xem Telegram đã nhận diện Web App chưa">
+                  <span class="material-symbols-outlined text-[17px]">stethoscope</span>
+                  <span>Kiểm tra trạng thái</span>
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-400">
+                📌 Lưu ý: Trong Google Apps Script, khi bấm Triển khai (Deploy), mục <b>Ai có quyền truy cập (Who has access)</b> BẮT BUỘC phải chọn <b>Bất kỳ ai (Anyone)</b> thì Telegram mới gửi tin nhắn vào được.
+              </p>
             </div>
 
             <!-- Bảo mật cá nhân -->
@@ -3881,16 +3898,22 @@
 
     async function activateTelegramWebhook() {
       const settings = state.telegramSettings || {};
-      const botToken = settings.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
-      let apiUrl = state.apiUrl;
+      const botToken = settings.botToken || document.getElementById('tg_bot_token')?.value.trim();
+      const inputEl = document.getElementById('tg_webhook_api_url');
+      let apiUrl = inputEl ? inputEl.value.trim() : state.apiUrl;
 
       if (!apiUrl) {
-        const inputUrl = prompt('Vui lòng dán đường link Web App Google Apps Script của anh vào đây (đường link kết thúc bằng /exec):', 'https://script.google.com/macros/s/AKfycb.../exec');
-        if (!inputUrl || !inputUrl.trim()) return;
-        apiUrl = inputUrl.trim();
-        state.apiUrl = apiUrl;
-        saveAll();
+        alert('Vui lòng nhập đường link Google Apps Script Web App của anh (kết thúc bằng /exec) trước khi kích hoạt!');
+        return;
       }
+
+      if (!botToken) {
+        alert('Vui lòng kiểm tra lại Bot Token trong tab Cài đặt Bot Token!');
+        return;
+      }
+
+      state.apiUrl = apiUrl;
+      saveAll();
 
       const tgWebhookUrl = `https://api.telegram.org/bot${botToken}/setWebhook?url=${encodeURIComponent(apiUrl)}`;
 
@@ -3898,13 +3921,44 @@
         const resp = await fetch(tgWebhookUrl);
         const res = await resp.json();
         if (res.ok) {
-          alert('🎉 CHÚC MỪNG ANH TRẦN QUỐC ĐƯỢC!\n\nĐã kích hoạt Trợ lý ảo nhận lệnh Telegram 2 chiều thành công!\n\n👉 Bây giờ anh có thể mở Telegram trên điện thoại lên, nhắn tin cho Bot câu "Thêm giải" hoặc "Gửi tôi báo cáo chi bộ tháng 9" để trải nghiệm ngay lập tức!');
+          alert('🎉 KÍCH HOẠT THÀNH CÔNG!\n\nTelegram đã kết nối Webhook tới Google Apps Script của anh!\n\n👉 Bây giờ anh hãy mở ứng dụng Telegram trên điện thoại, nhắn tin cho Bot câu "Thêm giải" hoặc "Gửi tôi báo cáo chi bộ tháng 9" để kiểm tra phản hồi nhé!');
         } else {
-          alert('Phản hồi từ Telegram: ' + (res.description || 'Không thể thiết lập Webhook.'));
+          alert('Telegram phản hồi: ' + (res.description || 'Không thể thiết lập Webhook.'));
         }
       } catch (err) {
         window.open(tgWebhookUrl, '_blank');
-        alert('Đã mở liên kết kích hoạt Webhook trên tab mới. Anh hãy kiểm tra xem trang đó có hiện {"ok":true,"description":"Webhook was set"} không nhé!');
+        alert('Đã mở tab mới để kích hoạt Webhook trực tiếp. Anh kiểm tra nếu trang hiện {"ok":true,"description":"Webhook was set"} là thành công 100% nhé!');
+      }
+    }
+
+    async function checkTelegramWebhookStatus() {
+      const settings = state.telegramSettings || {};
+      const botToken = settings.botToken || document.getElementById('tg_bot_token')?.value.trim();
+      if (!botToken) {
+        alert('Chưa có Bot Token để kiểm tra!');
+        return;
+      }
+
+      const tgInfoUrl = `https://api.telegram.org/bot${botToken}/getWebhookInfo`;
+      try {
+        const resp = await fetch(tgInfoUrl);
+        const res = await resp.json();
+        if (res.ok) {
+          const info = res.result;
+          let msg = `🔍 KẾT QUẢ KIỂM TRA WEBHOOK TELEGRAM:\n\n`;
+          msg += `• Đường link Webhook đang liên kết: ${info.url || '(Chưa liên kết)'}\n`;
+          msg += `• Số tin nhắn đang chờ xử lý: ${info.pending_update_count || 0}\n`;
+          if (info.last_error_message) {
+            msg += `\n⚠️ CẢNH BÁO LỖI GẦN NHẤT TỪ GOOGLE APPS SCRIPT:\n${info.last_error_message}\n(Thời điểm: ${new Date(info.last_error_date * 1000).toLocaleString('vi-VN')})\n\n👉 Cách khắc phục: Hãy đảm bảo trong Google Apps Script, mục "Ai có quyền truy cập (Who has access)" anh đã chọn là "Bất kỳ ai (Anyone)".`;
+          } else if (info.url) {
+            msg += `\n✅ Trạng thái: KẾT NỐI HOÀN TOÀN TỐT! Không có lỗi nào từ máy chủ.`;
+          }
+          alert(msg);
+        } else {
+          alert('Lỗi Telegram API: ' + (res.description || 'Không thể kiểm tra thông tin webhook.'));
+        }
+      } catch (err) {
+        window.open(tgInfoUrl, '_blank');
       }
     }
 
