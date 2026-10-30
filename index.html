@@ -434,13 +434,13 @@
     const INITIAL_TELEGRAM_SCHEDULES = [
       {
         id: 'sched-nhanuoc',
-        name: 'Báo cáo công tác TDTT định kỳ (Mẫu Nhà nước)',
+        name: 'Báo cáo công tác TDTT định kỳ (Mẫu Nhà nước - Chốt ngày 10)',
         enabled: true,
         mode: 'state',
         period: 'month',
         recipient: 'vp_trungtam',
         scheduleType: 'monthly',
-        dayOfMonth: 25,
+        dayOfMonth: 11,
         timeOfDay: '08:00',
         sendKpiSummary: true,
         sendFullDocument: true,
@@ -448,10 +448,10 @@
       },
       {
         id: 'sched-chibo',
-        name: 'Báo cáo nhiệm vụ Đảng viên (Mẫu Chi bộ)',
+        name: 'Báo cáo nhiệm vụ Đảng viên (Mẫu Chi bộ - Trọn tháng)',
         enabled: true,
         mode: 'party',
-        period: 'quarter',
+        period: 'month',
         recipient: 'Chi bộ Trung tâm DVTH',
         scheduleType: 'monthly',
         dayOfMonth: 28,
@@ -564,6 +564,25 @@
               changed = true;
             }
           });
+        }
+        // 4. Đồng bộ 2 lịch Telegram mẫu theo chu kỳ chuẩn:
+        // Nhà nước: ngày 11 lúc 08:00 (chốt 10 tháng trước đến 10 tháng này), Chi bộ: ngày 28 lúc 08:30 (trọn tháng)
+        if (Array.isArray(state.telegramSchedules)) {
+          const nn = state.telegramSchedules.find(s => s.id === 'sched-nhanuoc');
+          if (nn && (nn.dayOfMonth === 25 || !nn.name.includes('Chốt ngày 10'))) {
+            nn.dayOfMonth = 11;
+            nn.timeOfDay = '08:00';
+            nn.name = 'Báo cáo công tác TDTT định kỳ (Mẫu Nhà nước - Chốt ngày 10)';
+            changed = true;
+          }
+          const cb = state.telegramSchedules.find(s => s.id === 'sched-chibo');
+          if (cb && (cb.period === 'quarter' || !cb.name.includes('Trọn tháng'))) {
+            cb.period = 'month';
+            cb.dayOfMonth = 28;
+            cb.timeOfDay = '08:30';
+            cb.name = 'Báo cáo nhiệm vụ Đảng viên (Mẫu Chi bộ - Trọn tháng)';
+            changed = true;
+          }
         }
         if (changed) {
           saveAll();
@@ -2222,58 +2241,161 @@
     /* ==============================================================================
        14. TAB 7: BÁO CÁO & SỔ LƯU TRỮ (REPORTS & REGISTRY) - ĐẦY ĐỦ THÁNG, QUÝ, 6T, 9T, NĂM
        ============================================================================== */
-    function getPeriodMonths() {
-      const p = state.reportPeriod || 'month';
-      if (p === 'month') return { start: state.reportMonth || (new Date().getMonth() + 1), end: state.reportMonth || (new Date().getMonth() + 1) };
+    function getReportMonths(opts = {}) {
+      const p = opts.period || state.reportPeriod || 'month';
+      if (p === 'month') {
+        const m = parseInt(opts.month || state.reportMonth) || (new Date().getMonth() + 1);
+        return { start: m, end: m };
+      }
       if (p === 'quarter') {
-        const q = state.reportQuarter || 1;
+        const q = parseInt(opts.quarter || state.reportQuarter) || 1;
         const s = (q - 1) * 3 + 1;
         return { start: s, end: s + 2 };
       }
-      if (p === 'half') return state.reportHalf === 2 ? { start: 7, end: 12 } : { start: 1, end: 6 };
+      if (p === 'half') {
+        const h = parseInt(opts.half || state.reportHalf) || 1;
+        return h === 2 ? { start: 7, end: 12 } : { start: 1, end: 6 };
+      }
       if (p === 'nine') return { start: 1, end: 9 };
       return { start: 1, end: 12 };
     }
 
-    function getReportRange() {
-      const year = parseInt(state.reportYear) || new Date().getFullYear();
-      const months = getPeriodMonths();
-      const startDate = new Date(year, months.start - 1, 1);
-      const endDate = new Date(year, months.end, 0); // Ngày cuối cùng của tháng kết thúc
-      return { startDate, endDate };
+    function getReportRange(opts = {}) {
+      const mode = opts.mode || state.reportMode || 'state';
+      const period = opts.period || state.reportPeriod || 'month';
+      const year = parseInt(opts.year || state.reportYear) || new Date().getFullYear();
+
+      if (mode === 'state') {
+        // BÁO CÁO NHÀ NƯỚC (Gửi Văn phòng Trung tâm DVTH): Lấy từ ngày 10 tháng trước đến ngày 10 tháng này
+        if (period === 'month') {
+          const curM = parseInt(opts.month || state.reportMonth) || (new Date().getMonth() + 1);
+          let prevM = curM - 1;
+          let prevY = year;
+          if (prevM < 1) {
+            prevM = 12;
+            prevY = year - 1;
+          }
+          const startDate = new Date(prevY, prevM - 1, 10, 0, 0, 0);
+          const endDate = new Date(year, curM - 1, 10, 23, 59, 59);
+          return { startDate, endDate, isStateMonthly: true, prevM, curM, year };
+        } else if (period === 'quarter') {
+          const q = parseInt(opts.quarter || state.reportQuarter) || 1;
+          const endMonth = q * 3;
+          let startMonth = endMonth - 3;
+          let startYear = year;
+          if (startMonth < 1) {
+            startMonth = 12;
+            startYear = year - 1;
+          }
+          const startDate = new Date(startYear, startMonth - 1, 10, 0, 0, 0);
+          const endDate = new Date(year, endMonth - 1, 10, 23, 59, 59);
+          return { startDate, endDate };
+        } else if (period === 'half') {
+          const h = parseInt(opts.half || state.reportHalf) || 1;
+          const startDate = h === 1 ? new Date(year - 1, 11, 10, 0, 0, 0) : new Date(year, 5, 10, 0, 0, 0);
+          const endDate = h === 1 ? new Date(year, 5, 10, 23, 59, 59) : new Date(year, 11, 10, 23, 59, 59);
+          return { startDate, endDate };
+        } else if (period === 'nine') {
+          return {
+            startDate: new Date(year - 1, 11, 10, 0, 0, 0),
+            endDate: new Date(year, 8, 10, 23, 59, 59)
+          };
+        } else {
+          return {
+            startDate: new Date(year - 1, 11, 10, 0, 0, 0),
+            endDate: new Date(year, 11, 10, 23, 59, 59)
+          };
+        }
+      } else {
+        // BÁO CÁO CHI BỘ: Từ ngày 1 đầu tháng đến ngày cuối cùng của tháng
+        const months = getReportMonths(opts);
+        const startDate = new Date(year, months.start - 1, 1, 0, 0, 0);
+        const endDate = new Date(year, months.end, 0, 23, 59, 59);
+        return { startDate, endDate, isPartyMonthly: true };
+      }
     }
 
-    function getReportData() {
-      const range = getReportRange();
-      const list = state.activities.filter(a => {
+    function getReportData(opts = {}) {
+      const mode = opts.mode || state.reportMode || 'state';
+      const range = opts.range || getReportRange(opts);
+
+      // 1. Hoạt động nằm đúng trong kỳ báo cáo
+      const list = (state.activities || []).filter(a => {
+        if (!a.date) return false;
         const d = parseDateVN(a.date);
-        return d >= range.startDate && d <= range.endDate;
+        return d && d >= range.startDate && d <= range.endDate;
+      }).map(a => ({ ...a, isCarryOver: false }));
+
+      // 2. Tự động rà soát hoạt động của kỳ trước chưa được báo cáo (Catch-up / Carry-over)
+      // Tìm các hoạt động diễn ra trước range.startDate (trong vòng 45 ngày trước)
+      const lookbackDate = new Date(range.startDate.getTime() - 45 * 24 * 60 * 60 * 1000);
+
+      // Tập hợp ID các giải đấu đã được lưu trong các báo cáo chính thức trước đó
+      const reportedActIds = new Set();
+      (state.savedReports || []).forEach(r => {
+        if (r.mode === mode && Array.isArray(r.reportedActIds)) {
+          r.reportedActIds.forEach(id => reportedActIds.add(id));
+        }
       });
-      return sortActivitiesByLatest(list);
+
+      const carryOverActs = (state.activities || []).filter(a => {
+        if (!a.date) return false;
+        const d = parseDateVN(a.date);
+        if (!d) return false;
+        if (d >= lookbackDate && d < range.startDate) {
+          if (!list.some(item => item.id === a.id)) {
+            if (!reportedActIds.has(a.id) || a.forceCarryOver) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }).map(a => ({
+        ...a,
+        isCarryOver: true,
+        achievementNote: a.achievementNote ? `${a.achievementNote} (Bổ sung kỳ trước)` : 'Bổ sung từ kỳ trước chưa báo cáo'
+      }));
+
+      const combined = [...list, ...carryOverActs];
+      return sortActivitiesByLatest(combined);
     }
 
-    function getPeriodTitle() {
-      const p = state.reportPeriod;
-      const y = state.reportYear;
-      if (p === 'month') return `THÁNG ${state.reportMonth} NĂM ${y}`;
+    function getPeriodTitle(opts = {}) {
+      const p = opts.period || state.reportPeriod || 'month';
+      const y = opts.year || state.reportYear || new Date().getFullYear();
+      if (p === 'month') {
+        const m = opts.month || state.reportMonth || (new Date().getMonth() + 1);
+        return `THÁNG ${m} NĂM ${y}`;
+      }
       if (p === 'quarter') {
-        const roman = ['I', 'II', 'III', 'IV'][(state.reportQuarter || 1) - 1];
+        const q = opts.quarter || state.reportQuarter || 1;
+        const roman = ['I', 'II', 'III', 'IV'][q - 1];
         return `QUÝ ${roman} NĂM ${y}`;
       }
-      if (p === 'half') return (state.reportHalf === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + y;
+      if (p === 'half') {
+        const h = opts.half || state.reportHalf || 1;
+        return (h === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + y;
+      }
       if (p === 'nine') return `9 THÁNG ĐẦU NĂM ${y}`;
       return `NĂM ${y}`;
     }
 
-    function getPeriodSubtitle() {
-      const p = state.reportPeriod;
-      const y = state.reportYear;
-      if (p === 'month') return `tháng ${state.reportMonth} năm ${y}`;
+    function getPeriodSubtitle(opts = {}) {
+      const p = opts.period || state.reportPeriod || 'month';
+      const y = opts.year || state.reportYear || new Date().getFullYear();
+      if (p === 'month') {
+        const m = opts.month || state.reportMonth || (new Date().getMonth() + 1);
+        return `tháng ${m} năm ${y}`;
+      }
       if (p === 'quarter') {
-        const roman = ['I', 'II', 'III', 'IV'][(state.reportQuarter || 1) - 1];
+        const q = opts.quarter || state.reportQuarter || 1;
+        const roman = ['I', 'II', 'III', 'IV'][q - 1];
         return `quý ${roman} năm ${y}`;
       }
-      if (p === 'half') return (state.reportHalf === 1 ? '6 tháng đầu năm ' : '6 tháng cuối năm ') + y;
+      if (p === 'half') {
+        const h = opts.half || state.reportHalf || 1;
+        return (h === 1 ? '6 tháng đầu năm ' : '6 tháng cuối năm ') + y;
+      }
       if (p === 'nine') return `9 tháng đầu năm ${y}`;
       return `năm ${y}`;
     }
@@ -2485,6 +2607,18 @@
 
             </div>
 
+            <!-- Row 3: Chu kỳ tính ngày & Cơ chế tự động rà soát chuyển tiếp -->
+            <div class="flex items-center justify-between gap-2 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-[11px] flex-wrap">
+              <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                <span class="material-symbols-outlined text-[15px] ${!isParty ? 'text-sky-600' : 'text-rose-600'}">event_note</span>
+                <span><b>Chu kỳ tính số liệu:</b> ${!isParty ? `Từ ngày <b>${formatDateVN(range.startDate)}</b> đến ngày <b>${formatDateVN(range.endDate)}</b> (Chu kỳ từ 10 tháng trước đến 10 tháng này)` : `Từ ngày <b>${formatDateVN(range.startDate)}</b> đến ngày <b>${formatDateVN(range.endDate)}</b> (Chu kỳ trọn tháng từ 01 đến cuối tháng)`}</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-xl border border-emerald-200/80 dark:border-emerald-800">
+                <span class="material-symbols-outlined text-[14px]">auto_mode</span>
+                <span>Tự động rà soát: Hoạt động kỳ trước chưa báo cáo được chuyển sang kỳ này</span>
+              </div>
+            </div>
+
           </div>
 
           <!-- Official Administrative Document Container (Times New Roman, A4 Standard, Crisp Typography) -->
@@ -2686,56 +2820,18 @@
     }
 
     function buildReportHTMLForWord(opts = {}) {
-      const isParty = (opts.mode || state.reportMode) === 'party';
+      const mode = opts.mode || state.reportMode || 'state';
+      const isParty = mode === 'party';
       let range = opts.range;
       let list = opts.list;
       let periodTitle = opts.periodTitle;
       let periodSubtitle = opts.periodSubtitle;
 
       if (!range) {
-        if (opts.period) {
-          const year = opts.year || state.reportYear || new Date().getFullYear();
-          let startM = 1, endM = 12;
-          const today = new Date();
-          if (opts.period === 'month') {
-            const curM = opts.month || (today.getMonth() + 1);
-            startM = curM; endM = curM;
-            periodTitle = `THÁNG ${curM} NĂM ${year}`;
-            periodSubtitle = `tháng ${curM} năm ${year}`;
-          } else if (opts.period === 'quarter') {
-            const q = opts.quarter || (Math.floor(today.getMonth() / 3) + 1);
-            startM = (q - 1) * 3 + 1; endM = startM + 2;
-            const roman = ['I', 'II', 'III', 'IV'][q - 1];
-            periodTitle = `QUÝ ${roman} NĂM ${year}`;
-            periodSubtitle = `quý ${roman} năm ${year}`;
-          } else if (opts.period === 'half') {
-            const h = opts.half || (today.getMonth() < 6 ? 1 : 2);
-            startM = h === 1 ? 1 : 7; endM = h === 1 ? 6 : 12;
-            periodTitle = (h === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + year;
-            periodSubtitle = (h === 1 ? '6 tháng đầu năm ' : '6 tháng cuối năm ') + year;
-          } else if (opts.period === 'nine') {
-            startM = 1; endM = 9;
-            periodTitle = `9 THÁNG ĐẦU NĂM ${year}`;
-            periodSubtitle = `9 tháng đầu năm ${year}`;
-          } else {
-            periodTitle = `NĂM ${year}`;
-            periodSubtitle = `năm ${year}`;
-          }
-          range = {
-            startDate: new Date(year, startM - 1, 1),
-            endDate: new Date(year, endM, 0)
-          };
-          list = state.activities.filter(a => {
-            const d = parseDateVN(a.date);
-            return d && d >= range.startDate && d <= range.endDate;
-          });
-          list = sortActivitiesByLatest(list);
-        } else {
-          range = getReportRange();
-          list = getReportData();
-          periodTitle = getPeriodTitle();
-          periodSubtitle = getPeriodSubtitle();
-        }
+        range = getReportRange({ ...opts, mode });
+        list = opts.list || getReportData({ ...opts, mode, range });
+        periodTitle = opts.periodTitle || getPeriodTitle(opts);
+        periodSubtitle = opts.periodSubtitle || getPeriodSubtitle(opts);
       }
 
       const totalActs = list.length;
@@ -2908,6 +3004,7 @@
         summaryParticipants: list.reduce((a, b) => a + (parseInt(b.participants) || 0), 0),
         summaryMedals: list.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0),
         summaryBudget: list.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0),
+        reportedActIds: list.map(a => a.id),
         createdAt: new Date().toISOString()
       };
 
@@ -3111,7 +3208,7 @@
               ? `Thứ ${s.dayOfWeek || 2} hàng tuần lúc ${s.timeOfDay || '08:00'}`
               : (s.scheduleType === 'quarterly' 
                 ? `Ngày ${s.dayOfMonth || 28} cuối Quý lúc ${s.timeOfDay || '08:00'}`
-                : `Ngày ${s.dayOfMonth || 25} hàng tháng lúc ${s.timeOfDay || '08:00'}`);
+                : `Ngày ${s.dayOfMonth || (isParty ? 28 : 11)} hàng tháng lúc ${s.timeOfDay || (isParty ? '08:30' : '08:00')}`);
             
             let recipientName = 'Văn phòng Trung tâm DVTH';
             if (isParty || s.recipient === 'Chi bộ Trung tâm DVTH') {
@@ -3150,6 +3247,9 @@
                           <span class="material-symbols-outlined text-[14px] text-brand-600">domain</span>
                           <span>Nơi nhận: <b>${recipientName}</b></span>
                         </span>
+                      </div>
+                      <div class="mt-1 text-[10px] text-slate-500 dark:text-slate-400 italic">
+                        ${!isParty ? '📅 Chu kỳ số liệu: Từ ngày 10 tháng trước đến ngày 10 tháng này (Tự động gộp hoạt động chưa báo cáo)' : '📅 Chu kỳ số liệu: Trọn tháng từ ngày 01 đến ngày cuối tháng (Tự động gộp hoạt động chưa báo cáo)'}
                       </div>
 
                       <div class="mt-2 flex items-center gap-1.5 flex-wrap">
@@ -3234,13 +3334,13 @@
       const existing = schedId ? (state.telegramSchedules || []).find(s => s.id === schedId) : null;
       const sched = existing || {
         id: 'sched-' + Date.now(),
-        name: 'Báo cáo công tác TDTT định kỳ',
+        name: 'Báo cáo công tác TDTT định kỳ (Mẫu Nhà nước)',
         enabled: true,
         mode: 'state',
         period: 'month',
         recipient: 'vp_trungtam',
         scheduleType: 'monthly',
-        dayOfMonth: 25,
+        dayOfMonth: 11,
         timeOfDay: '08:00',
         sendKpiSummary: true,
         sendFullDocument: true,
@@ -3589,38 +3689,36 @@
         recipientText = 'Phòng Văn hóa và Thông tin';
       }
 
-      // Lấy dữ liệu và phạm vi theo kỳ của schedule
-      const year = state.reportYear || new Date().getFullYear();
-      let startM = 1, endM = 12;
+      // Lấy dữ liệu và phạm vi chuẩn xác theo quy định:
+      // - Mẫu Nhà nước: từ ngày 10 tháng trước đến ngày 10 tháng này
+      // - Mẫu Chi bộ: từ ngày 1 đến ngày cuối cùng của tháng
       const today = new Date();
-      let periodLabel = `NĂM ${year}`;
+      const year = state.reportYear || today.getFullYear();
+      const curM = today.getMonth() + 1;
+      const q = Math.floor(today.getMonth() / 3) + 1;
 
-      if (sched.period === 'month') {
-        const curM = today.getMonth() + 1;
-        startM = curM; endM = curM;
-        periodLabel = `THÁNG ${curM} NĂM ${year}`;
-      } else if (sched.period === 'quarter') {
-        const q = Math.floor(today.getMonth() / 3) + 1;
-        startM = (q - 1) * 3 + 1; endM = startM + 2;
-        const roman = ['I', 'II', 'III', 'IV'][q - 1];
-        periodLabel = `QUÝ ${roman} NĂM ${year}`;
-      } else if (sched.period === 'half') {
-        const h = today.getMonth() < 6 ? 1 : 2;
-        startM = h === 1 ? 1 : 7; endM = h === 1 ? 6 : 12;
-        periodLabel = (h === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + year;
-      } else if (sched.period === 'nine') {
-        startM = 1; endM = 9;
-        periodLabel = `9 THÁNG ĐẦU NĂM ${year}`;
-      }
+      const range = getReportRange({
+        mode: sched.mode,
+        period: sched.period,
+        year: year,
+        month: curM,
+        quarter: q
+      });
 
-      const startDate = new Date(year, startM - 1, 1);
-      const endDate = new Date(year, endM, 0);
+      const filteredActs = getReportData({
+        mode: sched.mode,
+        period: sched.period,
+        year: year,
+        month: curM,
+        quarter: q,
+        range: range
+      });
 
-      // Lọc danh sách giải đấu theo phạm vi
-      const filteredActs = (state.activities || []).filter(a => {
-        if (!a.date) return false;
-        const d = parseDateVN(a.date);
-        return d && d >= startDate && d <= endDate;
+      const periodLabel = getPeriodTitle({
+        period: sched.period,
+        year: year,
+        month: curM,
+        quarter: q
       });
 
       const totalActs = filteredActs.length;
@@ -3687,8 +3785,11 @@
             period: sched.period,
             recipient: sched.recipient,
             year: year,
-            month: today.getMonth() + 1,
-            quarter: Math.floor(today.getMonth() / 3) + 1
+            month: curM,
+            quarter: q,
+            range: range,
+            list: filteredActs,
+            periodTitle: periodLabel
           });
 
           const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });

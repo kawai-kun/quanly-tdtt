@@ -528,21 +528,57 @@ function generateTelegramSummaryReport() {
 function scheduledTelegramReportTrigger() {
   try {
     var data = getAppData();
-    if (!data || !data.telegramConfig || !data.telegramConfig.enabled) {
-      Logger.log('Telegram report is not enabled.');
+    if (!data) return;
+
+    var token = (data.telegramSettings && data.telegramSettings.botToken) || (data.telegramConfig && data.telegramConfig.botToken);
+    var chat = (data.telegramSettings && data.telegramSettings.chatId) || (data.telegramConfig && data.telegramConfig.chatId);
+
+    if (!token || !chat) {
+      Logger.log('Missing Telegram Bot Token or Chat ID');
       return;
     }
-    var cfg = data.telegramConfig;
-    if (!cfg.botToken || !cfg.chatId) {
-      Logger.log('Missing Telegram botToken or chatId.');
-      return;
+
+    var schedules = data.telegramSchedules || [];
+    var today = new Date();
+    var curDay = today.getDate();
+
+    if (schedules.length > 0) {
+      for (var s = 0; s < schedules.length; s++) {
+        var sched = schedules[s];
+        if (sched.enabled && (sched.dayOfMonth === curDay || sched.scheduleType === 'daily')) {
+          var msg = generateTelegramSummaryReport();
+          sendTelegramMessage(token, chat, msg);
+          Logger.log('Sent Telegram schedule: ' + sched.name);
+        }
+      }
+    } else {
+      var msg = generateTelegramSummaryReport();
+      sendTelegramMessage(token, chat, msg);
+      Logger.log('Sent default Telegram summary report successfully.');
     }
-    var msg = generateTelegramSummaryReport();
-    sendTelegramMessage(cfg.botToken, cfg.chatId, msg);
-    Logger.log('Sent scheduled Telegram report successfully.');
   } catch (e) {
     Logger.log('Error in scheduledTelegramReportTrigger: ' + e.toString());
   }
+}
+
+function sendTelegramDocument(botToken, chatId, fileBlob, filename, caption) {
+  if (!botToken || !chatId || !fileBlob) {
+    throw new Error('Thiếu Bot Token, Chat ID hoặc fileBlob');
+  }
+  var url = 'https://api.telegram.org/bot' + encodeURIComponent(botToken) + '/sendDocument';
+  var payload = {
+    chat_id: chatId,
+    document: fileBlob.setName(filename),
+    caption: caption || '',
+    parse_mode: 'HTML'
+  };
+  var options = {
+    method: 'post',
+    payload: payload,
+    muteHttpExceptions: true
+  };
+  var response = UrlFetchApp.fetch(url, options);
+  return JSON.parse(response.getContentText());
 }
 
 function setupTelegramTrigger(scheduleType) {
