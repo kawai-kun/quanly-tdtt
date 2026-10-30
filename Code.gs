@@ -1056,3 +1056,14 @@ function generateKpiStatusMessage(data) {
 
   return msg;
 }
+
+/**
+ * ==============================================================================
+ * HÀM KÍCH HOẠT ỦY QUYỀN GOOGLE (BẮT BUỘC CHẠY 1 LẦN)
+ * ==============================================================================
+ */
+function capQuyenTelegram() {
+  // Lệnh gọi trực tiếp không dùng try-catch để buộc Google bật cửa sổ cấp quyền
+  var resp = UrlFetchApp.fetch('https://api.telegram.org');
+  Logger.log('Đã cấp quyền kết nối Telegram thành công! Mã: ' + resp.getResponseCode());
+}
