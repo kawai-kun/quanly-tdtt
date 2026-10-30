@@ -56,6 +56,25 @@ function doGet(e) {
           version: CURRENT_VERSION,
           timestamp: new Date().toISOString()
         };
+      } else if (action === 'sendTelegram') {
+        var token = e.parameter.botToken;
+        var chat = e.parameter.chatId;
+        var text = e.parameter.text || generateTelegramSummaryReport();
+        var tgRes = sendTelegramMessage(token, chat, text);
+        result = {
+          success: true,
+          message: 'Đã gửi báo cáo Telegram thành công!',
+          telegramResponse: tgRes,
+          timestamp: new Date().toISOString()
+        };
+      } else if (action === 'setupTelegramTrigger') {
+        var sched = e.parameter.schedule || 'monthly_25';
+        var trigRes = setupTelegramTrigger(sched);
+        result = {
+          success: true,
+          message: trigRes.message,
+          timestamp: new Date().toISOString()
+        };
       } else {
         result = {
           success: false,
@@ -419,4 +438,139 @@ function restoreFromBackup(backupRow) {
   } catch (e) {
     return { success: false, error: e.toString() };
   }
+}
+
+/**
+ * ==============================================================================
+ * TỰ ĐỘNG GỬI BÁO CÁO QUA TELEGRAM BOT (Định kỳ hoặc theo yêu cầu)
+ * ==============================================================================
+ */
+function sendTelegramMessage(botToken, chatId, text) {
+  if (!botToken || !chatId || !text) {
+    throw new Error('Thiếu Bot Token, Chat ID hoặc Nội dung tin nhắn');
+  }
+  var url = 'https://api.telegram.org/bot' + encodeURIComponent(botToken) + '/sendMessage';
+  var payload = {
+    chat_id: chatId,
+    text: text,
+    parse_mode: 'HTML'
+  };
+  var options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+  var response = UrlFetchApp.fetch(url, options);
+  var resCode = response.getResponseCode();
+  var resText = response.getContentText();
+  if (resCode !== 200) {
+    throw new Error('Lỗi gửi Telegram (HTTP ' + resCode + '): ' + resText);
+  }
+  return JSON.parse(resText);
+}
+
+function generateTelegramSummaryReport() {
+  var data = getAppData();
+  if (!data) return 'Không tìm thấy dữ liệu trên hệ thống.';
+  var acts = data.activities || [];
+  var clubs = data.clubs || [];
+  
+  // Sắp xếp giải mới nhất lên đầu
+  acts.sort(function(a, b) {
+    var pA = (a.date || '').split('/');
+    var pB = (b.date || '').split('/');
+    var dA = pA.length === 3 ? new Date(+pA[2], +pA[1]-1, +pA[0]).getTime() : 0;
+    var dB = pB.length === 3 ? new Date(+pB[2], +pB[1]-1, +pB[0]).getTime() : 0;
+    return dB - dA;
+  });
+
+  var totalParticipants = 0;
+  var totalMedals = 0;
+  var totalGold = 0, totalSilver = 0, totalBronze = 0;
+  var totalBudget = 0;
+  for (var i = 0; i < acts.length; i++) {
+    totalParticipants += parseInt(acts[i].participants) || 0;
+    totalMedals += parseInt(acts[i].totalMedals) || 0;
+    totalGold += parseInt(acts[i].goldMedals) || 0;
+    totalSilver += parseInt(acts[i].silverMedals) || 0;
+    totalBronze += parseInt(acts[i].bronzeMedals) || 0;
+    totalBudget += parseInt(acts[i].budgetTotal) || 0;
+  }
+
+  var latest = acts[0] || {};
+  var today = new Date();
+  var dateStr = String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear();
+
+  var msg = '🏆 <b>HỆ THỐNG QUẢN LÝ TDTT - PHƯỜNG TÂN KHAI</b>\n';
+  msg += '📍 <i>Trung tâm Dịch vụ tổng hợp</i>\n';
+  msg += '📅 <i>Thời điểm báo cáo: ' + dateStr + '</i>\n';
+  msg += '👤 <b>Người lập:</b> Trần Quốc Được (Cán bộ TDTT)\n';
+  msg += '📤 <b>Nơi nhận:</b> Văn phòng Trung tâm Dịch vụ Tổng hợp\n\n';
+  msg += '📊 <b>CHỈ SỐ TỔNG QUAN HIỆN TẠI:</b>\n';
+  msg += '• Tổng giải đấu/hoạt động: <b>' + acts.length + '</b> giải\n';
+  msg += '• Tổng lượt VĐV tham gia: <b>' + totalParticipants.toLocaleString('vi-VN') + '</b> lượt\n';
+  msg += '• Tổng thành tích huy chương: <b>' + totalMedals + '</b> HC (' + totalGold + '🥇, ' + totalSilver + '🥈, ' + totalBronze + '🥉)\n';
+  msg += '• Mạng lưới CLB cơ sở: <b>' + clubs.length + '</b> CLB\n';
+  msg += '• Tổng kinh phí đã giải ngân: <b>' + totalBudget.toLocaleString('vi-VN') + ' đ</b>\n\n';
+
+  if (latest && latest.title) {
+    msg += '⭐ <b>GIẢI ĐẤU MỚI TỔ CHỨC GẦN ĐÂY NHẤT (#1):</b>\n';
+    msg += '• <b>' + latest.title + '</b>\n';
+    msg += '  - Mã: ' + latest.code + ' | Ngày: ' + latest.date + '\n';
+    msg += '  - Quy mô: ' + (latest.participants || 0) + ' VĐV | Thành tích: ' + (latest.totalMedals || 0) + ' HC\n';
+    if (latest.achievementNote) msg += '  - Điểm nhấn: ' + latest.achievementNote + '\n';
+  }
+  msg += '\n📌 <i>Báo cáo được tự động gửi định kỳ từ hệ thống Google Apps Script.</i>';
+  return msg;
+}
+
+function scheduledTelegramReportTrigger() {
+  try {
+    var data = getAppData();
+    if (!data || !data.telegramConfig || !data.telegramConfig.enabled) {
+      Logger.log('Telegram report is not enabled.');
+      return;
+    }
+    var cfg = data.telegramConfig;
+    if (!cfg.botToken || !cfg.chatId) {
+      Logger.log('Missing Telegram botToken or chatId.');
+      return;
+    }
+    var msg = generateTelegramSummaryReport();
+    sendTelegramMessage(cfg.botToken, cfg.chatId, msg);
+    Logger.log('Sent scheduled Telegram report successfully.');
+  } catch (e) {
+    Logger.log('Error in scheduledTelegramReportTrigger: ' + e.toString());
+  }
+}
+
+function setupTelegramTrigger(scheduleType) {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'scheduledTelegramReportTrigger') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+
+  if (!scheduleType || scheduleType === 'disabled') {
+    return { success: true, message: 'Đã hủy lịch gửi báo cáo tự động.' };
+  }
+
+  if (scheduleType === 'weekly_monday') {
+    ScriptApp.newTrigger('scheduledTelegramReportTrigger')
+      .timeBased()
+      .onWeekDay(ScriptApp.WeekDay.MONDAY)
+      .atHour(8)
+      .create();
+  } else {
+    // Mặc định chạy vào ngày 25 hàng tháng lúc 8h sáng
+    ScriptApp.newTrigger('scheduledTelegramReportTrigger')
+      .timeBased()
+      .onMonthDay(25)
+      .atHour(8)
+      .create();
+  }
+
+  return { success: true, message: 'Đã kích hoạt lịch tự động gửi báo cáo Telegram (' + scheduleType + ').' };
 }

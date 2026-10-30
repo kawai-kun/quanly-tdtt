@@ -254,6 +254,39 @@
       return d;
     }
 
+    function parseDateVN(str) {
+      if (!str) return new Date(0);
+      if (typeof str === 'string') {
+        const s = str.trim();
+        if (s.includes('/')) {
+          const parts = s.split('/');
+          if (parts.length === 3) return new Date(+parts[2], +parts[1] - 1, +parts[0]);
+        } else if (s.includes('-')) {
+          const parts = s.split('-');
+          if (parts.length === 3) return new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        }
+      }
+      const d = new Date(str);
+      return isNaN(d.getTime()) ? new Date(0) : d;
+    }
+
+    function formatDateVN(d) {
+      if (!d || !(d instanceof Date) || isNaN(d.getTime())) return '';
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      return `${dd}/${mm}/${d.getFullYear()}`;
+    }
+
+    function sortActivitiesByLatest(arr) {
+      if (!Array.isArray(arr)) return [];
+      return [...arr].sort((a, b) => {
+        const tA = parseDateVN(a.date).getTime();
+        const tB = parseDateVN(b.date).getTime();
+        if (tB !== tA) return tB - tA; // Giải mới nhất luôn ở vị trí số 1 (#1)
+        return (b.code || '').localeCompare(a.code || '');
+      });
+    }
+
     function extractYearFromDate(dateStr) {
       if (!dateStr) return new Date().getFullYear();
       const match = dateStr.match(/\b(20\d\d)\b/);
@@ -361,12 +394,12 @@
       {
         id: 'rep-09',
         reportNumber: 9,
-        code: '09/BC-TTDVTH',
+        code: '09/BC-TDTT',
         title: 'Báo cáo tổng kết công tác phát triển Thể dục Thể thao giai đoạn 2025 - 2026',
         reportDate: '28/10/2026',
         year: '2026',
         quarter: 'all',
-        author: 'Trần Quốc Đức',
+        author: 'Trần Quốc Được',
         position: 'Cán bộ Trung tâm Dịch vụ tổng hợp',
         summaryActs: 27,
         summaryParticipants: 2049,
@@ -395,8 +428,8 @@
       // Multi-Year Architecture
       selectedYear: lsGet('tk_selected_year', 'all'),
 
-      // Data Collections
-      activities: lsGet('tk_activities', INITIAL_ACTIVITIES),
+      // Data Collections - Tự động sắp xếp giải mới nhất ở vị trí số 1
+      activities: sortActivitiesByLatest(lsGet('tk_activities', INITIAL_ACTIVITIES)),
       clubs: lsGet('tk_clubs', INITIAL_CLUBS),
       schedules: lsGet('tk_schedules', INITIAL_SCHEDULES),
       facilities: lsGet('tk_facilities', INITIAL_FACILITIES),
@@ -408,9 +441,26 @@
       lastSyncTime: lsGet('tk_last_sync', 'Chưa đồng bộ'),
       autoSync: lsGet('tk_auto_sync', true),
 
-      // Reports Management State
+      // Reports Management State (Tháng, Quý, 6T, 9T, Năm - Nhà nước & Chi bộ)
+      reportMode: lsGet('tk_rep_mode', 'state'), // 'state' (Nhà nước) | 'party' (Chi bộ)
+      reportPeriod: lsGet('tk_rep_period', 'month'), // 'month' | 'quarter' | 'half' | 'nine' | 'year'
+      reportMonth: lsGet('tk_rep_month', new Date().getMonth() + 1),
+      reportQuarter: lsGet('tk_rep_quarter', Math.floor(new Date().getMonth() / 3) + 1),
+      reportHalf: lsGet('tk_rep_half', new Date().getMonth() < 6 ? 1 : 2),
+      reportYear: lsGet('tk_rep_year', new Date().getFullYear()),
+      reportRecipient: lsGet('tk_rep_recipient', 'vp_trungtam'), // 'vp_trungtam' (Văn phòng Trung tâm) | 'phong_vanhoa' (Phòng Văn hóa)
       reportSubTab: 'document',
       activeReportId: 'rep-09',
+
+      // Telegram Auto-scheduler config
+      telegramConfig: lsGet('tk_telegram_config', {
+        enabled: false,
+        botToken: '',
+        chatId: '',
+        schedule: 'monthly_25', // 'monthly_25' | 'monthly_end' | 'quarter_end' | 'weekly_monday'
+        reportType: 'summary', // 'summary' | 'state' | 'party'
+        lastSent: ''
+      }),
 
       // Tournament Filter State
       tournamentsFilter: {
@@ -422,6 +472,15 @@
 
       mobileDrawerOpen: false
     };
+
+    // Chuẩn hóa tự động tên Trần Quốc Được nếu localStorage cũ còn lưu tên sai
+    if (Array.isArray(state.savedReports)) {
+      state.savedReports.forEach(r => {
+        if (r.author && (r.author.includes('Đức') || r.author === 'Trần Quốc Đức')) {
+          r.author = 'Trần Quốc Được';
+        }
+      });
+    }
 
     function getAvailableYears() {
       const yearsSet = new Set();
@@ -457,6 +516,14 @@
       lsSet('tk_facilities', state.facilities);
       lsSet('tk_budget', state.budgetItems);
       lsSet('tk_saved_reports', state.savedReports);
+      lsSet('tk_rep_mode', state.reportMode);
+      lsSet('tk_rep_period', state.reportPeriod);
+      lsSet('tk_rep_month', state.reportMonth);
+      lsSet('tk_rep_quarter', state.reportQuarter);
+      lsSet('tk_rep_half', state.reportHalf);
+      lsSet('tk_rep_year', state.reportYear);
+      lsSet('tk_rep_recipient', state.reportRecipient);
+      lsSet('tk_telegram_config', state.telegramConfig);
       queueAutoSync();
     }
 
@@ -582,7 +649,7 @@
                 TK
               </div>
               <div class="hidden xl:flex flex-col text-left">
-                <span class="text-xs font-bold leading-tight text-slate-800 dark:text-slate-100">Trần Quốc Đức</span>
+                <span class="text-xs font-bold leading-tight text-slate-800 dark:text-slate-100">Trần Quốc Được</span>
                 <span class="text-[10px] text-slate-400 font-medium">Trung tâm DV Tổng hợp</span>
               </div>
               <button onclick="handleLogout()" title="Đăng xuất" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 ml-0.5 btn-press">
@@ -783,9 +850,10 @@
        ============================================================================== */
     function renderDashboard() {
       const availableYears = getAvailableYears();
-      const filteredActs = state.selectedYear === 'all'
+      const rawActs = state.selectedYear === 'all'
         ? state.activities
         : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
+      const filteredActs = sortActivitiesByLatest(rawActs);
 
       const totalActs = filteredActs.length;
       const totalParticipants = filteredActs.reduce((acc, a) => acc + (parseInt(a.participants) || 0), 0);
@@ -1080,6 +1148,9 @@
         return true;
       });
 
+      // Tự động sắp xếp: Giải mới nhất luôn ở vị trí số 1 (#1)
+      acts = sortActivitiesByLatest(acts);
+
       // Danh sách bộ môn độc nhất
       const sportList = Array.from(new Set(state.activities.map(a => a.sport || 'Bóng đá')));
 
@@ -1183,17 +1254,23 @@
 
       return `
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          ${acts.map(a => {
+          ${acts.map((a, i) => {
             const badge = getSportBadge(a.sport);
             return `
-              <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex flex-col justify-between">
+              <div class="p-5 rounded-3xl glass-card border ${i === 0 ? 'border-brand-500/80 dark:border-brand-400 ring-2 ring-brand-500/20' : 'border-slate-200/90 dark:border-slate-800'} shadow-mobbin card-lift flex flex-col justify-between relative overflow-hidden">
+                ${i === 0 ? `
+                  <div class="absolute top-0 right-0 bg-gradient-to-l from-brand-700 to-emerald-600 text-white text-[10px] font-bold px-3 py-0.5 rounded-bl-xl shadow-sm flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px]">schedule</span>
+                    <span>#1 Mới nhất</span>
+                  </div>
+                ` : ''}
                 <div>
                   <div class="flex items-center justify-between">
                     <span class="px-2.5 py-1 rounded-xl text-[10px] font-bold ${badge.bg} ${badge.text} border ${badge.border} flex items-center gap-1">
                       <span class="material-symbols-outlined text-[14px]">${badge.icon}</span>
                       <span>${badge.label}</span>
                     </span>
-                    <span class="font-mono text-xs font-extrabold text-brand-700 dark:text-brand-400">${a.code}</span>
+                    <span class="font-mono text-xs font-extrabold text-brand-700 dark:text-brand-400 ${i === 0 ? 'mr-16' : ''}">${a.code}</span>
                   </div>
 
                   <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-3 leading-snug">${a.title}</h3>
@@ -1208,8 +1285,8 @@
 
                   <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <div class="flex items-center justify-between">
-                      <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span>Ngày:</span>
-                      <span class="font-semibold font-mono">${a.date}</span>
+                      <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span>Ngày tổ chức:</span>
+                      <span class="font-semibold font-mono text-brand-700 dark:text-brand-400">${a.date}</span>
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>Địa điểm:</span>
@@ -1257,11 +1334,12 @@
           <table class="w-full text-left text-xs">
             <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
               <tr>
+                <th class="p-3.5 align-middle whitespace-nowrap w-14 text-center">STT</th>
                 <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
                 <th class="p-3.5 align-middle min-w-[240px]">Tên giải đấu</th>
                 <th class="p-3.5 align-middle whitespace-nowrap">Bộ môn</th>
                 <th class="p-3.5 align-middle whitespace-nowrap">Cấp độ</th>
-                <th class="p-3.5 align-middle whitespace-nowrap">Ngày</th>
+                <th class="p-3.5 align-middle whitespace-nowrap">Ngày tổ chức</th>
                 <th class="p-3.5 align-middle whitespace-nowrap text-center">VĐV</th>
                 <th class="p-3.5 align-middle whitespace-nowrap text-center">Huy chương (V-B-Đ)</th>
                 <th class="p-3.5 align-middle whitespace-nowrap text-right">Tổng kinh phí</th>
@@ -1269,8 +1347,17 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-              ${acts.map(a => `
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+              ${acts.map((a, i) => `
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors ${i === 0 ? 'bg-brand-50/30 dark:bg-brand-950/30 font-medium' : ''}">
+                  <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
+                    ${i === 0 ? `
+                      <span class="px-2 py-0.5 rounded-full bg-brand-700 text-white font-bold text-[10px] inline-flex items-center gap-0.5 shadow-sm">
+                        #1 Mới
+                      </span>
+                    ` : `
+                      <span class="text-slate-400 font-bold">${i + 1}</span>
+                    `}
+                  </td>
                   <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${a.code}</td>
                   <td class="p-3.5 align-middle min-w-[240px] max-w-sm">
                     <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${a.title}</div>
@@ -1283,7 +1370,7 @@
                   </td>
                   <td class="p-3.5 align-middle whitespace-nowrap"><span class="font-semibold text-slate-600 dark:text-slate-300">${a.sport}</span></td>
                   <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${a.category}</span></td>
-                  <td class="p-3.5 align-middle whitespace-nowrap text-slate-500 font-mono">${a.date}</td>
+                  <td class="p-3.5 align-middle whitespace-nowrap text-brand-700 dark:text-brand-400 font-bold font-mono">${a.date}</td>
                   <td class="p-3.5 align-middle whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-300">${a.participants}</td>
                   <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
                     <span class="text-amber-600 font-bold">${a.goldMedals || 0}V</span> - 
@@ -2040,8 +2127,64 @@
     }
 
     /* ==============================================================================
-       14. TAB 7: BÁO CÁO & SỔ LƯU TRỮ (REPORTS & REGISTRY) - CHUẨN THỂ THỨC HÀNH CHÍNH
+       14. TAB 7: BÁO CÁO & SỔ LƯU TRỮ (REPORTS & REGISTRY) - ĐẦY ĐỦ THÁNG, QUÝ, 6T, 9T, NĂM
        ============================================================================== */
+    function getPeriodMonths() {
+      const p = state.reportPeriod || 'month';
+      if (p === 'month') return { start: state.reportMonth || (new Date().getMonth() + 1), end: state.reportMonth || (new Date().getMonth() + 1) };
+      if (p === 'quarter') {
+        const q = state.reportQuarter || 1;
+        const s = (q - 1) * 3 + 1;
+        return { start: s, end: s + 2 };
+      }
+      if (p === 'half') return state.reportHalf === 2 ? { start: 7, end: 12 } : { start: 1, end: 6 };
+      if (p === 'nine') return { start: 1, end: 9 };
+      return { start: 1, end: 12 };
+    }
+
+    function getReportRange() {
+      const year = parseInt(state.reportYear) || new Date().getFullYear();
+      const months = getPeriodMonths();
+      const startDate = new Date(year, months.start - 1, 1);
+      const endDate = new Date(year, months.end, 0); // Ngày cuối cùng của tháng kết thúc
+      return { startDate, endDate };
+    }
+
+    function getReportData() {
+      const range = getReportRange();
+      const list = state.activities.filter(a => {
+        const d = parseDateVN(a.date);
+        return d >= range.startDate && d <= range.endDate;
+      });
+      return sortActivitiesByLatest(list);
+    }
+
+    function getPeriodTitle() {
+      const p = state.reportPeriod;
+      const y = state.reportYear;
+      if (p === 'month') return `THÁNG ${state.reportMonth} NĂM ${y}`;
+      if (p === 'quarter') {
+        const roman = ['I', 'II', 'III', 'IV'][(state.reportQuarter || 1) - 1];
+        return `QUÝ ${roman} NĂM ${y}`;
+      }
+      if (p === 'half') return (state.reportHalf === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + y;
+      if (p === 'nine') return `9 THÁNG ĐẦU NĂM ${y}`;
+      return `NĂM ${y}`;
+    }
+
+    function getPeriodSubtitle() {
+      const p = state.reportPeriod;
+      const y = state.reportYear;
+      if (p === 'month') return `tháng ${state.reportMonth} năm ${y}`;
+      if (p === 'quarter') {
+        const roman = ['I', 'II', 'III', 'IV'][(state.reportQuarter || 1) - 1];
+        return `quý ${roman} năm ${y}`;
+      }
+      if (p === 'half') return (state.reportHalf === 1 ? '6 tháng đầu năm ' : '6 tháng cuối năm ') + y;
+      if (p === 'nine') return `9 tháng đầu năm ${y}`;
+      return `năm ${y}`;
+    }
+
     function renderReports() {
       const sub = state.reportSubTab || 'document';
       const availableYears = getAvailableYears();
@@ -2049,7 +2192,7 @@
       // Số báo cáo tiếp theo tự động
       const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
       const nextReportNum = String(maxRepNum + 1).padStart(2, '0');
-      const nextReportCode = `${nextReportNum}/BC-TTDVTH`;
+      const nextReportCode = state.reportMode === 'party' ? `${nextReportNum}/BC-CB` : `${nextReportNum}/BC-TDTT`;
 
       let activeRep = state.savedReports.find(r => r.id === state.activeReportId) || state.savedReports[0];
 
@@ -2061,19 +2204,27 @@
               <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Báo Cáo & Sổ Lưu Trữ Báo Cáo
               </h1>
-              <p class="text-xs text-slate-500 mt-1">Đơn vị: <b>Trung tâm Dịch vụ tổng hợp</b> • UBND Phường Tân Khai</p>
+              <p class="text-xs text-slate-500 mt-1">Đơn vị lập: <b>Bộ phận Thể dục thể thao</b> • Trung tâm Dịch vụ tổng hợp Phường Tân Khai</p>
             </div>
 
-            <!-- Sub Tabs: Document View vs Registry Table -->
-            <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <button onclick="setReportSubTab('document')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
-                <span class="material-symbols-outlined text-[16px]">description</span>
-                <span>Văn bản báo cáo</span>
+            <!-- Sub Tabs & Telegram Config Button -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="openTelegramConfigModal()" class="px-3.5 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramConfig?.enabled ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'} btn-press" title="Thiết lập lịch tự động gửi báo cáo qua Telegram">
+                <span class="material-symbols-outlined text-[16px] text-sky-500">send</span>
+                <span>Tự động gửi Telegram</span>
+                ${state.telegramConfig?.enabled ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
               </button>
-              <button onclick="setReportSubTab('registry')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
-                <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
-                <span>Sổ lưu trữ (${state.savedReports.length})</span>
-              </button>
+
+              <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <button onclick="setReportSubTab('document')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
+                  <span class="material-symbols-outlined text-[16px]">description</span>
+                  <span>Văn bản báo cáo</span>
+                </button>
+                <button onclick="setReportSubTab('registry')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
+                  <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
+                  <span>Sổ lưu trữ (${state.savedReports.length})</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2087,144 +2238,568 @@
       renderApp();
     }
 
-    function renderReportDocumentView(rep, nextCode, availableYears) {
-      const code = rep ? rep.code : nextCode;
-      const title = rep ? rep.title : 'BÁO CÁO TỔNG KẾT CÔNG TÁC PHÁT TRIỂN THỂ DỤC THỂ THAO';
-      const date = rep ? rep.reportDate : new Date().toLocaleDateString('vi-VN');
-      const author = rep ? rep.author : 'Trần Quốc Đức';
-      const position = rep ? rep.position : 'Cán bộ Trung tâm Dịch vụ tổng hợp';
+    function setReportFilter(key, val) {
+      state[key] = val;
+      saveAll();
+      renderApp();
+    }
 
-      const totalActs = state.activities.length;
-      const totalParticipants = state.activities.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
-      const totalMedals = state.activities.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
-      const totalClubs = state.clubs.length;
-      const totalBudget = state.activities.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
+    function renderReportDocumentView(rep, nextCode, availableYears) {
+      const isParty = state.reportMode === 'party';
+      const range = getReportRange();
+      const list = getReportData();
+      const periodTitle = getPeriodTitle();
+      const periodSubtitle = getPeriodSubtitle();
+
+      const totalActs = list.length;
+      const totalParticipants = list.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
+      const totalMedals = list.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
+      const totalGold = list.reduce((a, b) => a + (parseInt(b.goldMedals) || 0), 0);
+      const totalSilver = list.reduce((a, b) => a + (parseInt(b.silverMedals) || 0), 0);
+      const totalBronze = list.reduce((a, b) => a + (parseInt(b.bronzeMedals) || 0), 0);
+      const totalBudget = list.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
+
+      // Phân loại hoạt động theo cấp độ
+      const sec1 = list.filter(a => a.category === 'Cấp phường');
+      const sec2 = list.filter(a => a.category === 'Cấp thành phố');
+      const sec3 = list.filter(a => a.category !== 'Cấp phường' && a.category !== 'Cấp thành phố');
+
+      // Đơn vị nhận báo cáo (chuẩn nghiệp vụ: gửi Văn phòng Trung tâm hoặc Phòng Văn hóa, không gửi thẳng UBND phường)
+      let recipientText = 'Văn phòng Trung tâm Dịch vụ Tổng hợp phường Tân Khai';
+      if (isParty) {
+        recipientText = 'Chi bộ Trung tâm Dịch vụ Tổng hợp phường Tân Khai';
+      } else if (state.reportRecipient === 'phong_vanhoa') {
+        recipientText = 'Phòng Văn hóa và Thông tin';
+      }
+
+      const today = new Date();
+      const dateLine = `Tân Khai, ngày ${String(today.getDate()).padStart(2, '0')} tháng ${String(today.getMonth() + 1).padStart(2, '0')} năm ${today.getFullYear()}`;
+      const code = rep ? rep.code : nextCode;
 
       return `
         <div class="space-y-4">
-          <!-- Control Actions Bar (No-Print) -->
-          <div class="no-print p-4 rounded-2xl glass-card border border-slate-200/90 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-mobbin">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold text-slate-500">Đang xem:</span>
-              <span class="px-3 py-1 rounded-xl bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-400 font-mono font-bold text-xs border border-brand-200">${code}</span>
-              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 hidden md:inline truncate max-w-xs">${title}</span>
+          <!-- Control Actions & Period Filters Bar (No-Print) -->
+          <div class="no-print p-4 sm:p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin space-y-4">
+            
+            <!-- Row 1: Thể thức (Nhà nước / Chi bộ) + Kỳ báo cáo (Tháng, Quý, 6T, 9T, Năm) -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-slate-200/80 dark:border-slate-800">
+              
+              <!-- Segmented: Thể thức -->
+              <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <button onclick="setReportFilter('reportMode', 'state')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${!isParty ? 'bg-brand-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}">
+                  <span class="material-symbols-outlined text-[15px]">account_balance</span>
+                  <span>Mẫu Nhà nước</span>
+                </button>
+                <button onclick="setReportFilter('reportMode', 'party')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${isParty ? 'bg-red-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}">
+                  <span class="material-symbols-outlined text-[15px]">flag</span>
+                  <span>Mẫu Chi bộ</span>
+                </button>
+              </div>
+
+              <!-- Segmented: Kỳ báo cáo -->
+              <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-x-auto max-w-full">
+                <button onclick="setReportFilter('reportPeriod', 'month')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'month' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Tháng</button>
+                <button onclick="setReportFilter('reportPeriod', 'quarter')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'quarter' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Quý</button>
+                <button onclick="setReportFilter('reportPeriod', 'half')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'half' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">6 Tháng</button>
+                <button onclick="setReportFilter('reportPeriod', 'nine')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'nine' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">9 Tháng</button>
+                <button onclick="setReportFilter('reportPeriod', 'year')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'year' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Cả Năm</button>
+              </div>
+
             </div>
 
-            <div class="flex items-center gap-2">
-              <button onclick="saveCurrentReportAsNew()" class="px-3.5 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1.5 btn-press">
-                <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
-                <span>Lưu vào Sổ lưu trữ</span>
-              </button>
-              <button onclick="printReport()" class="px-3.5 py-2 glass-card border border-slate-200 dark:border-slate-700 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press">
-                <span class="material-symbols-outlined text-[16px]">print</span>
-                <span>In văn bản / PDF</span>
-              </button>
+            <!-- Row 2: Bộ chọn chi tiết thời gian & Cơ quan nhận báo cáo -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-3">
+                
+                <!-- Dynamic Sub Selector for Month / Quarter / Half -->
+                ${state.reportPeriod === 'month' ? `
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500">Chọn tháng:</span>
+                    <select onchange="setReportFilter('reportMonth', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+                      ${[1,2,3,4,5,6,7,8,9,10,11,12].map(m => `
+                        <option value="${m}" ${state.reportMonth === m ? 'selected' : ''}>Tháng ${m}</option>
+                      `).join('')}
+                    </select>
+                  </div>
+                ` : ''}
+
+                ${state.reportPeriod === 'quarter' ? `
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500">Chọn quý:</span>
+                    <select onchange="setReportFilter('reportQuarter', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+                      <option value="1" ${state.reportQuarter === 1 ? 'selected' : ''}>Quý I (T1 - T3)</option>
+                      <option value="2" ${state.reportQuarter === 2 ? 'selected' : ''}>Quý II (T4 - T6)</option>
+                      <option value="3" ${state.reportQuarter === 3 ? 'selected' : ''}>Quý III (T7 - T9)</option>
+                      <option value="4" ${state.reportQuarter === 4 ? 'selected' : ''}>Quý IV (T10 - T12)</option>
+                    </select>
+                  </div>
+                ` : ''}
+
+                ${state.reportPeriod === 'half' ? `
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500">Kỳ 6 tháng:</span>
+                    <select onchange="setReportFilter('reportHalf', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+                      <option value="1" ${state.reportHalf === 1 ? 'selected' : ''}>6 tháng đầu năm (T1 - T6)</option>
+                      <option value="2" ${state.reportHalf === 2 ? 'selected' : ''}>6 tháng cuối năm (T7 - T12)</option>
+                    </select>
+                  </div>
+                ` : ''}
+
+                <!-- Chọn Năm -->
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-500">Năm:</span>
+                  <select onchange="setReportFilter('reportYear', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer font-mono">
+                    ${availableYears.map(y => `
+                      <option value="${y}" ${String(state.reportYear) === String(y) ? 'selected' : ''}>Năm ${y}</option>
+                    `).join('')}
+                  </select>
+                </div>
+
+                <!-- Chọn Cơ quan nhận báo cáo (chỉ hiện khi ở Mẫu Nhà nước) -->
+                ${!isParty ? `
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500">Gửi đến:</span>
+                    <select onchange="setReportFilter('reportRecipient', this.value)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer text-brand-700 dark:text-brand-400">
+                      <option value="vp_trungtam" ${state.reportRecipient === 'vp_trungtam' ? 'selected' : ''}>Văn phòng Trung tâm DVTH</option>
+                      <option value="phong_vanhoa" ${state.reportRecipient === 'phong_vanhoa' ? 'selected' : ''}>Phòng Văn hóa và Thông tin</option>
+                    </select>
+                  </div>
+                ` : `
+                  <div class="flex items-center gap-1.5 text-xs font-bold text-red-700 dark:text-red-400">
+                    <span class="material-symbols-outlined text-[15px]">send</span>
+                    <span>Gửi: Chi bộ Trung tâm Dịch vụ Tổng hợp</span>
+                  </div>
+                `}
+
+                <span class="text-xs font-mono text-slate-400 hidden lg:inline">
+                  (Từ ${formatDateVN(range.startDate)} đến ${formatDateVN(range.endDate)})
+                </span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="saveCurrentReportToRegistry()" class="px-3 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1.5 btn-press" title="Lưu số hiệu văn bản này vào Sổ lưu trữ">
+                  <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
+                  <span>Lưu vào Sổ</span>
+                </button>
+                <button onclick="exportDocxFile()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Tải file Word .doc chuẩn thể thức A4">
+                  <span class="material-symbols-outlined text-[16px]">article</span>
+                  <span>Xuất file Word</span>
+                </button>
+                <button onclick="printReport()" class="px-3 py-2 glass-card border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="In trực tiếp hoặc Lưu file PDF">
+                  <span class="material-symbols-outlined text-[16px]">print</span>
+                  <span>In / PDF</span>
+                </button>
+                <button onclick="sendCurrentReportToTelegram()" class="px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Gửi nội dung báo cáo này đến Telegram của tôi">
+                  <span class="material-symbols-outlined text-[16px]">send</span>
+                  <span>Telegram</span>
+                </button>
+              </div>
+
             </div>
+
           </div>
 
-          <!-- Official Document Form (Chuẩn thể thức Trung tâm Dịch vụ tổng hợp) -->
+          <!-- Official Administrative Document Container (Times New Roman, A4 Standard) -->
           <div class="print-container bg-white text-black p-8 sm:p-14 rounded-3xl shadow-xl border border-slate-200 font-serif leading-relaxed text-sm max-w-4xl mx-auto">
             
-            <!-- Letterhead Top -->
-            <div class="flex justify-between items-start border-b pb-4 mb-6">
-              <div class="text-center w-5/12">
-                <p class="text-[11px] font-bold uppercase tracking-wider">ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI</p>
-                <p class="text-xs font-extrabold uppercase text-brand-800 mt-1">TRUNG TÂM DỊCH VỤ TỔNG HỢP</p>
-                <div class="w-24 h-0.5 bg-slate-800 mx-auto mt-1 mb-2"></div>
-                <p class="text-xs font-mono font-bold">Số: ${code}</p>
-              </div>
-
-              <div class="text-center w-6/12">
-                <p class="text-[11px] font-bold uppercase tracking-wider">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
-                <p class="text-xs font-bold underline underline-offset-4 mt-1">Độc lập - Tự do - Hạnh phúc</p>
-                <p class="text-xs italic mt-3">Tân Khai, ngày ${date.split('/')[0] || '28'} tháng ${date.split('/')[1] || '10'} năm ${date.split('/')[2] || '2026'}</p>
-              </div>
-            </div>
-
-            <!-- Report Title -->
-            <div class="text-center my-6">
-              <h2 class="text-base font-bold uppercase tracking-tight">${title}</h2>
-              <p class="text-xs italic mt-1">(Giai đoạn phát triển thể thao phong trào và thành tích cao)</p>
-            </div>
-
-            <!-- Kính gửi -->
-            <div class="mb-4 text-xs">
-              <p>Kính gửi: <b>Lãnh đạo UBND Phường Tân Khai</b></p>
-              <p>Trung tâm Dịch vụ tổng hợp Phường Tân Khai trân trọng báo cáo kết quả tổ chức và phong trào thể dục thể thao trên địa bàn với các nội dung trọng tâm như sau:</p>
-            </div>
-
-            <!-- Content Sections -->
-            <div class="space-y-4 text-xs text-justify">
-              <div>
-                <h4 class="font-bold text-slate-900 uppercase">I. KẾT QUẢ HOẠT ĐỘNG VÀ PHONG TRÀO TDTT QUẦN CHÚNG</h4>
-                <p class="mt-1">
-                  Trong kỳ vừa qua, Trung tâm Dịch vụ tổng hợp đã chủ động tham mưu và tổ chức thành công <b>${totalActs} hoạt động & giải thi đấu thể thao</b>, thu hút hơn <b>${totalParticipants.toLocaleString('vi-VN')} lượt vận động viên, hội viên và nhân dân</b> tham gia sôi nổi tại các khu phố.
-                </p>
-                <p class="mt-1">
-                  Hệ thống câu lạc bộ trực thuộc duy trì ổn định với <b>${totalClubs} CLB chuyên nghiệp và bán chuyên</b> (Bóng đá, Cầu lông, Pickleball, Dưỡng sinh, Cờ tướng), tạo điều kiện cho người dân rèn luyện sức khỏe hằng ngày theo gương Bác Hồ vĩ đại.
-                </p>
-              </div>
-
-              <div>
-                <h4 class="font-bold text-slate-900 uppercase">II. THÀNH TÍCH ĐẠT ĐƯỢC TẠI CÁC ĐẠI HỘI THỂ THAO</h4>
-                <p class="mt-1">
-                  Đoàn thể thao Phường Tân Khai tham gia Đại hội TDTT TP Đồng Nai và các giải khu vực đạt tổng cộng <b>${totalMedals} huy chương các loại</b> (bao gồm các môn thế mạnh: Bi sắt, Kéo co, Đẩy gậy, Võ thuật, Cầu lông).
-                </p>
-              </div>
-
-              <div>
-                <h4 class="font-bold text-slate-900 uppercase">III. CÔNG TÁC QUẢN LÝ KINH PHÍ VÀ CƠ SỞ VẬT CHẤT</h4>
-                <p class="mt-1">
-                  Tổng kinh phí giải ngân phục vụ công tác tổ chức, mua sắm giải thưởng và khen thưởng đạt <b>${totalBudget.toLocaleString('vi-VN')} đồng</b>. Toàn bộ hồ sơ chứng từ, bảng kê quyết toán đã được hoàn thiện đúng quy định tài chính hiện hành.
-                </p>
-              </div>
-            </div>
-
-            <!-- Representative Tournaments Table inside Document -->
-            <div class="my-5">
-              <table class="w-full text-left text-[11px] border border-slate-300">
-                <thead class="bg-slate-100 font-bold border-b border-slate-300">
-                  <tr>
-                    <th class="p-2 border-r border-slate-300">STT</th>
-                    <th class="p-2 border-r border-slate-300">Tên giải thi đấu tiêu biểu</th>
-                    <th class="p-2 border-r border-slate-300">Thời gian</th>
-                    <th class="p-2 border-r border-slate-300">VĐV</th>
-                    <th class="p-2">Huy chương</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-300">
-                  ${state.activities.slice(0, 5).map((a, i) => `
-                    <tr>
-                      <td class="p-2 border-r border-slate-300 text-center font-mono">${i + 1}</td>
-                      <td class="p-2 border-r border-slate-300 font-semibold">
-                        ${a.title}
-                        ${a.achievementNote ? `<span class="block text-[10px] text-amber-700 italic font-medium">★ ${a.achievementNote}</span>` : ''}
-                      </td>
-                      <td class="p-2 border-r border-slate-300">${a.date}</td>
-                      <td class="p-2 border-r border-slate-300 text-center">${a.participants}</td>
-                      <td class="p-2 font-bold text-center">${a.totalMedals} HC</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-
-            <!-- SINGLE SIGNATURE: ONLY NGƯỜI LẬP BÁO CÁO (KHÔNG CÓ LÃNH ĐẠO KÝ) -->
-            <div class="mt-10 flex justify-end">
-              <div class="text-center w-64">
-                <p class="font-bold uppercase text-xs">NGƯỜI LẬP BÁO CÁO</p>
-                <p class="text-[10px] italic text-slate-500">(Ký và ghi rõ họ tên)</p>
-                <div class="h-20 flex items-center justify-center italic text-slate-300 font-sans text-xs">
-                  (Đã ký điện tử)
+            ${isParty ? `
+              <!-- LETTERHEAD MẪU CHI BỘ -->
+              <div class="flex justify-between items-start border-b pb-4 mb-6">
+                <div class="text-center w-5/12">
+                  <p class="text-[12px] font-bold uppercase tracking-wide">ĐẢNG BỘ PHƯỜNG TÂN KHAI</p>
+                  <p class="text-[13px] font-extrabold uppercase text-red-800 mt-0.5">CHI BỘ TRUNG TÂM DVTH</p>
+                  <div class="w-24 h-0.5 bg-red-800 mx-auto mt-1 mb-2"></div>
+                  <p class="text-xs font-mono font-bold">Số: ${code}</p>
                 </div>
-                <p class="font-bold text-xs uppercase">${author}</p>
-                <p class="text-[10px] text-slate-500">${position}</p>
+
+                <div class="text-center w-6/12">
+                  <p class="text-[12px] font-bold uppercase tracking-wider text-red-800">ĐẢNG CỘNG SẢN VIỆT NAM</p>
+                  <p class="text-xs italic mt-3">${dateLine}</p>
+                </div>
               </div>
-            </div>
+
+              <!-- Tiêu đề Mẫu Chi bộ -->
+              <div class="text-center my-6">
+                <h2 class="text-base font-bold uppercase tracking-tight text-red-900">BÁO CÁO</h2>
+                <p class="text-xs font-bold uppercase mt-1">KẾT QUẢ THỰC HIỆN NHIỆM VỤ ĐẢNG VIÊN ${periodTitle}</p>
+                <p class="text-xs italic text-slate-600 mt-1">(Từ ngày ${formatDateVN(range.startDate)} đến ngày ${formatDateVN(range.endDate)})</p>
+              </div>
+
+              <!-- Kính gửi & Thông tin Đảng viên -->
+              <div class="mb-5 text-xs space-y-1">
+                <p>Kính gửi: <b>Chi bộ Trung tâm Dịch vụ Tổng hợp phường Tân Khai</b></p>
+                <p>Họ và tên đảng viên: <b>Trần Quốc Được</b></p>
+                <p>Chức vụ Đảng: <b>Đảng viên</b></p>
+                <p>Lĩnh vực phụ trách: <b>Thể dục thể thao và Thể dục thể thao thanh thiếu nhi.</b></p>
+                <p class="text-justify pt-1 indent-8">
+                  Thực hiện nhiệm vụ đảng viên và công việc chuyên môn được Chi bộ phân công, tôi xin báo cáo kết quả thực hiện nhiệm vụ cá nhân ${periodSubtitle} như sau:
+                </p>
+              </div>
+
+              <!-- Nội dung Báo cáo Chi bộ -->
+              <div class="space-y-4 text-xs text-justify">
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">I. TƯ TƯỞNG CHÍNH TRỊ, ĐẠO ĐỨC LỐI SỐNG VÀ Ý THỨC KỶ LUẬT</h4>
+                  <p class="mt-1">
+                    - Bản thân luôn kiên định với đường lối đổi mới của Đảng, chấp hành nghiêm túc Cương lĩnh chính trị, Điều lệ Đảng, Nghị quyết, Chỉ thị của các cấp ủy Đảng và chính sách, pháp luật của Nhà nước.
+                  </p>
+                  <p class="mt-1">
+                    - Giữ gìn phẩm chất đạo đức lối sống trong sạch, lành mạnh; thực hiện tốt tinh thần đoàn kết nội bộ, tích cực đấu tranh ngăn chặn các biểu hiện suy thoái về tư tưởng chính trị, đạo đức lối sống; luôn nêu cao tinh thần trách nhiệm trong công việc được giao.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">II. KẾT QUẢ THỰC HIỆN NHIỆM VỤ CHUYÊN MÔN ĐƯỢC PHÂN CÔNG</h4>
+                  <p class="mt-1">
+                    Trong ${periodSubtitle}, bản thân đã chủ động tham mưu và phối hợp tổ chức triển khai <b>${totalActs} hoạt động & giải thi đấu thể dục thể thao</b>, thu hút khoảng <b>${totalParticipants.toLocaleString('vi-VN')} lượt người tham gia</b>. Kết quả cụ thể:
+                  </p>
+                  
+                  <div class="pl-3 mt-2 space-y-2 border-l-2 border-slate-200">
+                    <p class="font-bold text-slate-800">1. Công tác tổ chức các hoạt động TDTT tại cơ sở (Cấp phường):</p>
+                    ${sec1.length ? sec1.map(a => `
+                      <p class="text-[11px]">• Giải/hoạt động: <b>${a.title}</b> (Ngày ${a.date}) - Quy mô: <b>${a.participants} VĐV</b>. ${a.achievementNote ? `Ghi chú: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Trong kỳ không có hoạt động mới phát sinh ở mục này.</p>'}
+
+                    <p class="font-bold text-slate-800 pt-1">2. Công tác TDTT thanh thiếu nhi & tham gia các giải Đại hội (Cấp thành phố):</p>
+                    ${sec2.length ? sec2.map(a => `
+                      <p class="text-[11px]">• Tham gia giải: <b>${a.title}</b> (Ngày ${a.date}) - VĐV: <b>${a.participants}</b> - Đạt: <b>${a.totalMedals} HC</b> (${a.goldMedals || 0}V, ${a.silverMedals || 0}B, ${a.bronzeMedals || 0}Đ). ${a.achievementNote ? `Điểm nhấn: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Duy trì tập luyện, chuẩn bị lực lượng cho các giải thi đấu sắp tới.</p>'}
+
+                    <p class="font-bold text-slate-800 pt-1">3. Công tác phối hợp, quản lý CLB và cơ sở vật chất sân bãi:</p>
+                    <p class="text-[11px]">
+                      • Phối hợp tốt với các đoàn thể, duy trì nền nếp tập luyện tại 5 CLB cơ sở (Dưỡng sinh, Bóng đá, Cầu lông, Pickleball, Cờ tướng); quản lý an toàn hệ thống sân bãi, nhà thi đấu và hồ bơi.
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">III. TỰ ĐÁNH GIÁ ƯU ĐIỂM, HẠN CHẾ VÀ PHƯƠNG HƯỚNG TỚI</h4>
+                  <p class="mt-1">
+                    <b>- Ưu điểm:</b> Chủ động, bám sát chỉ đạo của Chi bộ và Ban Giám đốc Trung tâm; tận tụy với công việc, huy động tốt nguồn lực xã hội hóa cho các giải thể thao.
+                  </p>
+                  <p class="mt-1">
+                    <b>- Tự đánh giá mức độ hoàn thành nhiệm vụ:</b> Hoàn thành tốt nhiệm vụ được giao.
+                  </p>
+                  <p class="mt-1">
+                    <b>- Phương hướng:</b> Tiếp tục trau dồi chuyên môn, mở rộng phong trào rèn luyện thể thao cho đối tượng thanh thiếu niên và người cao tuổi.
+                  </p>
+                </div>
+
+                <p class="pt-2 text-justify indent-8">
+                  Trên đây là báo cáo kết quả thực hiện nhiệm vụ đảng viên ${periodSubtitle} của bản thân. Kính báo cáo Chi bộ xem xét, theo dõi và góp ý để bản thân tiếp tục thực hiện tốt nhiệm vụ được giao.
+                </p>
+              </div>
+
+              <!-- Chữ ký Đảng viên -->
+              <div class="mt-10 flex justify-end">
+                <div class="text-center w-64">
+                  <p class="font-bold uppercase text-xs">ĐẢNG VIÊN BÁO CÁO</p>
+                  <p class="text-[10px] italic text-slate-500">(Ký và ghi rõ họ tên)</p>
+                  <div class="h-16 flex items-center justify-center italic text-slate-400 font-sans text-xs">
+                    (Đã ký điện tử)
+                  </div>
+                  <p class="font-bold text-xs uppercase text-slate-900">Trần Quốc Được</p>
+                </div>
+              </div>
+
+            ` : `
+              <!-- LETTERHEAD MẪU NHÀ NƯỚC (QUỐC HIỆU + ĐƠN VỊ LẬP) -->
+              <div class="flex justify-between items-start border-b pb-4 mb-6">
+                <div class="text-center w-5/12">
+                  <p class="text-[11px] font-bold uppercase tracking-wider text-slate-600">TRUNG TÂM DỊCH VỤ TỔNG HỢP</p>
+                  <p class="text-xs font-extrabold uppercase text-brand-800 mt-1">BỘ PHẬN THỂ DỤC THỂ THAO</p>
+                  <div class="w-24 h-0.5 bg-slate-800 mx-auto mt-1 mb-2"></div>
+                  <p class="text-xs font-mono font-bold">Số: ${code}</p>
+                </div>
+
+                <div class="text-center w-6/12">
+                  <p class="text-[11px] font-bold uppercase tracking-wider">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                  <p class="text-xs font-bold underline underline-offset-4 mt-1">Độc lập - Tự do - Hạnh phúc</p>
+                  <p class="text-xs italic mt-3">${dateLine}</p>
+                </div>
+              </div>
+
+              <!-- Tiêu đề Mẫu Nhà nước -->
+              <div class="text-center my-6">
+                <h2 class="text-base font-bold uppercase tracking-tight text-slate-900">BÁO CÁO</h2>
+                <p class="text-xs font-bold uppercase text-slate-700 mt-1">KẾT QUẢ THỰC HIỆN NHIỆM VỤ CÔNG TÁC THỂ DỤC THỂ THAO ${periodTitle}</p>
+                <p class="text-xs italic text-slate-600 mt-1">(Từ ngày ${formatDateVN(range.startDate)} đến ngày ${formatDateVN(range.endDate)})</p>
+              </div>
+
+              <!-- Kính gửi (Chuẩn: gửi Văn phòng Trung tâm / Phòng Văn hóa, không gửi thẳng UBND) -->
+              <div class="mb-5 text-xs space-y-1">
+                <p>Kính gửi: <b>${recipientText}</b></p>
+                <p>Họ và tên người báo cáo: <b>Trần Quốc Được</b></p>
+                <p>Chức danh / Vị trí: <b>Cán bộ phụ trách Thể dục thể thao</b></p>
+                <p>Lĩnh vực phụ trách: <b>Thể dục thể thao và Thể dục thể thao thanh thiếu nhi.</b></p>
+                <p class="text-justify pt-1 indent-8">
+                  Thực hiện nhiệm vụ chuyên môn được phân công, Bộ phận Thể dục thể thao kính báo cáo kết quả tổ chức các hoạt động và phát triển phong trào TDTT ${periodSubtitle} như sau:
+                </p>
+              </div>
+
+              <!-- Nội dung Báo cáo Nhà nước -->
+              <div class="space-y-4 text-xs text-justify">
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">I. CÔNG TÁC TỔ CHỨC CÁC HOẠT ĐỘNG THỂ DỤC THỂ THAO CẤP PHƯỜNG</h4>
+                  <p class="mt-1">
+                    Trong ${periodSubtitle}, Bộ phận TDTT đã chủ động tham mưu và phối hợp tổ chức tốt các hoạt động thể thao quần chúng trên địa bàn:
+                  </p>
+                  <div class="pl-3 mt-1.5 space-y-1 border-l-2 border-slate-200">
+                    ${sec1.length ? sec1.map(a => `
+                      <p class="text-[11px]">• <b>${a.title}</b> (Ngày ${a.date}) tại ${a.location}: Quy mô <b>${a.participants} ${a.participantsUnit || 'VĐV'}</b> tham gia sôi nổi. ${a.achievementNote ? `Kết quả: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Trong kỳ duy trì hoạt động rèn luyện thường xuyên của nhân dân tại các khu phố.</p>'}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">II. CÔNG TÁC THỂ DỤC THỂ THAO THANH THIẾU NHI VÀ THAM GIA ĐẠI HỘI THỂ THAO CẤP THÀNH PHỐ</h4>
+                  <p class="mt-1">
+                    Tập trung tuyển chọn, tập huấn các đội tuyển thế mạnh đại diện tham gia các giải thể thao cấp thành phố và khu vực:
+                  </p>
+                  <div class="pl-3 mt-1.5 space-y-1 border-l-2 border-slate-200">
+                    ${sec2.length ? sec2.map(a => `
+                      <p class="text-[11px]">• Tham gia <b>${a.title}</b> (Ngày ${a.date}): Đoàn gồm <b>${a.participants} VĐV</b>, đạt thành tích xuất sắc <b>${a.totalMedals} huy chương</b> (${a.goldMedals || 0} Vàng, ${a.silverMedals || 0} Bạc, ${a.bronzeMedals || 0} Đồng). ${a.achievementNote ? `Điểm nhấn: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Chuẩn bị lực lượng thanh thiếu nhi sẵn sàng tham gia các đợt thi đấu trong năm.</p>'}
+                  </div>
+                  ${totalMedals > 0 ? `
+                    <p class="mt-2 text-slate-700 font-semibold bg-amber-50 p-2 rounded-lg border border-amber-200 text-[11px]">
+                      ★ Tổng thành tích đạt được trong kỳ: <b>${totalMedals} huy chương các loại</b> (${totalGold} HCV, ${totalSilver} HCB, ${totalBronze} HCĐ).
+                    </p>
+                  ` : ''}
+                </div>
+
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">III. CÔNG TÁC QUẢN LÝ CÂU LẠC BỘ, CƠ SỞ VẬT CHẤT & KINH PHÍ</h4>
+                  <p class="mt-1">
+                    - <b>Mạng lưới CLB:</b> Duy trì hoạt động ổn định của 5 CLB thể thao nòng cốt (Bóng đá, Cầu lông, Pickleball, Dưỡng sinh, Cờ tướng), tạo sân chơi rèn luyện sức khỏe thường xuyên cho nhân dân.
+                  </p>
+                  <p class="mt-1">
+                    - <b>Cơ sở vật chất:</b> Thường xuyên kiểm tra hiện trạng Sân vận động, Nhà thi đấu đa năng, Cụm sân Pickleball và Hồ bơi công cộng đảm bảo an toàn tuyệt đối cho người tham gia tập luyện.
+                  </p>
+                  <p class="mt-1">
+                    - <b>Giải ngân kinh phí:</b> Tổng kinh phí giải ngân phục vụ công tác tổ chức, mua sắm giải thưởng và khen thưởng trong kỳ là <b>${totalBudget.toLocaleString('vi-VN')} đồng</b>. Toàn bộ chứng từ, bảng kê quyết toán đã được hoàn thiện đúng quy định.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 class="font-bold text-slate-900 uppercase">IV. ĐÁNH GIÁ CHUNG VÀ PHƯƠNG HƯỚNG KỲ TỚI</h4>
+                  <p class="mt-1">
+                    - Nhìn chung công tác TDTT trong kỳ đã bám sát kế hoạch đề ra, phong trào quần chúng tiếp tục lan tỏa sâu rộng, chất lượng chuyên môn tại các giải thi đấu được nâng lên rõ rệt.
+                  </p>
+                  <p class="mt-1">
+                    - Thời gian tới, Bộ phận TDTT tiếp tục duy trì luyện tập, tổ chức các giải phong trào và quản lý khai thác hiệu quả cơ sở vật chất thể thao hiện có.
+                  </p>
+                </div>
+
+                <p class="pt-2 text-justify indent-8">
+                  Kính báo cáo Văn phòng Trung tâm Dịch vụ Tổng hợp xem xét, tổng hợp vào báo cáo chung của đơn vị.
+                </p>
+              </div>
+
+              <!-- Chữ ký Người lập báo cáo (Chỉ có 1 chữ ký của Cán bộ Trung tâm) -->
+              <div class="mt-10 flex justify-end">
+                <div class="text-center w-64">
+                  <p class="font-bold uppercase text-xs">NGƯỜI LẬP BÁO CÁO</p>
+                  <p class="text-[10px] italic text-slate-500">(Ký và ghi rõ họ tên)</p>
+                  <div class="h-16 flex items-center justify-center italic text-slate-400 font-sans text-xs">
+                    (Đã ký điện tử)
+                  </div>
+                  <p class="font-bold text-xs uppercase text-slate-900">Trần Quốc Được</p>
+                  <p class="text-[10px] text-slate-500">Cán bộ phụ trách Thể dục thể thao</p>
+                </div>
+              </div>
+            `}
 
           </div>
         </div>
       `;
+    }
+
+    function buildReportHTMLForWord() {
+      const isParty = state.reportMode === 'party';
+      const range = getReportRange();
+      const list = getReportData();
+      const periodTitle = getPeriodTitle();
+      const periodSubtitle = getPeriodSubtitle();
+
+      const totalActs = list.length;
+      const totalParticipants = list.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
+      const totalMedals = list.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
+      const totalGold = list.reduce((a, b) => a + (parseInt(b.goldMedals) || 0), 0);
+      const totalSilver = list.reduce((a, b) => a + (parseInt(b.silverMedals) || 0), 0);
+      const totalBronze = list.reduce((a, b) => a + (parseInt(b.bronzeMedals) || 0), 0);
+      const totalBudget = list.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
+
+      const sec1 = list.filter(a => a.category === 'Cấp phường');
+      const sec2 = list.filter(a => a.category === 'Cấp thành phố');
+
+      let recipientText = 'Văn phòng Trung tâm Dịch vụ Tổng hợp phường Tân Khai';
+      if (isParty) {
+        recipientText = 'Chi bộ Trung tâm Dịch vụ Tổng hợp phường Tân Khai';
+      } else if (state.reportRecipient === 'phong_vanhoa') {
+        recipientText = 'Phòng Văn hóa và Thông tin';
+      }
+
+      const today = new Date();
+      const dateLine = `Tân Khai, ngày ${String(today.getDate()).padStart(2, '0')} tháng ${String(today.getMonth() + 1).padStart(2, '0')} năm ${today.getFullYear()}`;
+      const fnt = "font-family:'Times New Roman',Times,serif;";
+
+      let headerBlock = '';
+      if (isParty) {
+        headerBlock = `
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td width="50%" align="center" valign="top" style="text-align:center;vertical-align:top;padding:0;">
+                <div style="${fnt}font-size:12pt;font-weight:bold;line-height:1.4;">ĐẢNG BỘ PHƯỜNG TÂN KHAI</div>
+                <div style="${fnt}font-size:13pt;font-weight:bold;line-height:1.4;color:#b91c1c;">CHI BỘ TRUNG TÂM DVTH</div>
+                <div style="width:120px;height:0;border-top:1.5px solid #b91c1c;margin:4px auto;"></div>
+                <div style="${fnt}font-size:12pt;margin-top:4px;">Số: .... /BC-CB</div>
+              </td>
+              <td width="50%" align="center" valign="top" style="text-align:center;vertical-align:top;padding:0;">
+                <div style="${fnt}font-size:12pt;font-weight:bold;line-height:1.4;color:#b91c1c;">ĐẢNG CỘNG SẢN VIỆT NAM</div>
+                <div style="${fnt}font-size:12pt;font-style:italic;margin-top:14px;">${dateLine}</div>
+              </td>
+            </tr>
+          </table>
+        `;
+      } else {
+        headerBlock = `
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td width="48%" align="center" valign="top" style="text-align:center;vertical-align:top;padding:0;">
+                <div style="${fnt}font-size:11pt;font-weight:bold;line-height:1.4;">TRUNG TÂM DỊCH VỤ TỔNG HỢP</div>
+                <div style="${fnt}font-size:12pt;font-weight:bold;line-height:1.4;color:#006948;">BỘ PHẬN THỂ DỤC THỂ THAO</div>
+                <div style="width:120px;height:0;border-top:1.5px solid #000;margin:4px auto;"></div>
+                <div style="${fnt}font-size:11pt;margin-top:4px;">Số: .... /BC-TDTT</div>
+              </td>
+              <td width="52%" align="center" valign="top" style="text-align:center;vertical-align:top;padding:0;">
+                <div style="${fnt}font-size:12pt;font-weight:bold;line-height:1.4;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                <div style="${fnt}font-size:13pt;font-weight:bold;line-height:1.4;">Độc lập – Tự do – Hạnh phúc</div>
+                <div style="width:160px;height:0;border-top:1.5px solid #000;margin:4px auto;"></div>
+                <div style="${fnt}font-size:12pt;font-style:italic;margin-top:8px;">${dateLine}</div>
+              </td>
+            </tr>
+          </table>
+        `;
+      }
+
+      return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Báo Cáo ${isParty ? 'Chi Bộ' : 'TDTT'} - ${periodTitle}</title>
+  <style>
+    @page { size: A4 portrait; margin: 20mm 20mm 20mm 30mm; }
+    body { font-family: 'Times New Roman', Times, serif; font-size: 14pt; line-height: 1.5; color: #000; background: #fff; margin: 0; padding: 20px; }
+    p { margin: 6px 0; line-height: 1.5; text-align: justify; }
+    .title { text-align: center; font-size: 15pt; font-weight: bold; margin: 18px 0 4px 0; }
+    .subtitle { text-align: center; font-size: 13pt; font-style: italic; margin-bottom: 16px; }
+    .section-title { font-weight: bold; margin-top: 14px; margin-bottom: 4px; }
+    .indent { text-indent: 1.27cm; }
+  </style>
+</head>
+<body>
+  ${headerBlock}
+
+  <div class="title">BÁO CÁO</div>
+  <div class="subtitle">Kết quả thực hiện nhiệm vụ ${isParty ? 'đảng viên' : 'công tác Thể dục Thể thao'} ${periodSubtitle}<br/>(Từ ngày ${formatDateVN(range.startDate)} đến ngày ${formatDateVN(range.endDate)})</div>
+
+  <p><b>Kính gửi:</b> ${recipientText}</p>
+  <p>Họ và tên: <b>Trần Quốc Được</b></p>
+  <p>Chức vụ: <b>${isParty ? 'Đảng viên' : 'Cán bộ phụ trách Thể dục thể thao'}</b></p>
+  <p>Lĩnh vực phụ trách: <b>Thể dục thể thao và Thể dục thể thao thanh thiếu nhi.</b></p>
+
+  <p class="indent">
+    Thực hiện nhiệm vụ được phân công, tôi xin báo cáo kết quả thực hiện nhiệm vụ ${periodSubtitle} như sau:
+  </p>
+
+  <p class="section-title">1. Công tác tổ chức các hoạt động thể dục thể thao tại cơ sở</p>
+  ${sec1.length ? sec1.map(a => `
+    <p style="margin-left: 20px;">• ${a.title} (Ngày ${a.date}) tại ${a.location}: Quy mô khoảng <b>${a.participants} VĐV</b>. ${a.achievementNote ? `Kết quả: ${a.achievementNote}` : ''}</p>
+  `).join('') : '<p style="margin-left: 20px; font-style: italic;">• Duy trì nền nếp rèn luyện thể dục thể thao quần chúng thường xuyên tại địa bàn.</p>'}
+
+  <p class="section-title">2. Công tác thể thao thanh thiếu nhi và tham gia thi đấu các giải cấp thành phố</p>
+  ${sec2.length ? sec2.map(a => `
+    <p style="margin-left: 20px;">• ${a.title} (Ngày ${a.date}): Đoàn tham gia gồm <b>${a.participants} VĐV</b>, đạt <b>${a.totalMedals} huy chương</b> (${a.goldMedals || 0}V, ${a.silverMedals || 0}B, ${a.bronzeMedals || 0}Đ). ${a.achievementNote ? `Điểm nhấn: ${a.achievementNote}` : ''}</p>
+  `).join('') : '<p style="margin-left: 20px; font-style: italic;">• Chuẩn bị lực lượng thanh thiếu nhi sẵn sàng tham gia các giải sắp tới.</p>'}
+  ${totalMedals > 0 ? `<p style="margin-left: 20px;"><b>Tổng thành tích trong kỳ:</b> Đạt ${totalMedals} huy chương các loại (${totalGold} HCV, ${totalSilver} HCB, ${totalBronze} HCĐ).</p>` : ''}
+
+  <p class="section-title">3. Công tác quản lý câu lạc bộ, cơ sở vật chất sân bãi và kinh phí</p>
+  <p style="margin-left: 20px;">- Duy trì sinh hoạt định kỳ của 5 câu lạc bộ TDTT trực thuộc.</p>
+  <p style="margin-left: 20px;">- Quản lý, khai thác an toàn các sân bãi, hồ bơi và nhà thi đấu trên địa bàn phường.</p>
+  <p style="margin-left: 20px;">- Tổng kinh phí giải ngân phục vụ công tác tổ chức và khen thưởng trong kỳ: <b>${totalBudget.toLocaleString('vi-VN')} đồng</b> (hồ sơ quyết toán đầy đủ theo quy định).</p>
+
+  <p class="indent" style="margin-top: 16px;">
+    Trên đây là báo cáo kết quả thực hiện nhiệm vụ ${periodSubtitle} của bản thân. Kính báo cáo ${recipientText} xem xét, theo dõi và chỉ đạo.
+  </p>
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:35px;page-break-inside:avoid;">
+    <tr>
+      <td width="55%"></td>
+      <td width="45%" align="center" style="text-align:center;">
+        <div style="${fnt}font-size:13pt;font-weight:bold;">${isParty ? 'ĐẢNG VIÊN BÁO CÁO' : 'NGƯỜI LẬP BÁO CÁO'}</div>
+        <div style="${fnt}font-size:11pt;font-style:italic;margin-top:4px;">(Ký và ghi rõ họ tên)</div>
+        <div style="height:65px;">&nbsp;</div>
+        <div style="${fnt}font-size:13pt;font-weight:bold;">Trần Quốc Được</div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+    }
+
+    function exportDocxFile() {
+      const html = buildReportHTMLForWord();
+      const blob = new Blob(['\ufeff', html], { type: 'application/msword;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const modeName = state.reportMode === 'party' ? 'ChiBo' : 'NhaNuoc';
+      const cleanPeriod = getPeriodTitle().replace(/\s+/g, '_');
+      link.download = `BaoCao_${modeName}_${cleanPeriod}.doc`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast('Đã xuất file Word', `Báo cáo ${getPeriodTitle()} đã được tải về máy.`);
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    function saveCurrentReportToRegistry() {
+      const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
+      const nextNum = maxRepNum + 1;
+      const numStr = String(nextNum).padStart(2, '0');
+      const isParty = state.reportMode === 'party';
+      const code = isParty ? `${numStr}/BC-CB` : `${numStr}/BC-TDTT`;
+
+      const list = getReportData();
+      const newRep = {
+        id: 'rep-' + Date.now(),
+        reportNumber: nextNum,
+        code: code,
+        title: `Báo cáo ${isParty ? 'nhiệm vụ Đảng viên' : 'công tác Thể dục Thể thao'} ${getPeriodSubtitle()}`,
+        reportDate: new Date().toLocaleDateString('vi-VN'),
+        year: String(state.reportYear),
+        period: state.reportPeriod,
+        mode: state.reportMode,
+        author: 'Trần Quốc Được',
+        position: isParty ? 'Đảng viên' : 'Cán bộ Trung tâm Dịch vụ tổng hợp',
+        summaryActs: list.length,
+        summaryParticipants: list.reduce((a, b) => a + (parseInt(b.participants) || 0), 0),
+        summaryMedals: list.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0),
+        summaryBudget: list.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0),
+        createdAt: new Date().toISOString()
+      };
+
+      state.savedReports.unshift(newRep);
+      state.activeReportId = newRep.id;
+      saveAll();
+      showToast('Đã lưu vào Sổ', `Đã lưu báo cáo số ${newRep.code} vào Sổ lưu trữ.`);
+      renderApp();
     }
 
     function renderReportRegistryView() {
@@ -2248,7 +2823,7 @@
                   <th class="p-3.5 align-middle whitespace-nowrap w-32">Số báo cáo</th>
                   <th class="p-3.5 align-middle min-w-[240px]">Tiêu đề báo cáo</th>
                   <th class="p-3.5 align-middle whitespace-nowrap">Ngày lập</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Kỳ báo cáo</th>
+                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Năm</th>
                   <th class="p-3.5 align-middle whitespace-nowrap">Người lập</th>
                   <th class="p-3.5 align-middle whitespace-nowrap text-right w-40">Thao tác</th>
                 </tr>
@@ -2260,7 +2835,7 @@
                     <td class="p-3.5 align-middle min-w-[240px] max-w-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">${r.title}</td>
                     <td class="p-3.5 align-middle whitespace-nowrap text-slate-500 font-mono">${r.reportDate}</td>
                     <td class="p-3.5 align-middle whitespace-nowrap text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800">${r.year || '2026'}</span></td>
-                    <td class="p-3.5 align-middle whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">${r.author}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">${r.author || 'Trần Quốc Được'}</td>
                     <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
                       <button onclick="viewReport('${r.id}')" title="Xem & In" class="p-1.5 rounded-lg text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">visibility</span></button>
                       <button onclick="editReportModal('${r.id}')" title="Sửa số / Tiêu đề" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
@@ -2285,16 +2860,17 @@
       const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
       const nextNum = maxRepNum + 1;
       const numStr = String(nextNum).padStart(2, '0');
+      const isParty = state.reportMode === 'party';
       const newRep = {
         id: 'rep-' + Date.now(),
         reportNumber: nextNum,
-        code: `${numStr}/BC-TTDVTH`,
-        title: `Báo cáo phát triển TDTT Phường Tân Khai năm ${new Date().getFullYear()}`,
+        code: isParty ? `${numStr}/BC-CB` : `${numStr}/BC-TDTT`,
+        title: `Báo cáo ${isParty ? 'nhiệm vụ đảng viên' : 'công tác phát triển TDTT'} năm ${new Date().getFullYear()}`,
         reportDate: new Date().toLocaleDateString('vi-VN'),
         year: String(state.selectedYear === 'all' ? new Date().getFullYear() : state.selectedYear),
         quarter: 'all',
-        author: 'Trần Quốc Đức',
-        position: 'Cán bộ Trung tâm Dịch vụ tổng hợp',
+        author: 'Trần Quốc Được',
+        position: isParty ? 'Đảng viên' : 'Cán bộ Trung tâm Dịch vụ tổng hợp',
         createdAt: new Date().toISOString()
       };
       state.savedReports.unshift(newRep);
@@ -2305,7 +2881,241 @@
     }
 
     function saveCurrentReportAsNew() {
-      createNewReportPrompt();
+      saveCurrentReportToRegistry();
+    }
+
+    /* ==============================================================================
+       MODAL: CẤU HÌNH TỰ ĐỘNG GỬI BÁO CÁO QUA TELEGRAM BOT
+       ============================================================================== */
+    function openTelegramConfigModal() {
+      const cfg = state.telegramConfig || { enabled: false, botToken: '', chatId: '', schedule: 'monthly_25', reportType: 'summary' };
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[18px]">send</span>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Thiết Lập Tự Động Gửi Báo Cáo (Telegram)</h3>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveTelegramConfig(event)" class="mt-4 space-y-3.5 text-xs">
+            
+            <!-- Bật / Tắt gửi tự động -->
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-900 dark:text-white block">Tự động gửi báo cáo định kỳ</span>
+                <span class="text-[11px] text-slate-500">Google Apps Script sẽ tự động kích hoạt gửi đến Telegram của anh Được</span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="tg_enabled" type="checkbox" ${cfg.enabled ? 'checked' : ''} class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+              </label>
+            </div>
+
+            <!-- Lịch gửi -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Lịch hẹn gửi tự động</label>
+                <select id="tg_schedule" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="monthly_25" ${cfg.schedule === 'monthly_25' ? 'selected' : ''}>Ngày 25 hàng tháng (Chốt báo cáo)</option>
+                  <option value="monthly_end" ${cfg.schedule === 'monthly_end' ? 'selected' : ''}>Ngày cuối cùng mỗi tháng</option>
+                  <option value="quarter_end" ${cfg.schedule === 'quarter_end' ? 'selected' : ''}>Ngày cuối mỗi Quý</option>
+                  <option value="weekly_monday" ${cfg.schedule === 'weekly_monday' ? 'selected' : ''}>Sáng thứ Hai hàng tuần (08:00)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold mb-1">Loại báo cáo gửi đi</label>
+                <select id="tg_report_type" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="summary" ${cfg.reportType === 'summary' ? 'selected' : ''}>Bản tóm tắt nhanh KPI & Giải mới nhất</option>
+                  <option value="state" ${cfg.reportType === 'state' ? 'selected' : ''}>Báo cáo công tác TDTT (Mẫu Nhà nước)</option>
+                  <option value="party" ${cfg.reportType === 'party' ? 'selected' : ''}>Báo cáo nhiệm vụ đảng viên (Mẫu Chi bộ)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Cấu hình Telegram Bot Token & Chat ID -->
+            <div>
+              <label class="block font-bold mb-1">Telegram Bot Token <span class="text-rose-500">*</span></label>
+              <input id="tg_token" type="text" placeholder="Ví dụ: 7894561230:AAH_xxx..." value="${cfg.botToken || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs" />
+            </div>
+
+            <div>
+              <label class="block font-bold mb-1">Telegram Chat ID của anh Được <span class="text-rose-500">*</span></label>
+              <input id="tg_chat_id" type="text" placeholder="Ví dụ: 123456789" value="${cfg.chatId || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs" />
+            </div>
+
+            <!-- Hướng dẫn nhanh -->
+            <div class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 text-[11px] leading-relaxed border border-sky-200 dark:border-sky-800">
+              <p class="font-bold flex items-center gap-1 mb-1">
+                <span class="material-symbols-outlined text-[15px]">help</span>
+                <span>Hướng dẫn cài đặt Telegram trong 1 phút:</span>
+              </p>
+              <p>1. Mở Telegram, tìm <b>@BotFather</b> ➔ Gõ <code>/newbot</code> để tạo bot và lấy <b>Token</b>.</p>
+              <p>2. Mở bot của anh vừa tạo, bấm <b>Start</b>. Sau đó tìm <b>@userinfobot</b> để xem <b>Id (Chat ID)</b> của anh.</p>
+              <p>3. Dán Token và Chat ID vào đây rồi bấm <b>Gửi thử nghiệm ngay</b>!</p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+              <button type="button" onclick="sendTestTelegramFromWeb()" class="px-3.5 py-2 rounded-xl font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 border border-sky-200 dark:border-sky-800 flex items-center gap-1.5 btn-press">
+                <span class="material-symbols-outlined text-[15px]">send</span>
+                <span>Gửi thử nghiệm ngay</span>
+              </button>
+
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Đóng</button>
+                <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu cấu hình</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function handleSaveTelegramConfig(e) {
+      e.preventDefault();
+      const enabled = document.getElementById('tg_enabled').checked;
+      const botToken = document.getElementById('tg_token').value.trim();
+      const chatId = document.getElementById('tg_chat_id').value.trim();
+      const schedule = document.getElementById('tg_schedule').value;
+      const reportType = document.getElementById('tg_report_type').value;
+
+      state.telegramConfig = {
+        enabled: enabled,
+        botToken: botToken,
+        chatId: chatId,
+        schedule: schedule,
+        reportType: reportType,
+        lastSent: state.telegramConfig?.lastSent || ''
+      };
+
+      saveAll();
+      closeModal();
+      showToast('Đã lưu cấu hình', 'Thông tin tự động gửi Telegram đã được cập nhật.');
+      renderApp();
+    }
+
+    async function sendTestTelegramFromWeb() {
+      const botToken = document.getElementById('tg_token')?.value.trim() || state.telegramConfig?.botToken;
+      const chatId = document.getElementById('tg_chat_id')?.value.trim() || state.telegramConfig?.chatId;
+
+      if (!botToken || !chatId) {
+        alert('Vui lòng nhập đầy đủ Telegram Bot Token và Chat ID trước khi gửi thử!');
+        return;
+      }
+
+      const today = new Date().toLocaleDateString('vi-VN');
+      const latest = state.activities[0] || {};
+      const totalActs = state.activities.length;
+      const totalMedals = state.activities.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
+
+      const msg = `🏆 <b>HỆ THỐNG QUẢN LÝ TDTT - PHƯỜNG TÂN KHAI</b>\n` +
+                  `📍 <i>Trung tâm Dịch vụ tổng hợp</i>\n` +
+                  `📅 Ngày gửi: <b>${today}</b>\n` +
+                  `👤 Cán bộ: <b>Trần Quốc Được</b>\n\n` +
+                  `✅ <b>KẾT NỐI TELEGRAM THÀNH CÔNG!</b>\n` +
+                  `• Tổng số giải đấu: <b>${totalActs} giải</b>\n` +
+                  `• Tổng huy chương: <b>${totalMedals} HC</b>\n` +
+                  (latest.title ? `• Giải mới nhất (#1): <b>${latest.title}</b> (${latest.date})\n` : '') +
+                  `\n📌 <i>Hệ thống sẽ tự động gửi báo cáo theo lịch anh đã thiết lập.</i>`;
+
+      try {
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: msg,
+            parse_mode: 'HTML'
+          })
+        });
+        const res = await resp.json();
+        if (res.ok) {
+          alert('🎉 Tuyệt vời! Tin nhắn đã được gửi thẳng vào Telegram của anh Trần Quốc Được thành công!');
+        } else {
+          alert('Lỗi Telegram API: ' + (res.description || 'Không thể gửi tin nhắn. Hãy kiểm tra lại Bot Token và Chat ID.'));
+        }
+      } catch (err) {
+        alert('Lỗi kết nối mạng hoặc CORS: ' + err.message);
+      }
+    }
+
+    async function sendCurrentReportToTelegram() {
+      const cfg = state.telegramConfig;
+      if (!cfg || !cfg.botToken || !cfg.chatId) {
+        if (confirm('Anh chưa cấu hình Telegram Bot Token và Chat ID. Anh có muốn mở bảng thiết lập ngay bây giờ không?')) {
+          openTelegramConfigModal();
+        }
+        return;
+      }
+
+      const isParty = state.reportMode === 'party';
+      const range = getReportRange();
+      const list = getReportData();
+      const totalActs = list.length;
+      const totalParticipants = list.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
+      const totalMedals = list.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
+      const totalGold = list.reduce((a, b) => a + (parseInt(b.goldMedals) || 0), 0);
+      const totalSilver = list.reduce((a, b) => a + (parseInt(b.silverMedals) || 0), 0);
+      const totalBronze = list.reduce((a, b) => a + (parseInt(b.bronzeMedals) || 0), 0);
+      const totalBudget = list.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
+
+      let recipientText = 'Văn phòng Trung tâm Dịch vụ Tổng hợp';
+      if (isParty) {
+        recipientText = 'Chi bộ Trung tâm Dịch vụ Tổng hợp';
+      } else if (state.reportRecipient === 'phong_vanhoa') {
+        recipientText = 'Phòng Văn hóa và Thông tin';
+      }
+
+      let msg = `📋 <b>BÁO CÁO ${isParty ? 'CHI BỘ' : 'CÔNG TÁC TDTT'} - ${getPeriodTitle()}</b>\n`;
+      msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
+      msg += `👤 <b>Người lập:</b> Trần Quốc Được (${isParty ? 'Đảng viên' : 'Cán bộ TDTT'})\n`;
+      msg += `📤 <b>Gửi đến:</b> ${recipientText}\n`;
+      msg += `📅 <b>Khoảng thời gian:</b> ${formatDateVN(range.startDate)} ➔ ${formatDateVN(range.endDate)}\n\n`;
+      msg += `📊 <b>SỐ LIỆU TỔNG HỢP:</b>\n`;
+      msg += `• Hoạt động / Giải đấu: <b>${totalActs}</b> giải\n`;
+      msg += `• Lượt VĐV tham gia: <b>${totalParticipants.toLocaleString('vi-VN')}</b> lượt\n`;
+      msg += `• Thành tích huy chương: <b>${totalMedals}</b> HC (${totalGold} vàng, ${totalSilver} bạc, ${totalBronze} đồng)\n`;
+      msg += `• Tổng kinh phí giải ngân: <b>${totalBudget.toLocaleString('vi-VN')} đ</b>\n\n`;
+
+      if (list.length > 0) {
+        msg += `⭐ <b>DANH SÁCH GIẢI TIÊU BIỂU:</b>\n`;
+        list.slice(0, 5).forEach((a, i) => {
+          msg += `${i + 1}. <b>${a.title}</b> (${a.date}) - ${a.participants} VĐV\n`;
+          if (a.achievementNote) msg += `   ↳ <i>${a.achievementNote}</i>\n`;
+        });
+      }
+
+      msg += `\n📌 <i>Báo cáo xuất từ Hệ thống Quản lý TDTT Phường Tân Khai.</i>`;
+
+      try {
+        const url = `https://api.telegram.org/bot${cfg.botToken}/sendMessage`;
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: cfg.chatId,
+            text: msg,
+            parse_mode: 'HTML'
+          })
+        });
+        const res = await resp.json();
+        if (res.ok) {
+          showToast('Đã gửi Telegram', `Báo cáo ${getPeriodTitle()} đã gửi vào Telegram của anh Được.`);
+        } else {
+          alert('Lỗi gửi Telegram: ' + (res.description || 'Không thể gửi.'));
+        }
+      } catch (err) {
+        alert('Lỗi kết nối Telegram: ' + err.message);
+      }
     }
 
     function editReportModal(repId) {
@@ -2568,6 +3378,7 @@
       } else {
         state.activities.unshift(item);
       }
+      state.activities = sortActivitiesByLatest(state.activities);
       saveAll();
       closeModal();
       showToast('Đã lưu thành công', `Giải đấu "${item.title}" đã được chuẩn hóa và lưu trữ.`);

@@ -194,7 +194,7 @@
         reportDate: '28/10/2026',
         year: '2026',
         quarter: 'all',
-        author: 'Trần Quốc Đức',
+        author: 'Trần Quốc Được',
         position: 'Cán bộ Trung tâm Dịch vụ tổng hợp',
         summaryActs: 27,
         summaryParticipants: 2049,

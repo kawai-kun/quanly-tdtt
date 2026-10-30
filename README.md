@@ -19,7 +19,9 @@ Hệ thống Quản lý & Điều hành Thể dục Thể thao Phường Tân Kh
    * Ô mật khẩu có nút ẩn/hiện mắt (`visibility`), ô nhập sạch sẽ và hỗ trợ ghi nhớ đăng nhập.
    * *Tài khoản nội bộ:* `admin` | *Mật khẩu:* `D123@`.
 
-2. **Tự động chuẩn hóa khuôn mẫu (Data Normalization):**
+2. **Quản lý giải đấu thông minh & Ưu tiên giải mới nhất:**
+   * Tự động sắp xếp: **Giải nào tổ chức mới nhất luôn hiển thị ở vị trí số 1 (#1)**, các giải cũ hơn lùi dần về sau để tiện theo dõi tiến độ công việc gần nhất.
+   * Cột số thứ tự STT rõ ràng, huy hiệu `#1 Mới nhất` nổi bật trên giao diện thẻ và bảng.
    * Tự động viết hoa chữ cái đầu và danh từ riêng (Tân Khai, TDTT, UBND, VĐV, HCV...).
    * Tự động nhận diện và gán bộ môn thể thao (Bóng đá, Cầu lông, Pickleball, Võ thuật...).
    * Tự động chuẩn hóa mã giải (`T-01`, `T-02`...), định dạng ngày tháng `DD/MM/YYYY`.
@@ -29,11 +31,21 @@ Hệ thống Quản lý & Điều hành Thể dục Thể thao Phường Tân Kh
    * Bộ lọc năm toàn hệ thống (`Tất cả năm`, `2026`, `2025`, `2027`...): Tự động mở rộng theo thời gian.
    * Chỉ số KPI, biểu đồ phân bố giải đấu và biểu đồ huy chương tự động thích ứng chính xác theo năm được chọn.
 
-4. **Sổ Quản Lý Báo Cáo Đã Xuất (Reports Registry):**
-   * Đơn vị phát hành chuẩn: **TRUNG TÂM DỊCH VỤ TỔNG HỢP**.
-   * Số báo cáo được sinh tự động căn cứ vào lịch sử xuất thực tế (`Số: 01/BC-TTDVTH`, `02/BC-TTDVTH`...).
-   * Quản lý Sổ lưu trữ: Xem lại bản in, chỉnh sửa số/tiêu đề hoặc xóa báo cáo sai sót.
-   * Thể thức chữ ký: **Chỉ có 1 chữ ký của Người lập báo cáo (Cán bộ Trung tâm)**, không để phần chữ ký lãnh đạo theo đúng yêu cầu.
+4. **Bộ Tổng Hợp & Xây Dựng Báo Cáo Chuyên Nghiệp (Tháng / Quý / 6 Tháng / 9 Tháng / Cả Năm):**
+   * **Hai thể thức chuẩn:**
+     * **Mẫu Nhà nước:** Đơn vị lập là *Bộ phận Thể dục thể thao - Trung tâm Dịch vụ tổng hợp*, nơi nhận gửi đến *Văn phòng Trung tâm Dịch vụ Tổng hợp* (để tổng hợp vào báo cáo chung) hoặc *Phòng Văn hóa và Thông tin* (không gửi thẳng UBND phường).
+     * **Mẫu Chi bộ:** Báo cáo kết quả thực hiện nhiệm vụ Đảng viên gửi *Chi bộ Trung tâm Dịch vụ Tổng hợp*.
+   * **Lọc thời gian tự động:** Chọn Tháng (T1 - T12), Quý (I - IV), 6 tháng (đầu/cuối năm), 9 tháng, hoặc Cả năm. Hệ thống tự động trích xuất các giải đấu, số VĐV, huy chương và kinh phí trong kỳ.
+   * **Định dạng xuất đa dạng:**
+     * **Xuất file Word (`.doc`):** Chuẩn font Times New Roman 14pt, căn lề A4 (20-20-20-30mm), sẵn sàng mở và chỉnh sửa trên Microsoft Word.
+     * **In văn bản / Lưu PDF:** Chuẩn khổ giấy A4, ẩn toàn bộ nút công cụ.
+     * **Lưu vào Sổ lưu trữ:** Lưu trữ lịch sử báo cáo để quản lý số công văn phát hành.
+   * **Người lập báo cáo chính thức:** **Trần Quốc Được** (Cán bộ phụ trách TDTT / Đảng viên).
+
+5. **Tự Động Gửi Báo Cáo Định Kỳ Đến Telegram:**
+   * Tích hợp Telegram Bot API gửi trực tiếp thông báo báo cáo về tài khoản cá nhân của anh Trần Quốc Được.
+   * Thiết lập lịch gửi: Ngày 25 hàng tháng (chốt báo cáo), ngày cuối tháng, cuối quý, hoặc sáng thứ Hai hàng tuần.
+   * Hỗ trợ nút gửi thử nghiệm ngay trên giao diện Web và tự động hóa ngầm 24/7 trên Google Apps Script.
 
 ---
 
