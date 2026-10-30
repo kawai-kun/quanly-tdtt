@@ -521,7 +521,7 @@ function generateTelegramSummaryReport() {
     msg += '  - Quy mô: ' + (latest.participants || 0) + ' VĐV | Thành tích: ' + (latest.totalMedals || 0) + ' HC\n';
     if (latest.achievementNote) msg += '  - Điểm nhấn: ' + latest.achievementNote + '\n';
   }
-  msg += '\n📌 <i>Báo cáo được tự động gửi định kỳ từ hệ thống Google Apps Script.</i>';
+  msg += '\n📌 <i>Kính báo cáo Văn phòng Trung tâm Dịch vụ Tổng hợp xem xét, theo dõi và tổng hợp.</i>';
   return msg;
 }
 

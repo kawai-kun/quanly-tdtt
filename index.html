@@ -95,6 +95,28 @@
       -webkit-backdrop-filter: blur(14px);
     }
 
+    /* Tối ưu hóa phông chữ tiếng Việt sắc nét, chuẩn thể thức văn bản hành chính */
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .admin-doc-paper {
+      font-family: 'Times New Roman', Times, 'Liberation Serif', serif !important;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #0f172a;
+    }
+
+    .admin-doc-paper p, .admin-doc-paper div, .admin-doc-paper span, .admin-doc-paper table {
+      font-family: 'Times New Roman', Times, 'Liberation Serif', serif !important;
+    }
+
     /* Print styling */
     @media print {
       body { background: #fff !important; color: #000 !important; }
@@ -409,6 +431,37 @@
       }
     ];
 
+    const INITIAL_TELEGRAM_SCHEDULES = [
+      {
+        id: 'sched-nhanuoc',
+        name: 'Báo cáo công tác TDTT định kỳ (Mẫu Nhà nước)',
+        enabled: true,
+        mode: 'state',
+        period: 'month',
+        recipient: 'vp_trungtam',
+        scheduleType: 'monthly',
+        dayOfMonth: 25,
+        timeOfDay: '08:00',
+        sendKpiSummary: true,
+        sendFullDocument: true,
+        lastSent: ''
+      },
+      {
+        id: 'sched-chibo',
+        name: 'Báo cáo nhiệm vụ Đảng viên (Mẫu Chi bộ)',
+        enabled: true,
+        mode: 'party',
+        period: 'quarter',
+        recipient: 'Chi bộ Trung tâm DVTH',
+        scheduleType: 'monthly',
+        dayOfMonth: 28,
+        timeOfDay: '08:30',
+        sendKpiSummary: true,
+        sendFullDocument: true,
+        lastSent: ''
+      }
+    ];
+
     /* ==============================================================================
        4. LOCAL STORAGE & APP STATE
        ============================================================================== */
@@ -452,15 +505,14 @@
       reportSubTab: 'document',
       activeReportId: 'rep-09',
 
-      // Telegram Auto-scheduler config
-      telegramConfig: lsGet('tk_telegram_config', {
-        enabled: false,
-        botToken: '',
-        chatId: '',
-        schedule: 'monthly_25', // 'monthly_25' | 'monthly_end' | 'quarter_end' | 'weekly_monday'
-        reportType: 'summary', // 'summary' | 'state' | 'party'
-        lastSent: ''
+      // Telegram Multi-Scheduler Engine
+      telegramSettings: lsGet('tk_telegram_settings', {
+        botToken: lsGet('tk_telegram_config', {})?.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA',
+        chatId: lsGet('tk_telegram_config', {})?.chatId || '6403485662'
       }),
+      telegramSchedules: lsGet('tk_telegram_schedules', INITIAL_TELEGRAM_SCHEDULES),
+      telegramModalTab: 'list',
+      editingScheduleId: null,
 
       // Tournament Filter State
       tournamentsFilter: {
@@ -473,14 +525,54 @@
       mobileDrawerOpen: false
     };
 
-    // Chuẩn hóa tự động tên Trần Quốc Được nếu localStorage cũ còn lưu tên sai
-    if (Array.isArray(state.savedReports)) {
-      state.savedReports.forEach(r => {
-        if (r.author && (r.author.includes('Đức') || r.author === 'Trần Quốc Đức')) {
-          r.author = 'Trần Quốc Được';
+    // Chuẩn hóa tự động tên Trần Quốc Được và phục hồi tiếng Việt nếu trình duyệt còn lưu dữ liệu cũ bị lỗi
+    function healDataEncoding() {
+      try {
+        let changed = false;
+        // 1. Chuẩn hóa họ tên tác giả Trần Quốc Được
+        if (Array.isArray(state.savedReports)) {
+          state.savedReports.forEach(r => {
+            if (!r.author || r.author.includes('Đức') || r.author.includes('?') || r.author !== 'Trần Quốc Được') {
+              r.author = 'Trần Quốc Được';
+              changed = true;
+            }
+          });
         }
-      });
+        // 2. Phục hồi các hoạt động bị lỗi font / ký tự hỏi chấm từ INITIAL_ACTIVITIES
+        if (Array.isArray(state.activities)) {
+          state.activities.forEach(a => {
+            const init = INITIAL_ACTIVITIES.find(ia => ia.id === a.id || ia.code === a.code);
+            if (init) {
+              if (/\?\s*ch|gi\?i|\?i\?n|lA'ng|Tr\?n|/.test(a.title || '') || /\?\s*ch|gi\?i|\?i\?n|lA'ng|Tr\?n|/.test(a.achievementNote || '')) {
+                a.title = init.title;
+                a.sport = init.sport;
+                a.location = init.location;
+                a.achievementNote = init.achievementNote;
+                changed = true;
+              }
+            }
+          });
+        }
+        // 3. Phục hồi các CLB nếu có chuỗi lỗi
+        if (Array.isArray(state.clubs)) {
+          state.clubs.forEach(c => {
+            const initC = INITIAL_CLUBS.find(ic => ic.id === c.id || ic.code === c.code);
+            if (initC && (/\?|/.test(c.name || '') || /\?|/.test(c.sport || ''))) {
+              c.name = initC.name;
+              c.sport = initC.sport;
+              c.location = initC.location;
+              changed = true;
+            }
+          });
+        }
+        if (changed) {
+          saveAll();
+        }
+      } catch (err) {
+        console.warn('Auto-healer note:', err);
+      }
     }
+    healDataEncoding();
 
     function getAvailableYears() {
       const yearsSet = new Set();
@@ -523,7 +615,8 @@
       lsSet('tk_rep_half', state.reportHalf);
       lsSet('tk_rep_year', state.reportYear);
       lsSet('tk_rep_recipient', state.reportRecipient);
-      lsSet('tk_telegram_config', state.telegramConfig);
+      lsSet('tk_telegram_settings', state.telegramSettings);
+      lsSet('tk_telegram_schedules', state.telegramSchedules);
       queueAutoSync();
     }
 
@@ -2196,6 +2289,9 @@
 
       let activeRep = state.savedReports.find(r => r.id === state.activeReportId) || state.savedReports[0];
 
+      const activeSchedCount = (state.telegramSchedules || []).filter(s => s.enabled).length;
+      const totalSchedCount = (state.telegramSchedules || []).length;
+
       return `
         <div class="space-y-6 tab-pane-animate">
           <!-- Header & Sub-Tab Switcher -->
@@ -2209,10 +2305,10 @@
 
             <!-- Sub Tabs & Telegram Config Button -->
             <div class="flex items-center gap-2 flex-wrap">
-              <button onclick="openTelegramConfigModal()" class="px-3.5 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramConfig?.enabled ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'} btn-press" title="Thiết lập lịch tự động gửi báo cáo qua Telegram">
-                <span class="material-symbols-outlined text-[16px] text-sky-500">send</span>
-                <span>Tự động gửi Telegram</span>
-                ${state.telegramConfig?.enabled ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
+              <button onclick="openTelegramConfigModal('list')" class="px-3.5 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeSchedCount > 0 ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'} btn-press" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
+                <span class="material-symbols-outlined text-[16px] text-sky-500">schedule_send</span>
+                <span>Lịch gửi Telegram (${activeSchedCount}/${totalSchedCount})</span>
+                ${activeSchedCount > 0 ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
               </button>
 
               <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -2244,7 +2340,7 @@
       renderApp();
     }
 
-    function renderReportDocumentView(rep, nextCode, availableYears) {
+        function renderReportDocumentView(rep, nextCode, availableYears) {
       const isParty = state.reportMode === 'party';
       const range = getReportRange();
       const list = getReportData();
@@ -2296,27 +2392,28 @@
                 </button>
               </div>
 
-              <!-- Segmented: Kỳ báo cáo -->
-              <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-x-auto max-w-full">
-                <button onclick="setReportFilter('reportPeriod', 'month')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'month' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Tháng</button>
-                <button onclick="setReportFilter('reportPeriod', 'quarter')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'quarter' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Quý</button>
-                <button onclick="setReportFilter('reportPeriod', 'half')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'half' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">6 Tháng</button>
-                <button onclick="setReportFilter('reportPeriod', 'nine')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'nine' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">9 Tháng</button>
-                <button onclick="setReportFilter('reportPeriod', 'year')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${state.reportPeriod === 'year' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Cả Năm</button>
+              <!-- Filter Selector: Kỳ báo cáo -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs">
+                  <button onclick="setReportFilter('reportPeriod', 'month')" class="px-2.5 py-1 rounded-xl font-bold transition-all ${state.reportPeriod === 'month' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Tháng</button>
+                  <button onclick="setReportFilter('reportPeriod', 'quarter')" class="px-2.5 py-1 rounded-xl font-bold transition-all ${state.reportPeriod === 'quarter' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Quý</button>
+                  <button onclick="setReportFilter('reportPeriod', 'half')" class="px-2.5 py-1 rounded-xl font-bold transition-all ${state.reportPeriod === 'half' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">6 Tháng</button>
+                  <button onclick="setReportFilter('reportPeriod', 'nine')" class="px-2.5 py-1 rounded-xl font-bold transition-all ${state.reportPeriod === 'nine' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">9 Tháng</button>
+                  <button onclick="setReportFilter('reportPeriod', 'year')" class="px-2.5 py-1 rounded-xl font-bold transition-all ${state.reportPeriod === 'year' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">Cả Năm</button>
+                </div>
               </div>
 
             </div>
 
-            <!-- Row 2: Bộ chọn chi tiết thời gian & Cơ quan nhận báo cáo -->
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div class="flex flex-wrap items-center gap-3">
-                
-                <!-- Dynamic Sub Selector for Month / Quarter / Half -->
+            <!-- Row 2: Bộ chọn chi tiết (Tháng/Quý/Năm) & Cơ quan nhận báo cáo -->
+            <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+              
+              <div class="flex items-center gap-2 flex-wrap">
                 ${state.reportPeriod === 'month' ? `
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-500">Chọn tháng:</span>
-                    <select onchange="setReportFilter('reportMonth', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
-                      ${[1,2,3,4,5,6,7,8,9,10,11,12].map(m => `
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-slate-500">Tháng:</span>
+                    <select onchange="setReportFilter('reportMonth', parseInt(this.value))" class="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-brand-700 dark:text-brand-400">
+                      ${Array.from({length: 12}, (_, i) => i + 1).map(m => `
                         <option value="${m}" ${state.reportMonth === m ? 'selected' : ''}>Tháng ${m}</option>
                       `).join('')}
                     </select>
@@ -2324,65 +2421,55 @@
                 ` : ''}
 
                 ${state.reportPeriod === 'quarter' ? `
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-500">Chọn quý:</span>
-                    <select onchange="setReportFilter('reportQuarter', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
-                      <option value="1" ${state.reportQuarter === 1 ? 'selected' : ''}>Quý I (T1 - T3)</option>
-                      <option value="2" ${state.reportQuarter === 2 ? 'selected' : ''}>Quý II (T4 - T6)</option>
-                      <option value="3" ${state.reportQuarter === 3 ? 'selected' : ''}>Quý III (T7 - T9)</option>
-                      <option value="4" ${state.reportQuarter === 4 ? 'selected' : ''}>Quý IV (T10 - T12)</option>
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-slate-500">Quý:</span>
+                    <select onchange="setReportFilter('reportQuarter', parseInt(this.value))" class="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-brand-700 dark:text-brand-400">
+                      <option value="1" ${state.reportQuarter === 1 ? 'selected' : ''}>Quý I (Tháng 1-3)</option>
+                      <option value="2" ${state.reportQuarter === 2 ? 'selected' : ''}>Quý II (Tháng 4-6)</option>
+                      <option value="3" ${state.reportQuarter === 3 ? 'selected' : ''}>Quý III (Tháng 7-9)</option>
+                      <option value="4" ${state.reportQuarter === 4 ? 'selected' : ''}>Quý IV (Tháng 10-12)</option>
                     </select>
                   </div>
                 ` : ''}
 
                 ${state.reportPeriod === 'half' ? `
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-500">Kỳ 6 tháng:</span>
-                    <select onchange="setReportFilter('reportHalf', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
-                      <option value="1" ${state.reportHalf === 1 ? 'selected' : ''}>6 tháng đầu năm (T1 - T6)</option>
-                      <option value="2" ${state.reportHalf === 2 ? 'selected' : ''}>6 tháng cuối năm (T7 - T12)</option>
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-slate-500">Giai đoạn:</span>
+                    <select onchange="setReportFilter('reportHalf', parseInt(this.value))" class="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-brand-700 dark:text-brand-400">
+                      <option value="1" ${state.reportHalf === 1 ? 'selected' : ''}>6 tháng đầu năm (Tháng 1-6)</option>
+                      <option value="2" ${state.reportHalf === 2 ? 'selected' : ''}>6 tháng cuối năm (Tháng 7-12)</option>
                     </select>
                   </div>
                 ` : ''}
 
-                <!-- Chọn Năm -->
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-500">Năm:</span>
-                  <select onchange="setReportFilter('reportYear', parseInt(this.value))" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer font-mono">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-slate-500">Năm:</span>
+                  <select onchange="setReportFilter('reportYear', parseInt(this.value))" class="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
                     ${availableYears.map(y => `
-                      <option value="${y}" ${String(state.reportYear) === String(y) ? 'selected' : ''}>Năm ${y}</option>
+                      <option value="${y}" ${state.reportYear === y ? 'selected' : ''}>${y}</option>
                     `).join('')}
                   </select>
                 </div>
 
-                <!-- Chọn Cơ quan nhận báo cáo (chỉ hiện khi ở Mẫu Nhà nước) -->
+                <!-- Đơn vị nhận báo cáo (chỉ hiển thị khi ở chế độ Nhà nước) -->
                 ${!isParty ? `
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-500">Gửi đến:</span>
-                    <select onchange="setReportFilter('reportRecipient', this.value)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer text-brand-700 dark:text-brand-400">
-                      <option value="vp_trungtam" ${state.reportRecipient === 'vp_trungtam' ? 'selected' : ''}>Văn phòng Trung tâm DVTH</option>
+                  <div class="flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-700">
+                    <span class="font-bold text-slate-500">Gửi đến:</span>
+                    <select onchange="setReportFilter('reportRecipient', this.value)" class="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium">
+                      <option value="vp_trungtam" ${state.reportRecipient === 'vp_trungtam' ? 'selected' : ''}>Văn phòng Trung tâm Dịch vụ Tổng hợp</option>
                       <option value="phong_vanhoa" ${state.reportRecipient === 'phong_vanhoa' ? 'selected' : ''}>Phòng Văn hóa và Thông tin</option>
                     </select>
                   </div>
-                ` : `
-                  <div class="flex items-center gap-1.5 text-xs font-bold text-red-700 dark:text-red-400">
-                    <span class="material-symbols-outlined text-[15px]">send</span>
-                    <span>Gửi: Chi bộ Trung tâm Dịch vụ Tổng hợp</span>
-                  </div>
-                `}
-
-                <span class="text-xs font-mono text-slate-400 hidden lg:inline">
-                  (Từ ${formatDateVN(range.startDate)} đến ${formatDateVN(range.endDate)})
-                </span>
+                ` : ''}
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex items-center gap-2 flex-wrap">
-                <button onclick="saveCurrentReportToRegistry()" class="px-3 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1.5 btn-press" title="Lưu số hiệu văn bản này vào Sổ lưu trữ">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button onclick="saveCurrentReportAsNew()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Lưu báo cáo vào Sổ lưu trữ">
                   <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
                   <span>Lưu vào Sổ</span>
                 </button>
-                <button onclick="exportDocxFile()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Tải file Word .doc chuẩn thể thức A4">
+                <button onclick="exportDocxFile()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Xuất văn bản Word chuẩn thể thức Times New Roman, A4">
                   <span class="material-symbols-outlined text-[16px]">article</span>
                   <span>Xuất file Word</span>
                 </button>
@@ -2400,8 +2487,8 @@
 
           </div>
 
-          <!-- Official Administrative Document Container (Times New Roman, A4 Standard) -->
-          <div class="print-container bg-white text-black p-8 sm:p-14 rounded-3xl shadow-xl border border-slate-200 font-serif leading-relaxed text-sm max-w-4xl mx-auto">
+          <!-- Official Administrative Document Container (Times New Roman, A4 Standard, Crisp Typography) -->
+          <div id="reportDocumentContent" class="print-container admin-doc-paper bg-white text-slate-900 p-8 sm:p-14 rounded-3xl shadow-xl border border-slate-200 leading-relaxed text-[14px] max-w-4xl mx-auto">
             
             ${isParty ? `
               <!-- LETTERHEAD MẪU CHI BỘ -->
@@ -2427,7 +2514,7 @@
               </div>
 
               <!-- Kính gửi & Thông tin Đảng viên -->
-              <div class="mb-5 text-xs space-y-1">
+              <div class="mb-5 text-[13.5px] space-y-1">
                 <p>Kính gửi: <b>Chi bộ Trung tâm Dịch vụ Tổng hợp phường Tân Khai</b></p>
                 <p>Họ và tên đảng viên: <b>Trần Quốc Được</b></p>
                 <p>Chức vụ Đảng: <b>Đảng viên</b></p>
@@ -2437,8 +2524,8 @@
                 </p>
               </div>
 
-              <!-- Nội dung Báo cáo Chi bộ -->
-              <div class="space-y-4 text-xs text-justify">
+              <!-- Nội dung Báo cáo Chi bộ (Đã tối ưu, bỏ phần CSVC sân bãi & kinh phí không cần thiết) -->
+              <div class="space-y-4 text-[13.5px] leading-relaxed text-justify">
                 <div>
                   <h4 class="font-bold text-slate-900 uppercase">I. TƯ TƯỞNG CHÍNH TRỊ, ĐẠO ĐỨC LỐI SỐNG VÀ Ý THỨC KỶ LUẬT</h4>
                   <p class="mt-1">
@@ -2458,18 +2545,13 @@
                   <div class="pl-3 mt-2 space-y-2 border-l-2 border-slate-200">
                     <p class="font-bold text-slate-800">1. Công tác tổ chức các hoạt động TDTT tại cơ sở (Cấp phường):</p>
                     ${sec1.length ? sec1.map(a => `
-                      <p class="text-[11px]">• Giải/hoạt động: <b>${a.title}</b> (Ngày ${a.date}) - Quy mô: <b>${a.participants} VĐV</b>. ${a.achievementNote ? `Ghi chú: <i>${a.achievementNote}</i>` : ''}</p>
-                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Trong kỳ không có hoạt động mới phát sinh ở mục này.</p>'}
+                      <p class="text-[13px]">• Giải/hoạt động: <b>${a.title}</b> (Ngày ${a.date}) - Quy mô: <b>${a.participants} VĐV</b>. ${a.achievementNote ? `Ghi chú: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[13px] italic text-slate-500">• Trong kỳ không có hoạt động mới phát sinh ở mục này.</p>'}
 
                     <p class="font-bold text-slate-800 pt-1">2. Công tác TDTT thanh thiếu nhi & tham gia các giải Đại hội (Cấp thành phố):</p>
                     ${sec2.length ? sec2.map(a => `
-                      <p class="text-[11px]">• Tham gia giải: <b>${a.title}</b> (Ngày ${a.date}) - VĐV: <b>${a.participants}</b> - Đạt: <b>${a.totalMedals} HC</b> (${a.goldMedals || 0}V, ${a.silverMedals || 0}B, ${a.bronzeMedals || 0}Đ). ${a.achievementNote ? `Điểm nhấn: <i>${a.achievementNote}</i>` : ''}</p>
-                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Duy trì tập luyện, chuẩn bị lực lượng cho các giải thi đấu sắp tới.</p>'}
-
-                    <p class="font-bold text-slate-800 pt-1">3. Công tác phối hợp, quản lý CLB và cơ sở vật chất sân bãi:</p>
-                    <p class="text-[11px]">
-                      • Phối hợp tốt với các đoàn thể, duy trì nền nếp tập luyện tại 5 CLB cơ sở (Dưỡng sinh, Bóng đá, Cầu lông, Pickleball, Cờ tướng); quản lý an toàn hệ thống sân bãi, nhà thi đấu và hồ bơi.
-                    </p>
+                      <p class="text-[13px]">• Tham gia giải: <b>${a.title}</b> (Ngày ${a.date}) - VĐV: <b>${a.participants}</b> - Đạt: <b>${a.totalMedals} HC</b> (${a.goldMedals || 0}V, ${a.silverMedals || 0}B, ${a.bronzeMedals || 0}Đ). ${a.achievementNote ? `Điểm nhấn: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[13px] italic text-slate-500">• Duy trì tập luyện, chuẩn bị lực lượng cho các giải thi đấu sắp tới.</p>'}
                   </div>
                 </div>
 
@@ -2486,8 +2568,8 @@
                   </p>
                 </div>
 
-                <p class="pt-2 text-justify indent-8">
-                  Trên đây là báo cáo kết quả thực hiện nhiệm vụ đảng viên ${periodSubtitle} của bản thân. Kính báo cáo Chi bộ xem xét, theo dõi và góp ý để bản thân tiếp tục thực hiện tốt nhiệm vụ được giao.
+                <p class="pt-3 text-justify indent-8">
+                  Trên đây là báo cáo kết quả thực hiện nhiệm vụ đảng viên ${periodSubtitle} của bản thân. Kính báo cáo Chi bộ Trung tâm Dịch vụ Tổng hợp xem xét, theo dõi và tổng hợp.
                 </p>
               </div>
 
@@ -2528,7 +2610,7 @@
               </div>
 
               <!-- Kính gửi (Chuẩn: gửi Văn phòng Trung tâm / Phòng Văn hóa, không gửi thẳng UBND) -->
-              <div class="mb-5 text-xs space-y-1">
+              <div class="mb-5 text-[13.5px] space-y-1">
                 <p>Kính gửi: <b>${recipientText}</b></p>
                 <p>Họ và tên người báo cáo: <b>Trần Quốc Được</b></p>
                 <p>Chức danh / Vị trí: <b>Cán bộ phụ trách Thể dục thể thao</b></p>
@@ -2538,17 +2620,17 @@
                 </p>
               </div>
 
-              <!-- Nội dung Báo cáo Nhà nước -->
-              <div class="space-y-4 text-xs text-justify">
+              <!-- Nội dung Báo cáo Nhà nước (Đã bỏ phần CSVC sân bãi & kinh phí không cần thiết) -->
+              <div class="space-y-4 text-[13.5px] leading-relaxed text-justify">
                 <div>
                   <h4 class="font-bold text-slate-900 uppercase">I. CÔNG TÁC TỔ CHỨC CÁC HOẠT ĐỘNG THỂ DỤC THỂ THAO CẤP PHƯỜNG</h4>
                   <p class="mt-1">
                     Trong ${periodSubtitle}, Bộ phận TDTT đã chủ động tham mưu và phối hợp tổ chức tốt các hoạt động thể thao quần chúng trên địa bàn:
                   </p>
-                  <div class="pl-3 mt-1.5 space-y-1 border-l-2 border-slate-200">
+                  <div class="pl-3 mt-1.5 space-y-1.5 border-l-2 border-slate-200">
                     ${sec1.length ? sec1.map(a => `
-                      <p class="text-[11px]">• <b>${a.title}</b> (Ngày ${a.date}) tại ${a.location}: Quy mô <b>${a.participants} ${a.participantsUnit || 'VĐV'}</b> tham gia sôi nổi. ${a.achievementNote ? `Kết quả: <i>${a.achievementNote}</i>` : ''}</p>
-                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Trong kỳ duy trì hoạt động rèn luyện thường xuyên của nhân dân tại các khu phố.</p>'}
+                      <p class="text-[13px]">• <b>${a.title}</b> (Ngày ${a.date}) tại ${a.location}: Quy mô <b>${a.participants} ${a.participantsUnit || 'VĐV'}</b> tham gia sôi nổi. ${a.achievementNote ? `Kết quả: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[13px] italic text-slate-500">• Trong kỳ duy trì hoạt động rèn luyện thường xuyên của nhân dân tại các khu phố.</p>'}
                   </div>
                 </div>
 
@@ -2557,43 +2639,30 @@
                   <p class="mt-1">
                     Tập trung tuyển chọn, tập huấn các đội tuyển thế mạnh đại diện tham gia các giải thể thao cấp thành phố và khu vực:
                   </p>
-                  <div class="pl-3 mt-1.5 space-y-1 border-l-2 border-slate-200">
+                  <div class="pl-3 mt-1.5 space-y-1.5 border-l-2 border-slate-200">
                     ${sec2.length ? sec2.map(a => `
-                      <p class="text-[11px]">• Tham gia <b>${a.title}</b> (Ngày ${a.date}): Đoàn gồm <b>${a.participants} VĐV</b>, đạt thành tích xuất sắc <b>${a.totalMedals} huy chương</b> (${a.goldMedals || 0} Vàng, ${a.silverMedals || 0} Bạc, ${a.bronzeMedals || 0} Đồng). ${a.achievementNote ? `Điểm nhấn: <i>${a.achievementNote}</i>` : ''}</p>
-                    `).join('') : '<p class="text-[11px] italic text-slate-500">• Chuẩn bị lực lượng thanh thiếu nhi sẵn sàng tham gia các đợt thi đấu trong năm.</p>'}
+                      <p class="text-[13px]">• Tham gia <b>${a.title}</b> (Ngày ${a.date}): Đoàn gồm <b>${a.participants} VĐV</b>, đạt thành tích xuất sắc <b>${a.totalMedals} huy chương</b> (${a.goldMedals || 0} Vàng, ${a.silverMedals || 0} Bạc, ${a.bronzeMedals || 0} Đồng). ${a.achievementNote ? `Điểm nhấn: <i>${a.achievementNote}</i>` : ''}</p>
+                    `).join('') : '<p class="text-[13px] italic text-slate-500">• Chuẩn bị lực lượng thanh thiếu nhi sẵn sàng tham gia các đợt thi đấu trong năm.</p>'}
                   </div>
                   ${totalMedals > 0 ? `
-                    <p class="mt-2 text-slate-700 font-semibold bg-amber-50 p-2 rounded-lg border border-amber-200 text-[11px]">
+                    <p class="mt-2 text-slate-800 font-semibold bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[12.5px]">
                       ★ Tổng thành tích đạt được trong kỳ: <b>${totalMedals} huy chương các loại</b> (${totalGold} HCV, ${totalSilver} HCB, ${totalBronze} HCĐ).
                     </p>
                   ` : ''}
                 </div>
 
                 <div>
-                  <h4 class="font-bold text-slate-900 uppercase">III. CÔNG TÁC QUẢN LÝ CÂU LẠC BỘ, CƠ SỞ VẬT CHẤT & KINH PHÍ</h4>
-                  <p class="mt-1">
-                    - <b>Mạng lưới CLB:</b> Duy trì hoạt động ổn định của 5 CLB thể thao nòng cốt (Bóng đá, Cầu lông, Pickleball, Dưỡng sinh, Cờ tướng), tạo sân chơi rèn luyện sức khỏe thường xuyên cho nhân dân.
-                  </p>
-                  <p class="mt-1">
-                    - <b>Cơ sở vật chất:</b> Thường xuyên kiểm tra hiện trạng Sân vận động, Nhà thi đấu đa năng, Cụm sân Pickleball và Hồ bơi công cộng đảm bảo an toàn tuyệt đối cho người tham gia tập luyện.
-                  </p>
-                  <p class="mt-1">
-                    - <b>Giải ngân kinh phí:</b> Tổng kinh phí giải ngân phục vụ công tác tổ chức, mua sắm giải thưởng và khen thưởng trong kỳ là <b>${totalBudget.toLocaleString('vi-VN')} đồng</b>. Toàn bộ chứng từ, bảng kê quyết toán đã được hoàn thiện đúng quy định.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 class="font-bold text-slate-900 uppercase">IV. ĐÁNH GIÁ CHUNG VÀ PHƯƠNG HƯỚNG KỲ TỚI</h4>
+                  <h4 class="font-bold text-slate-900 uppercase">III. ĐÁNH GIÁ CHUNG VÀ PHƯƠNG HƯỚNG KỲ TỚI</h4>
                   <p class="mt-1">
                     - Nhìn chung công tác TDTT trong kỳ đã bám sát kế hoạch đề ra, phong trào quần chúng tiếp tục lan tỏa sâu rộng, chất lượng chuyên môn tại các giải thi đấu được nâng lên rõ rệt.
                   </p>
                   <p class="mt-1">
-                    - Thời gian tới, Bộ phận TDTT tiếp tục duy trì luyện tập, tổ chức các giải phong trào và quản lý khai thác hiệu quả cơ sở vật chất thể thao hiện có.
+                    - Thời gian tới, Bộ phận TDTT tiếp tục duy trì luyện tập, tổ chức các giải phong trào và triển khai hiệu quả nhiệm vụ được phân công.
                   </p>
                 </div>
 
-                <p class="pt-2 text-justify indent-8">
-                  Kính báo cáo Văn phòng Trung tâm Dịch vụ Tổng hợp xem xét, tổng hợp vào báo cáo chung của đơn vị.
+                <p class="pt-3 text-justify indent-8">
+                  Kính báo cáo ${recipientText} xem xét, theo dõi và tổng hợp.
                 </p>
               </div>
 
@@ -2616,12 +2685,58 @@
       `;
     }
 
-    function buildReportHTMLForWord() {
-      const isParty = state.reportMode === 'party';
-      const range = getReportRange();
-      const list = getReportData();
-      const periodTitle = getPeriodTitle();
-      const periodSubtitle = getPeriodSubtitle();
+    function buildReportHTMLForWord(opts = {}) {
+      const isParty = (opts.mode || state.reportMode) === 'party';
+      let range = opts.range;
+      let list = opts.list;
+      let periodTitle = opts.periodTitle;
+      let periodSubtitle = opts.periodSubtitle;
+
+      if (!range) {
+        if (opts.period) {
+          const year = opts.year || state.reportYear || new Date().getFullYear();
+          let startM = 1, endM = 12;
+          const today = new Date();
+          if (opts.period === 'month') {
+            const curM = opts.month || (today.getMonth() + 1);
+            startM = curM; endM = curM;
+            periodTitle = `THÁNG ${curM} NĂM ${year}`;
+            periodSubtitle = `tháng ${curM} năm ${year}`;
+          } else if (opts.period === 'quarter') {
+            const q = opts.quarter || (Math.floor(today.getMonth() / 3) + 1);
+            startM = (q - 1) * 3 + 1; endM = startM + 2;
+            const roman = ['I', 'II', 'III', 'IV'][q - 1];
+            periodTitle = `QUÝ ${roman} NĂM ${year}`;
+            periodSubtitle = `quý ${roman} năm ${year}`;
+          } else if (opts.period === 'half') {
+            const h = opts.half || (today.getMonth() < 6 ? 1 : 2);
+            startM = h === 1 ? 1 : 7; endM = h === 1 ? 6 : 12;
+            periodTitle = (h === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + year;
+            periodSubtitle = (h === 1 ? '6 tháng đầu năm ' : '6 tháng cuối năm ') + year;
+          } else if (opts.period === 'nine') {
+            startM = 1; endM = 9;
+            periodTitle = `9 THÁNG ĐẦU NĂM ${year}`;
+            periodSubtitle = `9 tháng đầu năm ${year}`;
+          } else {
+            periodTitle = `NĂM ${year}`;
+            periodSubtitle = `năm ${year}`;
+          }
+          range = {
+            startDate: new Date(year, startM - 1, 1),
+            endDate: new Date(year, endM, 0)
+          };
+          list = state.activities.filter(a => {
+            const d = parseDateVN(a.date);
+            return d && d >= range.startDate && d <= range.endDate;
+          });
+          list = sortActivitiesByLatest(list);
+        } else {
+          range = getReportRange();
+          list = getReportData();
+          periodTitle = getPeriodTitle();
+          periodSubtitle = getPeriodSubtitle();
+        }
+      }
 
       const totalActs = list.length;
       const totalParticipants = list.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
@@ -2634,10 +2749,11 @@
       const sec1 = list.filter(a => a.category === 'Cấp phường');
       const sec2 = list.filter(a => a.category === 'Cấp thành phố');
 
+      const recipientParam = opts.recipient || state.reportRecipient;
       let recipientText = 'Văn phòng Trung tâm Dịch vụ Tổng hợp phường Tân Khai';
       if (isParty) {
         recipientText = 'Chi bộ Trung tâm Dịch vụ Tổng hợp phường Tân Khai';
-      } else if (state.reportRecipient === 'phong_vanhoa') {
+      } else if (recipientParam === 'phong_vanhoa') {
         recipientText = 'Phòng Văn hóa và Thông tin';
       }
 
@@ -2691,8 +2807,8 @@
   <title>Báo Cáo ${isParty ? 'Chi Bộ' : 'TDTT'} - ${periodTitle}</title>
   <style>
     @page { size: A4 portrait; margin: 20mm 20mm 20mm 30mm; }
-    body { font-family: 'Times New Roman', Times, serif; font-size: 14pt; line-height: 1.5; color: #000; background: #fff; margin: 0; padding: 20px; }
-    p { margin: 6px 0; line-height: 1.5; text-align: justify; }
+    body { font-family: 'Times New Roman', Times, serif; font-size: 14pt; line-height: 1.55; color: #000; background: #fff; margin: 0; padding: 20px; }
+    p { margin: 6px 0; line-height: 1.55; text-align: justify; }
     .title { text-align: center; font-size: 15pt; font-weight: bold; margin: 18px 0 4px 0; }
     .subtitle { text-align: center; font-size: 13pt; font-style: italic; margin-bottom: 16px; }
     .section-title { font-weight: bold; margin-top: 14px; margin-bottom: 4px; }
@@ -2725,13 +2841,12 @@
   `).join('') : '<p style="margin-left: 20px; font-style: italic;">• Chuẩn bị lực lượng thanh thiếu nhi sẵn sàng tham gia các giải sắp tới.</p>'}
   ${totalMedals > 0 ? `<p style="margin-left: 20px;"><b>Tổng thành tích trong kỳ:</b> Đạt ${totalMedals} huy chương các loại (${totalGold} HCV, ${totalSilver} HCB, ${totalBronze} HCĐ).</p>` : ''}
 
-  <p class="section-title">3. Công tác quản lý câu lạc bộ, cơ sở vật chất sân bãi và kinh phí</p>
-  <p style="margin-left: 20px;">- Duy trì sinh hoạt định kỳ của 5 câu lạc bộ TDTT trực thuộc.</p>
-  <p style="margin-left: 20px;">- Quản lý, khai thác an toàn các sân bãi, hồ bơi và nhà thi đấu trên địa bàn phường.</p>
-  <p style="margin-left: 20px;">- Tổng kinh phí giải ngân phục vụ công tác tổ chức và khen thưởng trong kỳ: <b>${totalBudget.toLocaleString('vi-VN')} đồng</b> (hồ sơ quyết toán đầy đủ theo quy định).</p>
+  <p class="section-title">3. Đánh giá chung và phương hướng kỳ tới</p>
+  <p style="margin-left: 20px;">- Nhìn chung công tác TDTT trong kỳ đã bám sát kế hoạch đề ra, phong trào thể thao quần chúng tiếp tục lan tỏa sâu rộng, chất lượng chuyên môn tại các giải đấu được nâng lên rõ rệt.</p>
+  <p style="margin-left: 20px;">- Thời gian tới, Bộ phận TDTT tiếp tục duy trì luyện tập, tổ chức các giải phong trào và triển khai hiệu quả nhiệm vụ được giao.</p>
 
   <p class="indent" style="margin-top: 16px;">
-    Trên đây là báo cáo kết quả thực hiện nhiệm vụ ${periodSubtitle} của bản thân. Kính báo cáo ${recipientText} xem xét, theo dõi và chỉ đạo.
+    Kính báo cáo ${recipientText} xem xét, theo dõi và tổng hợp.
   </p>
 
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:35px;page-break-inside:avoid;">
@@ -2748,6 +2863,7 @@
 </body>
 </html>`;
     }
+
 
     function exportDocxFile() {
       const html = buildReportHTMLForWord();
@@ -2884,94 +3000,389 @@
       saveCurrentReportToRegistry();
     }
 
-    /* ==============================================================================
-       MODAL: CẤU HÌNH TỰ ĐỘNG GỬI BÁO CÁO QUA TELEGRAM BOT
+        /* ==============================================================================
+       QUẢN LÝ LỊCH VÀ CẤU HÌNH TỰ ĐỘNG GỬI BÁO CÁO QUA TELEGRAM BOT
+       (Multi-Scheduler Engine: Quản lý nhiều cấu hình, tự do chọn ngày 1-31, gửi KPI + File Word)
        ============================================================================== */
-    function openTelegramConfigModal() {
-      const cfg = state.telegramConfig || { enabled: false, botToken: '', chatId: '', schedule: 'monthly_25', reportType: 'summary' };
+
+    function openTelegramConfigModal(tab = 'list') {
+      state.telegramModalTab = tab || 'list';
+      const schedules = state.telegramSchedules || [];
+      const activeCount = schedules.filter(s => s.enabled).length;
+      const totalCount = schedules.length;
+      const settings = state.telegramSettings || {
+        botToken: '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA',
+        chatId: '6403485662'
+      };
+
+      // Đóng modal cũ nếu đang mở
+      const oldModal = document.getElementById('modalContainer');
+      if (oldModal) oldModal.remove();
+
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
-      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 flex items-center justify-center">
-                <span class="material-symbols-outlined text-[18px]">send</span>
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[90vh] flex flex-col modal-animate text-left">
+          
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 shrink-0">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">schedule_send</span>
               </div>
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Thiết Lập Tự Động Gửi Báo Cáo (Telegram)</h3>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>Quản Lý Lịch Gửi Báo Cáo Telegram</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${activeCount > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}">
+                    ${activeCount}/${totalCount} đang chạy
+                  </span>
+                </h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tự động tổng hợp số liệu KPI và đính kèm file báo cáo Word (.doc) gửi thẳng vào Telegram</p>
+              </div>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="closeModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-[20px]">close</span></button>
           </div>
 
-          <form onsubmit="handleSaveTelegramConfig(event)" class="mt-4 space-y-3.5 text-xs">
+          <!-- Navigation Tabs -->
+          <div class="flex items-center justify-between gap-2 mt-3.5 pb-2 border-b border-slate-100 dark:border-slate-800/80 shrink-0">
+            <div class="flex items-center gap-1.5">
+              <button onclick="switchTelegramModalTab('list')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'list' ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-700'}">
+                <span class="material-symbols-outlined text-[16px]">list_alt</span>
+                <span>Danh sách cấu hình (${totalCount})</span>
+              </button>
+              <button onclick="switchTelegramModalTab('settings')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'settings' ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-700'}">
+                <span class="material-symbols-outlined text-[16px]">key</span>
+                <span>Cài đặt Bot & Chat ID</span>
+              </button>
+            </div>
+
+            ${state.telegramModalTab === 'list' ? `
+              <button onclick="openEditScheduleModal()" class="px-3 py-1.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1 cursor-pointer btn-press">
+                <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                <span>Thêm cấu hình mới</span>
+              </button>
+            ` : ''}
+          </div>
+
+          <!-- Tab Content Body (Scrollable) -->
+          <div class="mt-3.5 overflow-y-auto flex-1 pr-1 space-y-3.5 text-xs text-left">
+            ${state.telegramModalTab === 'list' ? renderTelegramSchedulesListHtml(schedules) : renderTelegramSettingsFormHtml(settings)}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function switchTelegramModalTab(tab) {
+      state.telegramModalTab = tab;
+      const modal = document.getElementById('modalContainer');
+      if (modal) {
+        modal.remove();
+        openTelegramConfigModal(tab);
+      }
+    }
+
+    function renderTelegramSchedulesListHtml(schedules) {
+      if (!schedules || schedules.length === 0) {
+        return `
+          <div class="p-8 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+            <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">schedule_send</span>
+            <p class="font-bold text-slate-700 dark:text-slate-300">Chưa có cấu hình gửi báo cáo nào</p>
+            <p class="text-xs text-slate-400 mt-1 mb-4">Bạn có thể tạo cấu hình mới hoặc khôi phục 2 cấu hình mẫu (Nhà nước và Chi bộ)</p>
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="restoreDefaultTelegramSchedules()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl btn-press">
+                Khôi phục 2 cấu hình mẫu
+              </button>
+              <button onclick="openEditScheduleModal()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl btn-press">
+                + Thêm cấu hình mới
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="space-y-3">
+          ${schedules.map((s) => {
+            const isParty = s.mode === 'party';
+            const periodLabel = s.period === 'quarter' ? 'Hàng Quý' : (s.period === 'half' ? '6 Tháng' : (s.period === 'nine' ? '9 Tháng' : (s.period === 'year' ? 'Hàng Năm' : 'Hàng Tháng')));
+            const timingText = s.scheduleType === 'weekly' 
+              ? `Thứ ${s.dayOfWeek || 2} hàng tuần lúc ${s.timeOfDay || '08:00'}`
+              : (s.scheduleType === 'quarterly' 
+                ? `Ngày ${s.dayOfMonth || 28} cuối Quý lúc ${s.timeOfDay || '08:00'}`
+                : `Ngày ${s.dayOfMonth || 25} hàng tháng lúc ${s.timeOfDay || '08:00'}`);
             
-            <!-- Bật / Tắt gửi tự động -->
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <div>
-                <span class="font-bold text-slate-900 dark:text-white block">Tự động gửi báo cáo định kỳ</span>
-                <span class="text-[11px] text-slate-500">Google Apps Script sẽ tự động kích hoạt gửi đến Telegram của anh Được</span>
+            let recipientName = 'Văn phòng Trung tâm DVTH';
+            if (isParty || s.recipient === 'Chi bộ Trung tâm DVTH') {
+              recipientName = 'Chi bộ Trung tâm DVTH';
+            } else if (s.recipient === 'phong_vanhoa') {
+              recipientName = 'Phòng Văn hóa và Thông tin';
+            }
+
+            return `
+              <div class="p-4 rounded-2xl glass-card border ${s.enabled ? 'border-sky-300/80 dark:border-sky-900/60 bg-sky-50/20 dark:bg-sky-950/10' : 'border-slate-200 dark:border-slate-800 opacity-75'} shadow-sm transition-all">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-start gap-3">
+                    <label class="relative inline-flex items-center cursor-pointer mt-0.5 shrink-0" title="${s.enabled ? 'Bấm để tắt cấu hình này' : 'Bấm để bật cấu hình này'}">
+                      <input type="checkbox" ${s.enabled ? 'checked' : ''} onchange="toggleTelegramSchedule('${s.id}')" class="sr-only peer">
+                      <div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+
+                    <div>
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="font-bold text-slate-900 dark:text-white text-xs">${s.name}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isParty ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300' : 'bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300'}">
+                          ${isParty ? '⭐ Mẫu Chi bộ' : '🏛️ Mẫu Nhà nước'}
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          ${periodLabel}
+                        </span>
+                      </div>
+
+                      <div class="mt-1.5 flex items-center gap-2 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+                        <span class="flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[14px] text-sky-500">alarm</span>
+                          <span>${timingText}</span>
+                        </span>
+                        <span>•</span>
+                        <span class="flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[14px] text-brand-600">domain</span>
+                          <span>Nơi nhận: <b>${recipientName}</b></span>
+                        </span>
+                      </div>
+
+                      <div class="mt-2 flex items-center gap-1.5 flex-wrap">
+                        <span class="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-900/50">
+                          <span class="material-symbols-outlined text-[12px]">analytics</span>
+                          <span>Số liệu KPI</span>
+                        </span>
+                        <span class="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 flex items-center gap-1 border border-blue-200/50 dark:border-blue-900/50">
+                          <span class="material-symbols-outlined text-[12px]">description</span>
+                          <span>Kèm File Word (.doc)</span>
+                        </span>
+                        ${s.lastSent ? `
+                          <span class="text-[10px] text-slate-400 italic">Gửi lần cuối: ${s.lastSent}</span>
+                        ` : `
+                          <span class="text-[10px] text-slate-400 italic">Chưa gửi lần nào</span>
+                        `}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Actions -->
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button onclick="executeTelegramSchedule('${s.id}', true)" title="Gửi thử ngay báo cáo này vào Telegram" class="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold text-xs flex items-center gap-1 border border-sky-200 dark:border-sky-800 btn-press">
+                      <span class="material-symbols-outlined text-[15px]">send</span>
+                      <span class="hidden sm:inline">Gửi thử ngay</span>
+                    </button>
+                    <button onclick="openEditScheduleModal('${s.id}')" title="Chỉnh sửa cấu hình" class="p-1.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 btn-press">
+                      <span class="material-symbols-outlined text-[16px]">edit</span>
+                    </button>
+                    <button onclick="deleteTelegramSchedule('${s.id}')" title="Xóa cấu hình này" class="p-1.5 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 btn-press">
+                      <span class="material-symbols-outlined text-[16px]">delete</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input id="tg_enabled" type="checkbox" ${cfg.enabled ? 'checked' : ''} class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderTelegramSettingsFormHtml(settings) {
+      return `
+        <form onsubmit="handleSaveTelegramSettings(event)" class="space-y-3.5">
+          <div>
+            <label class="block font-bold mb-1 text-slate-800 dark:text-slate-200">Telegram Bot Token <span class="text-rose-500">*</span></label>
+            <input id="tg_bot_token" type="text" required placeholder="Ví dụ: 9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA" value="${settings.botToken || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs text-slate-900 dark:text-white" />
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Mã token được cấp từ @BotFather khi tạo con Bot.</span>
+          </div>
+
+          <div>
+            <label class="block font-bold mb-1 text-slate-800 dark:text-slate-200">Telegram Chat ID của anh Trần Quốc Được <span class="text-rose-500">*</span></label>
+            <input id="tg_chat_id" type="text" required placeholder="Ví dụ: 6403485662" value="${settings.chatId || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs text-slate-900 dark:text-white" />
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Chat ID cá nhân của anh Được (xem bằng bot @userinfobot).</span>
+          </div>
+
+          <!-- Hướng dẫn chi tiết -->
+          <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800/60 space-y-1.5 text-[11px] leading-relaxed">
+            <p class="font-bold flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300">
+              <span class="material-symbols-outlined text-[16px]">info</span>
+              <span>LƯU Ý QUAN TRỌNG ĐỂ BOT GỬI ĐƯỢC TIN NHẮN & FILE:</span>
+            </p>
+            <p>1. <b>Mở cuộc trò chuyện với con Bot của anh</b> trên ứng dụng Telegram và bấm nút <b>START</b> (Bắt đầu). Telegram có cơ chế bảo mật: Nếu chưa bấm Start, Bot sẽ báo lỗi <i>"Bad Request: chat not found"</i>.</p>
+            <p>2. Dán đúng <b>Bot Token</b> và <b>Chat ID</b> rồi bấm nút <b>Kiểm tra kết nối Bot</b> bên dưới để thử nghiệm nhận tin nhắn ngay!</p>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between gap-2">
+            <button type="button" onclick="sendTestBotGreeting()" class="px-3.5 py-2 rounded-xl font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 border border-sky-200 dark:border-sky-800 flex items-center gap-1.5 btn-press">
+              <span class="material-symbols-outlined text-[16px]">send</span>
+              <span>Kiểm tra kết nối Bot</span>
+            </button>
+
+            <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">
+              Lưu cài đặt Telegram
+            </button>
+          </div>
+        </form>
+      `;
+    }
+
+    function openEditScheduleModal(schedId = null) {
+      const existing = schedId ? (state.telegramSchedules || []).find(s => s.id === schedId) : null;
+      const sched = existing || {
+        id: 'sched-' + Date.now(),
+        name: 'Báo cáo công tác TDTT định kỳ',
+        enabled: true,
+        mode: 'state',
+        period: 'month',
+        recipient: 'vp_trungtam',
+        scheduleType: 'monthly',
+        dayOfMonth: 25,
+        timeOfDay: '08:00',
+        sendKpiSummary: true,
+        sendFullDocument: true,
+        lastSent: ''
+      };
+
+      // Đóng modal cũ
+      const oldModal = document.getElementById('modalContainer');
+      if (oldModal) oldModal.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[90vh] overflow-y-auto modal-animate text-left">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">
+                ${existing ? 'Chỉnh Sửa Cấu Hình Gửi Báo Cáo' : 'Thêm Cấu Hình Gửi Báo Cáo Mới'}
+              </h3>
+              <p class="text-[11px] text-slate-400">Tự do chọn ngày gửi (1-31), giờ gửi và thể thức báo cáo gửi Telegram</p>
+            </div>
+            <button onclick="closeModal(); openTelegramConfigModal('list');" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-[18px]">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveScheduleConfig(event)" class="mt-4 space-y-3.5 text-xs">
+            <input type="hidden" id="cfg_id" value="${sched.id}" />
+
+            <!-- Tên cấu hình -->
+            <div>
+              <label class="block font-bold mb-1">Tên cấu hình / Tiêu đề gợi nhớ <span class="text-rose-500">*</span></label>
+              <input id="cfg_name" type="text" required value="${sched.name}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white" />
+            </div>
+
+            <!-- Thể thức báo cáo & Kỳ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Thể thức văn bản</label>
+                <select id="cfg_mode" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="state" ${sched.mode === 'state' ? 'selected' : ''}>🏛️ Mẫu Nhà nước (TDTT)</option>
+                  <option value="party" ${sched.mode === 'party' ? 'selected' : ''}>⭐ Mẫu Chi bộ (Đảng viên)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold mb-1">Kỳ dữ liệu báo cáo</label>
+                <select id="cfg_period" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="month" ${sched.period === 'month' ? 'selected' : ''}>Hàng Tháng (Tháng hiện tại)</option>
+                  <option value="quarter" ${sched.period === 'quarter' ? 'selected' : ''}>Hàng Quý (Quý hiện tại)</option>
+                  <option value="half" ${sched.period === 'half' ? 'selected' : ''}>6 Tháng (Đầu / Cuối năm)</option>
+                  <option value="nine" ${sched.period === 'nine' ? 'selected' : ''}>9 Tháng đầu năm</option>
+                  <option value="year" ${sched.period === 'year' ? 'selected' : ''}>Cả Năm</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Cơ quan / Đơn vị nhận -->
+            <div>
+              <label class="block font-bold mb-1">Cơ quan / Đơn vị nhận báo cáo</label>
+              <select id="cfg_recipient" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <option value="vp_trungtam" ${sched.recipient === 'vp_trungtam' ? 'selected' : ''}>Văn phòng Trung tâm Dịch vụ Tổng hợp</option>
+                <option value="phong_vanhoa" ${sched.recipient === 'phong_vanhoa' ? 'selected' : ''}>Phòng Văn hóa và Thông tin</option>
+                <option value="Chi bộ Trung tâm DVTH" ${sched.recipient === 'Chi bộ Trung tâm DVTH' ? 'selected' : ''}>Chi bộ Trung tâm Dịch vụ Tổng hợp</option>
+              </select>
+              <span class="text-[10px] text-slate-400 mt-1 block italic">📌 Báo cáo của bộ phận gửi lên Văn phòng Trung tâm DVTH hoặc Phòng VHTT, không gửi thẳng lên UBND phường.</span>
+            </div>
+
+            <!-- Thiết lập thời gian gửi tự chọn -->
+            <div class="p-3.5 rounded-2xl bg-sky-50/50 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-900/60 space-y-3">
+              <p class="font-bold text-sky-800 dark:text-sky-300 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">event_repeat</span>
+                <span>Thiết lập lịch hẹn gửi (Tự chọn ngày & giờ linh hoạt):</span>
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div>
+                  <label class="block font-medium mb-1">Chu kỳ lặp lại</label>
+                  <select id="cfg_sched_type" onchange="handleScheduleTypeChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <option value="monthly" ${sched.scheduleType === 'monthly' ? 'selected' : ''}>Hàng tháng</option>
+                    <option value="quarterly" ${sched.scheduleType === 'quarterly' ? 'selected' : ''}>Hàng quý</option>
+                    <option value="weekly" ${sched.scheduleType === 'weekly' ? 'selected' : ''}>Hàng tuần</option>
+                  </select>
+                </div>
+
+                <div id="dayOfMonthBox">
+                  <label class="block font-medium mb-1">Chọn ngày gửi (1 - 31)</label>
+                  <select id="cfg_day_month" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    ${Array.from({length: 31}, (_, i) => i + 1).map(d => `
+                      <option value="${d}" ${(parseInt(sched.dayOfMonth) || 25) === d ? 'selected' : ''}>Ngày ${d} hàng tháng</option>
+                    `).join('')}
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block font-medium mb-1">Giờ gửi trong ngày</label>
+                  <input id="cfg_time_day" type="time" value="${sched.timeOfDay || '08:00'}" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Tùy chọn nội dung đính kèm -->
+            <div class="space-y-2 pt-1">
+              <label class="block font-bold">Nội dung gửi kèm:</label>
+              
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-pointer">
+                <input id="cfg_send_kpi" type="checkbox" ${sched.sendKpiSummary !== false ? 'checked' : ''} class="rounded text-brand-600 focus:ring-brand-500 w-4 h-4">
+                <div>
+                  <span class="font-bold block text-slate-800 dark:text-slate-200">Gửi bảng tóm tắt số liệu KPI</span>
+                  <span class="text-[11px] text-slate-400">Tin nhắn Telegram chứa tổng số giải, VĐV, huy chương, kinh phí & giải mới nhất (#1)</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-pointer">
+                <input id="cfg_send_doc" type="checkbox" ${sched.sendFullDocument !== false ? 'checked' : ''} class="rounded text-brand-600 focus:ring-brand-500 w-4 h-4">
+                <div>
+                  <span class="font-bold block text-slate-800 dark:text-slate-200">Đính kèm file báo cáo Word (.doc) hoàn chỉnh</span>
+                  <span class="text-[11px] text-slate-400">Tự động xuất và upload file văn bản A4 chuẩn thể thức hành chính vào cuộc trò chuyện</span>
+                </div>
               </label>
             </div>
 
-            <!-- Lịch gửi -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Trạng thái kích hoạt -->
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
               <div>
-                <label class="block font-bold mb-1">Lịch hẹn gửi tự động</label>
-                <select id="tg_schedule" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                  <option value="monthly_25" ${cfg.schedule === 'monthly_25' ? 'selected' : ''}>Ngày 25 hàng tháng (Chốt báo cáo)</option>
-                  <option value="monthly_end" ${cfg.schedule === 'monthly_end' ? 'selected' : ''}>Ngày cuối cùng mỗi tháng</option>
-                  <option value="quarter_end" ${cfg.schedule === 'quarter_end' ? 'selected' : ''}>Ngày cuối mỗi Quý</option>
-                  <option value="weekly_monday" ${cfg.schedule === 'weekly_monday' ? 'selected' : ''}>Sáng thứ Hai hàng tuần (08:00)</option>
-                </select>
+                <span class="font-bold text-slate-900 dark:text-white block">Kích hoạt cấu hình này</span>
+                <span class="text-[11px] text-slate-400">Bật để hệ thống tự động chạy theo lịch hẹn</span>
               </div>
-
-              <div>
-                <label class="block font-bold mb-1">Loại báo cáo gửi đi</label>
-                <select id="tg_report_type" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                  <option value="summary" ${cfg.reportType === 'summary' ? 'selected' : ''}>Bản tóm tắt nhanh KPI & Giải mới nhất</option>
-                  <option value="state" ${cfg.reportType === 'state' ? 'selected' : ''}>Báo cáo công tác TDTT (Mẫu Nhà nước)</option>
-                  <option value="party" ${cfg.reportType === 'party' ? 'selected' : ''}>Báo cáo nhiệm vụ đảng viên (Mẫu Chi bộ)</option>
-                </select>
-              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="cfg_enabled" type="checkbox" ${sched.enabled ? 'checked' : ''} class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
             </div>
 
-            <!-- Cấu hình Telegram Bot Token & Chat ID -->
-            <div>
-              <label class="block font-bold mb-1">Telegram Bot Token <span class="text-rose-500">*</span></label>
-              <input id="tg_token" type="text" placeholder="Ví dụ: 7894561230:AAH_xxx..." value="${cfg.botToken || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs" />
-            </div>
-
-            <div>
-              <label class="block font-bold mb-1">Telegram Chat ID của anh Được <span class="text-rose-500">*</span></label>
-              <input id="tg_chat_id" type="text" placeholder="Ví dụ: 123456789" value="${cfg.chatId || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs" />
-            </div>
-
-            <!-- Hướng dẫn nhanh -->
-            <div class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 text-[11px] leading-relaxed border border-sky-200 dark:border-sky-800">
-              <p class="font-bold flex items-center gap-1 mb-1">
-                <span class="material-symbols-outlined text-[15px]">help</span>
-                <span>Hướng dẫn cài đặt Telegram trong 1 phút:</span>
-              </p>
-              <p>1. Mở Telegram, tìm <b>@BotFather</b> ➔ Gõ <code>/newbot</code> để tạo bot và lấy <b>Token</b>.</p>
-              <p>2. Mở bot của anh vừa tạo, bấm <b>Start</b>. Sau đó tìm <b>@userinfobot</b> để xem <b>Id (Chat ID)</b> của anh.</p>
-              <p>3. Dán Token và Chat ID vào đây rồi bấm <b>Gửi thử nghiệm ngay</b>!</p>
-            </div>
-
-            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
-              <button type="button" onclick="sendTestTelegramFromWeb()" class="px-3.5 py-2 rounded-xl font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 border border-sky-200 dark:border-sky-800 flex items-center gap-1.5 btn-press">
-                <span class="material-symbols-outlined text-[15px]">send</span>
-                <span>Gửi thử nghiệm ngay</span>
+            <!-- Submit -->
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
+              <button type="button" onclick="closeModal(); openTelegramConfigModal('list');" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">
+                Hủy
               </button>
-
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Đóng</button>
-                <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu cấu hình</button>
-              </div>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">
+                Lưu cấu hình
+              </button>
             </div>
           </form>
         </div>
@@ -2979,35 +3390,132 @@
       document.body.appendChild(modal);
     }
 
-    function handleSaveTelegramConfig(e) {
-      e.preventDefault();
-      const enabled = document.getElementById('tg_enabled').checked;
-      const botToken = document.getElementById('tg_token').value.trim();
-      const chatId = document.getElementById('tg_chat_id').value.trim();
-      const schedule = document.getElementById('tg_schedule').value;
-      const reportType = document.getElementById('tg_report_type').value;
+    function handleScheduleTypeChange() {
+      const type = document.getElementById('cfg_sched_type')?.value;
+      const box = document.getElementById('dayOfMonthBox');
+      if (!box) return;
+      if (type === 'weekly') {
+        box.innerHTML = `
+          <label class="block font-medium mb-1">Chọn thứ trong tuần</label>
+          <select id="cfg_day_month" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <option value="2">Thứ Hai</option>
+            <option value="3">Thứ Ba</option>
+            <option value="4">Thứ Tư</option>
+            <option value="5">Thứ Năm</option>
+            <option value="6">Thứ Sáu</option>
+            <option value="7">Thứ Bảy</option>
+            <option value="1">Chủ Nhật</option>
+          </select>
+        `;
+      } else {
+        box.innerHTML = `
+          <label class="block font-medium mb-1">Chọn ngày gửi (1 - 31)</label>
+          <select id="cfg_day_month" class="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            ${Array.from({length: 31}, (_, i) => i + 1).map(d => `
+              <option value="${d}">Ngày ${d} ${type === 'quarterly' ? 'cuối quý' : 'hàng tháng'}</option>
+            `).join('')}
+          </select>
+        `;
+      }
+    }
 
-      state.telegramConfig = {
+    function handleSaveScheduleConfig(e) {
+      e.preventDefault();
+      const id = document.getElementById('cfg_id').value;
+      const name = document.getElementById('cfg_name').value.trim();
+      const mode = document.getElementById('cfg_mode').value;
+      const period = document.getElementById('cfg_period').value;
+      const recipient = document.getElementById('cfg_recipient').value;
+      const schedType = document.getElementById('cfg_sched_type').value;
+      const dayOfMonth = parseInt(document.getElementById('cfg_day_month').value) || 25;
+      const timeOfDay = document.getElementById('cfg_time_day').value || '08:00';
+      const sendKpiSummary = document.getElementById('cfg_send_kpi').checked;
+      const sendFullDocument = document.getElementById('cfg_send_doc').checked;
+      const enabled = document.getElementById('cfg_enabled').checked;
+
+      const idx = (state.telegramSchedules || []).findIndex(s => s.id === id);
+      const item = {
+        id: id,
+        name: name,
         enabled: enabled,
-        botToken: botToken,
-        chatId: chatId,
-        schedule: schedule,
-        reportType: reportType,
-        lastSent: state.telegramConfig?.lastSent || ''
+        mode: mode,
+        period: period,
+        recipient: recipient,
+        scheduleType: schedType,
+        dayOfMonth: dayOfMonth,
+        timeOfDay: timeOfDay,
+        sendKpiSummary: sendKpiSummary,
+        sendFullDocument: sendFullDocument,
+        lastSent: idx !== -1 ? state.telegramSchedules[idx].lastSent : ''
       };
+
+      if (!state.telegramSchedules) state.telegramSchedules = [];
+      if (idx !== -1) {
+        state.telegramSchedules[idx] = item;
+      } else {
+        state.telegramSchedules.push(item);
+      }
 
       saveAll();
       closeModal();
-      showToast('Đã lưu cấu hình', 'Thông tin tự động gửi Telegram đã được cập nhật.');
+      openTelegramConfigModal('list');
+      showToast('Đã lưu cấu hình', `Cấu hình "${name}" đã được lưu vào danh sách.`);
       renderApp();
     }
 
-    async function sendTestTelegramFromWeb() {
-      const botToken = document.getElementById('tg_token')?.value.trim() || state.telegramConfig?.botToken;
-      const chatId = document.getElementById('tg_chat_id')?.value.trim() || state.telegramConfig?.chatId;
+    function toggleTelegramSchedule(schedId) {
+      const sched = (state.telegramSchedules || []).find(s => s.id === schedId);
+      if (sched) {
+        sched.enabled = !sched.enabled;
+        saveAll();
+        showToast(sched.enabled ? 'Đã bật cấu hình' : 'Đã tắt cấu hình', `Cấu hình "${sched.name}" đã ${sched.enabled ? 'được kích hoạt' : 'tạm dừng'}.`);
+        closeModal();
+        openTelegramConfigModal('list');
+        renderApp();
+      }
+    }
+
+    function deleteTelegramSchedule(schedId) {
+      const sched = (state.telegramSchedules || []).find(s => s.id === schedId);
+      if (!sched) return;
+      if (confirm(`Bạn có chắc chắn muốn xóa cấu hình "${sched.name}" khỏi danh sách?`)) {
+        state.telegramSchedules = state.telegramSchedules.filter(s => s.id !== schedId);
+        saveAll();
+        showToast('Đã xóa cấu hình', `Cấu hình "${sched.name}" đã được xóa.`);
+        closeModal();
+        openTelegramConfigModal('list');
+        renderApp();
+      }
+    }
+
+    function restoreDefaultTelegramSchedules() {
+      state.telegramSchedules = JSON.parse(JSON.stringify(INITIAL_TELEGRAM_SCHEDULES));
+      saveAll();
+      showToast('Đã khôi phục', 'Đã cài đặt lại 2 cấu hình mẫu (Nhà nước và Chi bộ).');
+      closeModal();
+      openTelegramConfigModal('list');
+      renderApp();
+    }
+
+    function handleSaveTelegramSettings(e) {
+      e.preventDefault();
+      const botToken = document.getElementById('tg_bot_token').value.trim();
+      const chatId = document.getElementById('tg_chat_id').value.trim();
+
+      state.telegramSettings = {
+        botToken: botToken,
+        chatId: chatId
+      };
+      saveAll();
+      showToast('Đã lưu cài đặt Telegram', 'Bot Token và Chat ID đã được lưu an toàn.');
+    }
+
+    async function sendTestBotGreeting() {
+      const botToken = document.getElementById('tg_bot_token')?.value.trim() || state.telegramSettings?.botToken;
+      const chatId = document.getElementById('tg_chat_id')?.value.trim() || state.telegramSettings?.chatId;
 
       if (!botToken || !chatId) {
-        alert('Vui lòng nhập đầy đủ Telegram Bot Token và Chat ID trước khi gửi thử!');
+        alert('Vui lòng nhập đầy đủ Telegram Bot Token và Chat ID trước khi kiểm tra!');
         return;
       }
 
@@ -3018,13 +3526,15 @@
 
       const msg = `🏆 <b>HỆ THỐNG QUẢN LÝ TDTT - PHƯỜNG TÂN KHAI</b>\n` +
                   `📍 <i>Trung tâm Dịch vụ tổng hợp</i>\n` +
-                  `📅 Ngày gửi: <b>${today}</b>\n` +
+                  `📅 Ngày kiểm tra: <b>${today}</b>\n` +
                   `👤 Cán bộ: <b>Trần Quốc Được</b>\n\n` +
-                  `✅ <b>KẾT NỐI TELEGRAM THÀNH CÔNG!</b>\n` +
+                  `✅ <b>KẾT NỐI TELEGRAM BOT THÀNH CÔNG!</b>\n` +
+                  `• Hiện có: <b>${(state.telegramSchedules || []).length}</b> cấu hình gửi báo cáo\n` +
+                  `• Đang hoạt động: <b>${(state.telegramSchedules || []).filter(s => s.enabled).length}</b> cấu hình\n` +
                   `• Tổng số giải đấu: <b>${totalActs} giải</b>\n` +
                   `• Tổng huy chương: <b>${totalMedals} HC</b>\n` +
                   (latest.title ? `• Giải mới nhất (#1): <b>${latest.title}</b> (${latest.date})\n` : '') +
-                  `\n📌 <i>Hệ thống sẽ tự động gửi báo cáo theo lịch anh đã thiết lập.</i>`;
+                  `\n📌 <i>Hệ thống đã sẵn sàng gửi số liệu KPI và đính kèm file báo cáo Word (.doc) tự động theo lịch của anh!</i>`;
 
       try {
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -3039,10 +3549,10 @@
         });
         const res = await resp.json();
         if (res.ok) {
-          alert('🎉 Tuyệt vời! Tin nhắn đã được gửi thẳng vào Telegram của anh Trần Quốc Được thành công!');
+          alert('🎉 Tuyệt vời! Kết nối thành công! Tin nhắn đã được gửi thẳng vào Telegram của anh Trần Quốc Được!');
         } else {
           if (res.description && res.description.toLowerCase().includes('chat not found')) {
-            alert('⚠️ Lỗi Telegram: "Bad Request: chat not found"\n\nNguyên nhân: Telegram có quy định bảo mật là Bot KHÔNG THỂ tự ý gửi tin nhắn trước nếu anh chưa từng bấm "Start" với con Bot đó.\n\n👉 Cách khắc phục ngay (mất 5 giây):\n1. Mở ứng dụng Telegram của anh.\n2. Mở cuộc trò chuyện với con Bot mà anh vừa tạo từ @BotFather.\n3. Bấm nút "START" (Bắt đầu) ở dưới đáy màn hình (hoặc gõ chữ "hi" hay "/start" gửi cho con Bot).\n4. Quay lại đây bấm nút "Gửi thử nghiệm ngay" là sẽ nhận được tin nhắn báo cáo ngay lập tức!');
+            alert('⚠️ Lỗi Telegram: "Bad Request: chat not found"\n\nNguyên nhân: Telegram có quy định bảo mật là Bot KHÔNG THỂ tự ý gửi tin nhắn trước nếu anh chưa từng bấm "Start" với con Bot đó.\n\n👉 Cách khắc phục ngay (mất 5 giây):\n1. Mở ứng dụng Telegram của anh.\n2. Mở cuộc trò chuyện với con Bot mà anh vừa tạo từ @BotFather.\n3. Bấm nút "START" (Bắt đầu) ở dưới đáy màn hình (hoặc gõ chữ "hi" hay "/start" gửi cho con Bot).\n4. Quay lại đây bấm nút "Kiểm tra kết nối Bot" là sẽ nhận được tin nhắn ngay lập tức!');
           } else {
             alert('Lỗi Telegram API: ' + (res.description || 'Không thể gửi tin nhắn. Hãy kiểm tra lại Bot Token và Chat ID.'));
           }
@@ -3052,11 +3562,179 @@
       }
     }
 
+    async function executeTelegramSchedule(schedId, isManual = false) {
+      const sched = (state.telegramSchedules || []).find(s => s.id === schedId);
+      if (!sched) {
+        alert('Không tìm thấy cấu hình gửi báo cáo này!');
+        return;
+      }
+
+      const settings = state.telegramSettings || {};
+      const botToken = settings.botToken;
+      const chatId = settings.chatId;
+
+      if (!botToken || !chatId) {
+        if (confirm('Anh chưa lưu Telegram Bot Token và Chat ID. Anh có muốn mở tab Cài đặt ngay bây giờ không?')) {
+          closeModal();
+          openTelegramConfigModal('settings');
+        }
+        return;
+      }
+
+      const isParty = sched.mode === 'party';
+      let recipientText = 'Văn phòng Trung tâm Dịch vụ Tổng hợp';
+      if (isParty || sched.recipient === 'Chi bộ Trung tâm DVTH') {
+        recipientText = 'Chi bộ Trung tâm Dịch vụ Tổng hợp';
+      } else if (sched.recipient === 'phong_vanhoa') {
+        recipientText = 'Phòng Văn hóa và Thông tin';
+      }
+
+      // Lấy dữ liệu và phạm vi theo kỳ của schedule
+      const year = state.reportYear || new Date().getFullYear();
+      let startM = 1, endM = 12;
+      const today = new Date();
+      let periodLabel = `NĂM ${year}`;
+
+      if (sched.period === 'month') {
+        const curM = today.getMonth() + 1;
+        startM = curM; endM = curM;
+        periodLabel = `THÁNG ${curM} NĂM ${year}`;
+      } else if (sched.period === 'quarter') {
+        const q = Math.floor(today.getMonth() / 3) + 1;
+        startM = (q - 1) * 3 + 1; endM = startM + 2;
+        const roman = ['I', 'II', 'III', 'IV'][q - 1];
+        periodLabel = `QUÝ ${roman} NĂM ${year}`;
+      } else if (sched.period === 'half') {
+        const h = today.getMonth() < 6 ? 1 : 2;
+        startM = h === 1 ? 1 : 7; endM = h === 1 ? 6 : 12;
+        periodLabel = (h === 1 ? '6 THÁNG ĐẦU NĂM ' : '6 THÁNG CUỐI NĂM ') + year;
+      } else if (sched.period === 'nine') {
+        startM = 1; endM = 9;
+        periodLabel = `9 THÁNG ĐẦU NĂM ${year}`;
+      }
+
+      const startDate = new Date(year, startM - 1, 1);
+      const endDate = new Date(year, endM, 0);
+
+      // Lọc danh sách giải đấu theo phạm vi
+      const filteredActs = (state.activities || []).filter(a => {
+        if (!a.date) return false;
+        const d = parseDateVN(a.date);
+        return d && d >= startDate && d <= endDate;
+      });
+
+      const totalActs = filteredActs.length;
+      const totalParticipants = filteredActs.reduce((a, b) => a + (parseInt(b.participants) || 0), 0);
+      const totalMedals = filteredActs.reduce((a, b) => a + (parseInt(b.totalMedals) || 0), 0);
+      const totalGold = filteredActs.reduce((a, b) => a + (parseInt(b.goldMedals) || 0), 0);
+      const totalSilver = filteredActs.reduce((a, b) => a + (parseInt(b.silverMedals) || 0), 0);
+      const totalBronze = filteredActs.reduce((a, b) => a + (parseInt(b.bronzeMedals) || 0), 0);
+      const totalBudget = filteredActs.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
+
+      // 1. GỬI TIN NHẮN TÓM TẮT SỐ LIỆU KPI
+      if (sched.sendKpiSummary !== false) {
+        let msg = `📋 <b>${sched.name.toUpperCase()}</b>\n`;
+        msg += `🏷️ <i>Thể thức: ${isParty ? 'Báo cáo Chi bộ Đảng' : 'Báo cáo Công tác TDTT (Nhà nước)'}</i>\n`;
+        msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
+        msg += `👤 <b>Người lập:</b> Trần Quốc Được (${isParty ? 'Đảng viên' : 'Cán bộ phụ trách TDTT'})\n`;
+        msg += `📤 <b>Gửi đến:</b> ${recipientText}\n`;
+        msg += `📅 <b>Kỳ báo cáo:</b> ${periodLabel} (${formatDateVN(startDate)} ➔ ${formatDateVN(endDate)})\n\n`;
+        msg += `📊 <b>SỐ LIỆU TỔNG HỢP & KPI:</b>\n`;
+        msg += `• Tổng số giải đấu: <b>${totalActs}</b> giải\n`;
+        msg += `• Lượt VĐV tham gia: <b>${totalParticipants.toLocaleString('vi-VN')}</b> lượt\n`;
+        msg += `• Thành tích huy chương: <b>${totalMedals}</b> HC (${totalGold}🥇, ${totalSilver}🥈, ${totalBronze}🥉)\n`;
+        msg += `• Tổng kinh phí giải ngân: <b>${totalBudget.toLocaleString('vi-VN')} đ</b>\n\n`;
+
+        if (filteredActs.length > 0) {
+          msg += `⭐ <b>DANH SÁCH GIẢI MỚI / TIÊU BIỂU:</b>\n`;
+          filteredActs.slice(0, 3).forEach((a, i) => {
+            msg += `${i + 1}. <b>${a.title}</b> (${a.date}) - ${a.participants} VĐV\n`;
+            if (a.achievementNote) msg += `   ↳ <i>${a.achievementNote}</i>\n`;
+          });
+        }
+        msg += `\n📌 <i>Kính báo cáo ${recipientText} xem xét, theo dõi và tổng hợp.</i>`;
+
+        try {
+          const resp = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: msg,
+              parse_mode: 'HTML'
+            })
+          });
+          const res = await resp.json();
+          if (!res.ok) {
+            if (res.description && res.description.toLowerCase().includes('chat not found')) {
+              alert('⚠️ Lỗi: Telegram báo "Bad Request: chat not found"!\n\nAnh Được chỉ cần mở con Bot của mình trên Telegram và bấm nút START (hoặc gửi 1 tin nhắn cho Bot), sau đó quay lại gửi lại là được ngay ạ!');
+              return;
+            } else {
+              throw new Error(res.description || 'Không thể gửi tin nhắn Telegram.');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi gửi tin nhắn KPI: ' + e.message);
+          return;
+        }
+      }
+
+      // 2. GỬI FILE VĂN BẢN WORD (.DOC) HOÀN CHỈNH
+      if (sched.sendFullDocument !== false) {
+        try {
+          const wordHtml = buildReportHTMLForWord({
+            mode: sched.mode,
+            period: sched.period,
+            recipient: sched.recipient,
+            year: year,
+            month: today.getMonth() + 1,
+            quarter: Math.floor(today.getMonth() / 3) + 1
+          });
+
+          const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });
+          const modeTag = isParty ? 'ChiBo' : 'TDTT';
+          const periodTag = periodLabel.replace(/[\s\/\\]+/g, '_');
+          const fileName = `BaoCao_${modeTag}_${periodTag}_TranQuocDuoc.doc`;
+
+          const formData = new FormData();
+          formData.append('chat_id', chatId);
+          formData.append('document', blob, fileName);
+          formData.append('caption', `📄 <b>File Báo Cáo Hoàn Chỉnh (Word .doc):</b>\n${sched.name}\n👤 <i>Người lập: Trần Quốc Được</i>\n📤 <i>Nơi nhận: ${recipientText}</i>`);
+          formData.append('parse_mode', 'HTML');
+
+          const docResp = await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+            method: 'POST',
+            body: formData
+          });
+          const docRes = await docResp.json();
+          if (!docRes.ok) {
+            throw new Error(docRes.description || 'Không thể gửi file Word qua Telegram.');
+          }
+        } catch (docErr) {
+          alert('Lỗi gửi file Word đính kèm: ' + docErr.message);
+          return;
+        }
+      }
+
+      // Cập nhật thời điểm gửi gần nhất
+      sched.lastSent = new Date().toLocaleString('vi-VN');
+      saveAll();
+
+      if (isManual) {
+        alert(`🎉 Thành công!\n\nHệ thống đã gửi số liệu KPI${sched.sendFullDocument !== false ? ' kèm File báo cáo Word (.doc)' : ''} vào Telegram của anh Trần Quốc Được theo cấu hình "${sched.name}".`);
+      } else {
+        showToast('Đã gửi báo cáo Telegram', `Đã gửi báo cáo "${sched.name}" thành công.`);
+      }
+      closeModal();
+      openTelegramConfigModal('list');
+      renderApp();
+    }
+
     async function sendCurrentReportToTelegram() {
-      const cfg = state.telegramConfig;
-      if (!cfg || !cfg.botToken || !cfg.chatId) {
+      const settings = state.telegramSettings;
+      if (!settings || !settings.botToken || !settings.chatId) {
         if (confirm('Anh chưa cấu hình Telegram Bot Token và Chat ID. Anh có muốn mở bảng thiết lập ngay bây giờ không?')) {
-          openTelegramConfigModal();
+          openTelegramConfigModal('settings');
         }
         return;
       }
@@ -3087,7 +3765,7 @@
       msg += `📊 <b>SỐ LIỆU TỔNG HỢP:</b>\n`;
       msg += `• Hoạt động / Giải đấu: <b>${totalActs}</b> giải\n`;
       msg += `• Lượt VĐV tham gia: <b>${totalParticipants.toLocaleString('vi-VN')}</b> lượt\n`;
-      msg += `• Thành tích huy chương: <b>${totalMedals}</b> HC (${totalGold} vàng, ${totalSilver} bạc, ${totalBronze} đồng)\n`;
+      msg += `• Thành tích huy chương: <b>${totalMedals}</b> HC (${totalGold}🥇, ${totalSilver}🥈, ${totalBronze}🥉)\n`;
       msg += `• Tổng kinh phí giải ngân: <b>${totalBudget.toLocaleString('vi-VN')} đ</b>\n\n`;
 
       if (list.length > 0) {
@@ -3097,34 +3775,53 @@
           if (a.achievementNote) msg += `   ↳ <i>${a.achievementNote}</i>\n`;
         });
       }
-
-      msg += `\n📌 <i>Báo cáo xuất từ Hệ thống Quản lý TDTT Phường Tân Khai.</i>`;
+      msg += `\n📌 <i>Kính báo cáo ${recipientText} xem xét, theo dõi và tổng hợp.</i>`;
 
       try {
-        const url = `https://api.telegram.org/bot${cfg.botToken}/sendMessage`;
-        const resp = await fetch(url, {
+        // 1. Gửi tin nhắn tóm tắt
+        const resp = await fetch(`https://api.telegram.org/bot${settings.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            chat_id: cfg.chatId,
+            chat_id: settings.chatId,
             text: msg,
             parse_mode: 'HTML'
           })
         });
         const res = await resp.json();
-        if (res.ok) {
-          showToast('Đã gửi Telegram', `Báo cáo ${getPeriodTitle()} đã gửi vào Telegram của anh Được.`);
-        } else {
+        if (!res.ok) {
           if (res.description && res.description.toLowerCase().includes('chat not found')) {
             alert('⚠️ Lỗi: Telegram báo "Bad Request: chat not found"!\n\nAnh chỉ cần mở con Bot của mình trên Telegram và bấm nút START (hoặc gửi 1 tin nhắn cho Bot), sau đó quay lại gửi lại là được ngay ạ!');
+            return;
           } else {
-            alert('Lỗi gửi Telegram: ' + (res.description || 'Không thể gửi.'));
+            throw new Error(res.description || 'Lỗi gửi tin nhắn.');
           }
         }
+
+        // 2. Đính kèm gửi luôn File Word .doc
+        const wordHtml = buildReportHTMLForWord();
+        const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });
+        const modeTag = isParty ? 'ChiBo' : 'TDTT';
+        const cleanPeriod = getPeriodTitle().replace(/[\s\/\\]+/g, '_');
+        const fileName = `BaoCao_${modeTag}_${cleanPeriod}_TranQuocDuoc.doc`;
+
+        const formData = new FormData();
+        formData.append('chat_id', settings.chatId);
+        formData.append('document', blob, fileName);
+        formData.append('caption', `📄 <b>File Báo Cáo Hoàn Chỉnh (Word .doc):</b>\nBáo cáo ${getPeriodTitle()}\n👤 <i>Người lập: Trần Quốc Được</i>\n📤 <i>Nơi nhận: ${recipientText}</i>`);
+        formData.append('parse_mode', 'HTML');
+
+        await fetch(`https://api.telegram.org/bot${settings.botToken}/sendDocument`, {
+          method: 'POST',
+          body: formData
+        });
+
+        showToast('Đã gửi Telegram', `Báo cáo ${getPeriodTitle()} và file Word .doc đã được gửi vào Telegram của anh Được.`);
       } catch (err) {
         alert('Lỗi kết nối Telegram: ' + err.message);
       }
     }
+
 
     function editReportModal(repId) {
       const rep = state.savedReports.find(r => r.id === repId);
