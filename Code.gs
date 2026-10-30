@@ -542,32 +542,39 @@ function scheduledTelegramReportTrigger() {
     var today = new Date();
     var curDay = today.getDate();
 
-    // 1. Nhắc nhở vào ngày 9 (trước BC Nhà nước) và ngày 29 (trước BC Chi bộ)
+    // 1. Nhắc nhở ngắn gọn vào ngày 9 (trước BC Nhà nước) và ngày 29 (trước BC Chi bộ)
     if (curDay === 9 || curDay === 29) {
-      var bcType = (curDay === 9) ? 'Nhà nước (ngày 10)' : 'Chi bộ (ngày 30)';
-      var reminderMsg = '🔔 <b>HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO</b>\n' +
-                        '📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n\n' +
-                        '👋 <b>Sếp ơi, ngày mai em làm báo cáo tháng (' + bcType + '), Sếp xem có gì cần bổ sung không ạ!</b>\n\n' +
-                        '📊 Hiện có: <b>' + (data.activities || []).length + '</b> giải đấu trên hệ thống.\n' +
-                        '🔗 <i>Đường link cập nhật:</i> https://kawai-kun.github.io/quanly-tdtt/';
-      sendTelegramMessage(token, chat, reminderMsg);
+      var reminderText = (data.telegramSettings && data.telegramSettings.reminderMsg && data.telegramSettings.reminderMsg.trim()) 
+        ? data.telegramSettings.reminderMsg.trim() 
+        : 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!';
+      sendTelegramMessage(token, chat, reminderText);
       Logger.log('Sent reminder message on day: ' + curDay);
     }
 
-    // 2. Chạy gửi báo cáo theo lịch cấu hình đã thiết lập
+    // 2. Chạy gửi báo cáo theo lịch cấu hình đã thiết lập (ngắn gọn, chuẩn mực)
     if (schedules.length > 0) {
       for (var s = 0; s < schedules.length; s++) {
         var sched = schedules[s];
         if (sched.enabled && (sched.dayOfMonth === curDay || sched.scheduleType === 'daily')) {
-          var msg = generateTelegramSummaryReport();
+          var isParty = sched.mode === 'party';
+          var repType = isParty ? 'Chi bộ' : 'công tác Thể dục Thể thao';
+          var curM = today.getMonth() + 1;
+          var curY = today.getFullYear();
+          var timeTitle = 'tháng ' + curM + ' năm ' + curY;
+          if (sched.period === 'quarter') {
+            timeTitle = 'Quý ' + Math.floor((curM - 1) / 3 + 1) + ' năm ' + curY;
+          } else if (sched.period === 'year') {
+            timeTitle = 'năm ' + curY;
+          }
+          var msg = 'Em gửi sếp báo cáo ' + repType + ' ' + timeTitle + ' ạ!';
           sendTelegramMessage(token, chat, msg);
           Logger.log('Sent Telegram schedule: ' + sched.name);
         }
       }
     } else {
-      var msg = generateTelegramSummaryReport();
+      var msg = 'Em gửi sếp báo cáo công tác Thể dục Thể thao tháng ' + (today.getMonth() + 1) + ' năm ' + today.getFullYear() + ' ạ!';
       sendTelegramMessage(token, chat, msg);
-      Logger.log('Sent default Telegram summary report successfully.');
+      Logger.log('Sent default Telegram report message.');
     }
   } catch (e) {
     Logger.log('Error in scheduledTelegramReportTrigger: ' + e.toString());

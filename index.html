@@ -67,32 +67,56 @@
     .dark ::-webkit-scrollbar-thumb { background: #334155; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    /* Mobbin Ambient Mesh Background */
+    /* Mobbin Ambient Mesh Background - Tinh chỉnh dịu mắt (Chống chói ở Light mode, Tách bạch ở Dark mode) */
     body {
-      background-color: #f8fafc;
+      background-color: #f1f5f9;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.04) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.03) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.02) 0px, transparent 50%);
       background-attachment: fixed;
     }
     .dark body {
-      background-color: #090d16;
+      background-color: #0b1120;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.1) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.08) 0px, transparent 50%);
     }
 
-    /* Mobbin Glassmorphism */
+    /* Mobbin Glassmorphism & Tương phản sắc nét */
     .glass-card {
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
     .dark .glass-card {
-      background: rgba(15, 23, 42, 0.90);
+      background: rgba(24, 34, 53, 0.95);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
+      border-color: rgba(51, 65, 85, 0.7) !important;
+    }
+
+    /* Khắc phục triệt để lỗi hiển thị dropdown select & option trên Dark Mode & Light Mode */
+    select {
+      background-color: #ffffff;
+      color: #0f172a;
+    }
+    select option {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      padding: 6px 10px;
+    }
+    .dark select {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    .dark select option {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+      padding: 6px 10px;
+    }
+    .dark input, .dark textarea {
+      color-scheme: dark;
     }
 
     /* Tối ưu hóa phông chữ tiếng Việt sắc nét, chuẩn thể thức văn bản hành chính */
@@ -1064,11 +1088,11 @@
               </div>
 
               <!-- Multi-Year Dropdown -->
-              <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 text-xs font-bold shadow-sm">
+              <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 text-xs font-bold shadow-sm">
                 <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">event</span>
-                <select onchange="setGlobalYear(this.value)" class="bg-transparent font-bold text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer">
-                  <option value="all" ${state.selectedYear === 'all' ? 'selected' : ''}>Tất cả các năm</option>
-                  ${availableYears.map(y => `<option value="${y}" ${String(state.selectedYear) === String(y) ? 'selected' : ''}>Năm ${y}</option>`).join('')}
+                <select onchange="setGlobalYear(this.value)" class="bg-transparent dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
+                  <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="all" ${state.selectedYear === 'all' ? 'selected' : ''}>Tất cả các năm</option>
+                  ${availableYears.map(y => `<option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="${y}" ${String(state.selectedYear) === String(y) ? 'selected' : ''}>Năm ${y}</option>`).join('')}
                 </select>
               </div>
 
@@ -3551,7 +3575,7 @@
       return `
         <div class="space-y-3">
           <!-- Card: Trợ lý Nhắc việc trước ngày làm Báo cáo (Ngày 9 & Ngày 29) -->
-          <div class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 dark:border-amber-800/70 shadow-sm">
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 dark:border-amber-800/70 shadow-sm space-y-2.5">
             <div class="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
               <div class="flex items-start gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
@@ -3559,21 +3583,36 @@
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-900 dark:text-white">Trợ lý Nhắc lịch Báo cáo ("Sếp ơi...")</span>
+                    <span class="text-xs font-bold text-slate-900 dark:text-white">Trợ lý Nhắc lịch Báo cáo</span>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">Tự động (Ngày 9 & 29)</span>
                   </div>
                   <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                    Vào <b>ngày 9</b> (trước hạn nộp BC Nhà nước) và <b>ngày 29</b> (trước hạn nộp BC Chi bộ), Bot tự động gửi tin nhắn thân mật nhắc anh Được rà soát dữ liệu.
-                  </p>
-                  <p class="text-[10.5px] text-amber-800 dark:text-amber-300 mt-1 font-mono italic bg-amber-100/60 dark:bg-amber-950/40 px-2 py-1 rounded-lg">
-                    "👋 Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!"
+                    Vào <b>ngày 9</b> (trước hạn nộp BC Nhà nước) và <b>ngày 29</b> (trước hạn nộp BC Chi bộ), Bot tự động gửi tin nhắn ngắn nhắc anh Được rà soát dữ liệu.
                   </p>
                 </div>
               </div>
               <button onclick="sendDaiCaReminderTelegram(true)" title="Bấm để gửi thử tin nhắn này ngay vào Telegram" class="shrink-0 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm btn-press">
                 <span class="material-symbols-outlined text-[15px]">send</span>
-                <span>Gửi thử tin nhắc Sếp</span>
+                <span>Gửi thử tin nhắc</span>
               </button>
+            </div>
+
+            <!-- Ô chỉnh sửa câu nhắc nhở trực tiếp ngay trên giao diện -->
+            <div class="pt-2 border-t border-amber-200/60 dark:border-amber-800/40">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center justify-between">
+                <span>Nội dung tin nhắn nhắc nhở (Tùy ý sửa đổi trực tiếp):</span>
+                <span class="text-[10px] text-slate-400 font-normal">Tự động áp dụng ngay không cần sửa code</span>
+              </label>
+              <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                  <span class="material-symbols-outlined text-[16px] text-amber-600 absolute left-3 top-2">edit_note</span>
+                  <input id="tg_quick_reminder_msg" type="text" value="${state.telegramSettings?.reminderMsg || 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!'}" class="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Nhập câu nhắc nhở..." />
+                </div>
+                <button onclick="saveQuickReminderMsg()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shrink-0 btn-press" title="Lưu lại câu nhắc mới này">
+                  <span class="material-symbols-outlined text-[15px]">save</span>
+                  <span>Lưu câu nhắc</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -3680,6 +3719,12 @@
             <label class="block font-bold mb-1 text-slate-800 dark:text-slate-200">Telegram Chat ID của anh Trần Quốc Được <span class="text-rose-500">*</span></label>
             <input id="tg_chat_id" type="text" required placeholder="Ví dụ: 6403485662" value="${settings.chatId || ''}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs text-slate-900 dark:text-white" />
             <span class="text-[10px] text-slate-400 mt-0.5 block">Chat ID cá nhân của anh Được (xem bằng bot @userinfobot).</span>
+          </div>
+
+          <div>
+            <label class="block font-bold mb-1 text-slate-800 dark:text-slate-200">Nội dung tin nhắn nhắc việc tự động (Ngày 9 & 29) <span class="text-rose-500">*</span></label>
+            <input id="tg_setting_reminder_msg" type="text" required placeholder="Nhập câu nhắc nhở..." value="${settings.reminderMsg || 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold text-xs text-slate-900 dark:text-white" />
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Nội dung Bot sẽ tự động gửi vào ngày 9 và ngày 29 hàng tháng (có thể sửa đổi bất kỳ lúc nào).</span>
           </div>
 
           <!-- Hướng dẫn chi tiết -->
@@ -3977,13 +4022,29 @@
       e.preventDefault();
       const botToken = document.getElementById('tg_bot_token').value.trim();
       const chatId = document.getElementById('tg_chat_id').value.trim();
+      const reminderMsg = document.getElementById('tg_setting_reminder_msg') ? document.getElementById('tg_setting_reminder_msg').value.trim() : 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!';
 
       state.telegramSettings = {
         botToken: botToken,
-        chatId: chatId
+        chatId: chatId,
+        reminderMsg: reminderMsg || 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!'
       };
       saveAll();
-      showToast('Đã lưu cài đặt Telegram', 'Bot Token và Chat ID đã được lưu an toàn.');
+      showToast('Đã lưu cài đặt Telegram', 'Bot Token, Chat ID và nội dung tin nhắn nhắc việc đã được lưu an toàn.');
+    }
+
+    function saveQuickReminderMsg() {
+      const input = document.getElementById('tg_quick_reminder_msg');
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val) {
+        alert('Vui lòng không để trống nội dung tin nhắn nhắc việc!');
+        return;
+      }
+      if (!state.telegramSettings) state.telegramSettings = {};
+      state.telegramSettings.reminderMsg = val;
+      saveAll();
+      showToast('Đã lưu nội dung nhắc nhở', 'Đã cập nhật câu nhắc việc mới thành công.');
     }
 
     async function sendTestBotGreeting() {
@@ -4048,26 +4109,13 @@
         return;
       }
 
-      const today = new Date();
-      const dateStr = String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear();
-      
-      const unrepCount = (state.activities || []).filter(a => {
-        const s = getActivityReportStatus(a);
-        return !s.isReported;
-      }).length;
-      const latest = (state.activities || [])[0] || {};
-
-      let msg = `🔔 <b>HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO</b>\n`;
-      msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
-      msg += `📅 Ngày gửi nhắc: <b>${dateStr}</b>\n\n`;
-      msg += `👋 <b>Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!</b>\n\n`;
-      msg += `📊 <b>Tình hình dữ liệu hiện tại trên hệ thống:</b>\n`;
-      msg += `• Tổng số giải đấu ghi nhận: <b>${(state.activities || []).length}</b> giải\n`;
-      msg += `• Giải đấu ⏳ <b>Chưa lập báo cáo:</b> <b>${unrepCount}</b> giải\n`;
-      if (latest && latest.title) {
-        msg += `• Hoạt động gần nhất (#1): <i>${latest.title}</i> (${latest.date})\n`;
-      }
-      msg += `\n🔗 <i>Sếp có thể bấm vào đường link để rà soát dữ liệu:</i>\nhttps://kawai-kun.github.io/quanly-tdtt/`;
+      // Lấy câu nhắc việc ngắn gọn theo đúng yêu cầu
+      const quickInput = document.getElementById('tg_quick_reminder_msg');
+      const msg = (quickInput && quickInput.value.trim()) 
+        ? quickInput.value.trim() 
+        : ((settings.reminderMsg && settings.reminderMsg.trim()) 
+            ? settings.reminderMsg.trim() 
+            : 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!');
 
       try {
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -4167,36 +4215,20 @@
       const totalBronze = filteredActs.reduce((a, b) => a + (parseInt(b.bronzeMedals) || 0), 0);
       const totalBudget = filteredActs.reduce((a, b) => a + (parseInt(b.budgetTotal) || 0), 0);
 
-      // 1. GỬI TIN NHẮN TÓM TẮT SỐ LIỆU KPI
-      if (sched.sendKpiSummary !== false) {
-        let msg = `📋 <b>${sched.name.toUpperCase()}</b>\n`;
-        msg += `🏷️ <i>Thể thức: ${isParty ? 'Báo cáo Chi bộ Đảng' : 'Báo cáo Công tác TDTT (Nhà nước)'}</i>\n`;
-        msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
-        msg += `👤 <b>Người lập:</b> Trần Quốc Được (${isParty ? 'Đảng viên' : 'Cán bộ phụ trách TDTT'})\n`;
-        msg += `📤 <b>Gửi đến:</b> ${recipientText}\n`;
-        msg += `📅 <b>Kỳ báo cáo:</b> ${periodLabel} (${formatDateVN(startDate)} ➔ ${formatDateVN(endDate)})\n\n`;
-        msg += `📊 <b>SỐ LIỆU TỔNG HỢP & KPI:</b>\n`;
-        msg += `• Tổng số giải đấu: <b>${totalActs}</b> giải\n`;
-        msg += `• Lượt VĐV tham gia: <b>${totalParticipants.toLocaleString('vi-VN')}</b> lượt\n`;
-        msg += `• Thành tích huy chương: <b>${totalMedals}</b> HC (${totalGold}🥇, ${totalSilver}🥈, ${totalBronze}🥉)\n`;
-        msg += `• Tổng kinh phí giải ngân: <b>${totalBudget.toLocaleString('vi-VN')} đ</b>\n\n`;
+      // Thông điệp gửi báo cáo ngắn gọn, lịch sự theo yêu cầu người dùng
+      const repTypeTitle = isParty ? 'Chi bộ' : 'công tác Thể dục Thể thao';
+      const cleanPeriodTitle = periodLabel.replace(/^BÁO CÁO\s*/i, '').trim();
+      const shortReportMsg = `Em gửi sếp báo cáo ${repTypeTitle} ${cleanPeriodTitle.toLowerCase()} ạ!`;
 
-        if (filteredActs.length > 0) {
-          msg += `⭐ <b>DANH SÁCH GIẢI MỚI / TIÊU BIỂU:</b>\n`;
-          filteredActs.slice(0, 3).forEach((a, i) => {
-            msg += `${i + 1}. <b>${a.title}</b> (${a.date}) - ${a.participants} VĐV\n`;
-            if (a.achievementNote) msg += `   ↳ <i>${a.achievementNote}</i>\n`;
-          });
-        }
-        msg += `\n📌 <i>Kính báo cáo ${recipientText} xem xét, theo dõi và tổng hợp.</i>`;
-
+      // 1. GỬI TIN NHẮN THÔNG BÁO NGẮN GỌN (Nếu không gửi file Word hoặc nếu bật tùy chọn)
+      if (sched.sendKpiSummary !== false && sched.sendFullDocument === false) {
         try {
           const resp = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               chat_id: chatId,
-              text: msg,
+              text: shortReportMsg,
               parse_mode: 'HTML'
             })
           });
@@ -4210,12 +4242,12 @@
             }
           }
         } catch (e) {
-          alert('Lỗi gửi tin nhắn KPI: ' + e.message);
+          alert('Lỗi gửi tin nhắn báo cáo: ' + e.message);
           return;
         }
       }
 
-      // 2. GỬI FILE VĂN BẢN WORD (.DOC) HOÀN CHỈNH
+      // 2. GỬI FILE VĂN BẢN WORD (.DOC) HOÀN CHỈNH KÈM LỜI NHẮN NGẮN GỌN
       if (sched.sendFullDocument !== false) {
         try {
           const wordHtml = buildReportHTMLForWord({
@@ -4238,7 +4270,7 @@
           const formData = new FormData();
           formData.append('chat_id', chatId);
           formData.append('document', blob, fileName);
-          formData.append('caption', `📄 <b>File Báo Cáo Hoàn Chỉnh (Word .doc):</b>\n${sched.name}\n👤 <i>Người lập: Trần Quốc Được</i>\n📤 <i>Nơi nhận: ${recipientText}</i>`);
+          formData.append('caption', shortReportMsg);
           formData.append('parse_mode', 'HTML');
 
           const docResp = await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
@@ -4296,66 +4328,40 @@
         recipientText = 'Phòng Văn hóa và Thông tin';
       }
 
-      let msg = `📋 <b>BÁO CÁO ${isParty ? 'CHI BỘ' : 'CÔNG TÁC TDTT'} - ${getPeriodTitle()}</b>\n`;
-      msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
-      msg += `👤 <b>Người lập:</b> Trần Quốc Được (${isParty ? 'Đảng viên' : 'Cán bộ TDTT'})\n`;
-      msg += `📤 <b>Gửi đến:</b> ${recipientText}\n`;
-      msg += `📅 <b>Khoảng thời gian:</b> ${formatDateVN(range.startDate)} ➔ ${formatDateVN(range.endDate)}\n\n`;
-      msg += `📊 <b>SỐ LIỆU TỔNG HỢP:</b>\n`;
-      msg += `• Hoạt động / Giải đấu: <b>${totalActs}</b> giải\n`;
-      msg += `• Lượt VĐV tham gia: <b>${totalParticipants.toLocaleString('vi-VN')}</b> lượt\n`;
-      msg += `• Thành tích huy chương: <b>${totalMedals}</b> HC (${totalGold}🥇, ${totalSilver}🥈, ${totalBronze}🥉)\n`;
-      msg += `• Tổng kinh phí giải ngân: <b>${totalBudget.toLocaleString('vi-VN')} đ</b>\n\n`;
-
-      if (list.length > 0) {
-        msg += `⭐ <b>DANH SÁCH GIẢI TIÊU BIỂU:</b>\n`;
-        list.slice(0, 5).forEach((a, i) => {
-          msg += `${i + 1}. <b>${a.title}</b> (${a.date}) - ${a.participants} VĐV\n`;
-          if (a.achievementNote) msg += `   ↳ <i>${a.achievementNote}</i>\n`;
-        });
-      }
-      msg += `\n📌 <i>Kính báo cáo ${recipientText} xem xét, theo dõi và tổng hợp.</i>`;
+      // Thông điệp ngắn gọn, lịch sự theo yêu cầu người dùng
+      const repTypeTitle = isParty ? 'Chi bộ' : 'công tác Thể dục Thể thao';
+      const cleanPeriod = getPeriodTitle().replace(/^BÁO CÁO\s*/i, '').trim();
+      const shortCaption = `Em gửi sếp báo cáo ${repTypeTitle} ${cleanPeriod.toLowerCase()} ạ!`;
 
       try {
-        // 1. Gửi tin nhắn tóm tắt
-        const resp = await fetch(`https://api.telegram.org/bot${settings.botToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: settings.chatId,
-            text: msg,
-            parse_mode: 'HTML'
-          })
-        });
-        const res = await resp.json();
-        if (!res.ok) {
-          if (res.description && res.description.toLowerCase().includes('chat not found')) {
-            alert('⚠️ Lỗi: Telegram báo "Bad Request: chat not found"!\n\nAnh chỉ cần mở con Bot của mình trên Telegram và bấm nút START (hoặc gửi 1 tin nhắn cho Bot), sau đó quay lại gửi lại là được ngay ạ!');
-            return;
-          } else {
-            throw new Error(res.description || 'Lỗi gửi tin nhắn.');
-          }
-        }
-
-        // 2. Đính kèm gửi luôn File Word .doc
+        // 1. Đính kèm gửi File Word .doc hoàn chỉnh kèm lời nhắn ngắn gọn
         const wordHtml = buildReportHTMLForWord();
         const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });
         const modeTag = isParty ? 'ChiBo' : 'TDTT';
-        const cleanPeriod = getPeriodTitle().replace(/[\s\/\\]+/g, '_');
-        const fileName = `BaoCao_${modeTag}_${cleanPeriod}_TranQuocDuoc.doc`;
+        const cleanFilePeriod = getPeriodTitle().replace(/[\s\/\\]+/g, '_');
+        const fileName = `BaoCao_${modeTag}_${cleanFilePeriod}_TranQuocDuoc.doc`;
 
         const formData = new FormData();
         formData.append('chat_id', settings.chatId);
         formData.append('document', blob, fileName);
-        formData.append('caption', `📄 <b>File Báo Cáo Hoàn Chỉnh (Word .doc):</b>\nBáo cáo ${getPeriodTitle()}\n👤 <i>Người lập: Trần Quốc Được</i>\n📤 <i>Nơi nhận: ${recipientText}</i>`);
+        formData.append('caption', shortCaption);
         formData.append('parse_mode', 'HTML');
 
-        await fetch(`https://api.telegram.org/bot${settings.botToken}/sendDocument`, {
+        const docResp = await fetch(`https://api.telegram.org/bot${settings.botToken}/sendDocument`, {
           method: 'POST',
           body: formData
         });
+        const docRes = await docResp.json();
+        if (!docRes.ok) {
+          if (docRes.description && docRes.description.toLowerCase().includes('chat not found')) {
+            alert('⚠️ Lỗi: Telegram báo "Bad Request: chat not found"!\n\nAnh chỉ cần mở con Bot của mình trên Telegram và bấm nút START (hoặc gửi 1 tin nhắn cho Bot), sau đó quay lại gửi lại là được ngay ạ!');
+            return;
+          } else {
+            throw new Error(docRes.description || 'Lỗi gửi file báo cáo qua Telegram.');
+          }
+        }
 
-        showToast('Đã gửi Telegram', `Báo cáo ${getPeriodTitle()} và file Word .doc đã được gửi vào Telegram của anh Được.`);
+        showToast('Đã gửi Telegram', `Đã gửi báo cáo "${shortCaption}" vào Telegram của anh Được.`);
       } catch (err) {
         alert('Lỗi kết nối Telegram: ' + err.message);
       }
