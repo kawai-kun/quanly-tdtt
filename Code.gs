@@ -542,16 +542,16 @@ function scheduledTelegramReportTrigger() {
     var today = new Date();
     var curDay = today.getDate();
 
-    // 1. Nhắc nhở Đại ca vào ngày 9 (trước BC Nhà nước) và ngày 29 (trước BC Chi bộ)
+    // 1. Nhắc nhở vào ngày 9 (trước BC Nhà nước) và ngày 29 (trước BC Chi bộ)
     if (curDay === 9 || curDay === 29) {
       var bcType = (curDay === 9) ? 'Nhà nước (ngày 10)' : 'Chi bộ (ngày 30)';
       var reminderMsg = '🔔 <b>HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO</b>\n' +
                         '📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n\n' +
-                        '👋 <b>Đại ca ơi, ngày mai em làm báo cáo tháng (' + bcType + '), Đại ca xem có gì cần nhập thêm không ạ!</b>\n\n' +
+                        '👋 <b>Sếp ơi, ngày mai em làm báo cáo tháng (' + bcType + '), Sếp xem có gì cần bổ sung không ạ!</b>\n\n' +
                         '📊 Hiện có: <b>' + (data.activities || []).length + '</b> giải đấu trên hệ thống.\n' +
                         '🔗 <i>Đường link cập nhật:</i> https://kawai-kun.github.io/quanly-tdtt/';
       sendTelegramMessage(token, chat, reminderMsg);
-      Logger.log('Sent Dai Ca reminder message on day: ' + curDay);
+      Logger.log('Sent reminder message on day: ' + curDay);
     }
 
     // 2. Chạy gửi báo cáo theo lịch cấu hình đã thiết lập

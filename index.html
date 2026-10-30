@@ -523,6 +523,15 @@
         viewMode: 'cards'
       },
 
+      // Kế hoạch & Chỉ tiêu Thi đua năm
+      kpiTargets: lsGet('tk_kpi_targets', {
+        targetActivities: 20,
+        targetParticipants: 1500,
+        targetMedals: 30,
+        targetClubs: 5,
+        planTitle: 'Kế hoạch phát triển TDTT Phường Tân Khai năm 2026'
+      }),
+
       mobileDrawerOpen: false
     };
 
@@ -694,6 +703,7 @@
       lsSet('tk_rep_recipient', state.reportRecipient);
       lsSet('tk_telegram_settings', state.telegramSettings);
       lsSet('tk_telegram_schedules', state.telegramSchedules);
+      lsSet('tk_kpi_targets', state.kpiTargets);
       queueAutoSync();
     }
 
@@ -1130,6 +1140,9 @@
             </div>
           </div>
 
+          <!-- Tiến Độ Chỉ Tiêu Thi Đua Năm (Kế Hoạch vs Thực Hiện) -->
+          ${renderKpiProgressCard(filteredActs, totalActs, totalParticipants, totalMedals)}
+
           <!-- Charts Row (Chart.js) -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div class="p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
@@ -1209,6 +1222,220 @@
 
         </div>
       `;
+    }
+
+    function renderKpiProgressCard(filteredActs, totalActs, totalParticipants, totalMedals) {
+      const kpi = state.kpiTargets || {
+        targetActivities: 20,
+        targetParticipants: 1500,
+        targetMedals: 30,
+        targetClubs: 5,
+        planTitle: 'Kế hoạch phát triển TDTT Phường Tân Khai năm 2026'
+      };
+
+      const actPct = Math.round((totalActs / (kpi.targetActivities || 20)) * 100);
+      const partPct = Math.round((totalParticipants / (kpi.targetParticipants || 1500)) * 100);
+      const medalPct = Math.round((totalMedals / (kpi.targetMedals || 30)) * 100);
+      const clubCount = (state.clubs || []).length;
+      const clubPct = Math.round((clubCount / (kpi.targetClubs || 5)) * 100);
+
+      // Điểm đánh giá trung bình
+      const avgPct = Math.round((actPct + partPct + medalPct + clubPct) / 4);
+
+      let badgeBg = 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
+      let badgeText = `⭐ XUẤT SẮC - VƯỢT CHỈ TIÊU (${avgPct}%)`;
+      let noteText = 'Phong trào TDTT Phường Tân Khai đã hoàn thành và vượt mức toàn bộ các chỉ tiêu kế hoạch năm được giao.';
+
+      if (avgPct < 80) {
+        badgeBg = 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30';
+        badgeText = `⏳ TIẾP TỤC TRIỂN KHAI (${avgPct}%)`;
+        noteText = 'Đang tiếp tục tổ chức các giải đấu và hoạt động phong trào để hoàn thành chỉ tiêu năm.';
+      } else if (avgPct < 100) {
+        badgeBg = 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30';
+        badgeText = `✓ ĐẠT KẾ HOẠCH NĂM (${avgPct}%)`;
+        noteText = 'Đã cơ bản đạt các chỉ tiêu đề ra, đang duy trì ổn định phong trào cơ sở.';
+      }
+
+      return `
+        <div class="p-5 sm:p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin space-y-4">
+          <!-- Header Card -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/70 dark:border-slate-800/70">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="w-8 h-8 rounded-xl bg-brand-700 text-white flex items-center justify-center shadow-sm">
+                  <span class="material-symbols-outlined text-[18px]">flag</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">
+                  Tiến Độ Thực Hiện Chỉ Tiêu Thi Đua Năm ${state.selectedYear === 'all' ? '2026' : state.selectedYear}
+                </h3>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${badgeBg}">
+                  ${badgeText}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                ${kpi.planTitle || 'Kế hoạch phát triển TDTT Phường Tân Khai'} • ${noteText}
+              </p>
+            </div>
+
+            <button onclick="openKpiTargetsModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all self-start sm:self-auto btn-press" title="Điều chỉnh các con số kế hoạch được giao">
+              <span class="material-symbols-outlined text-[16px]">tune</span>
+              <span>Cài đặt chỉ tiêu</span>
+            </button>
+          </div>
+
+          <!-- 4 Progress Bars Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- 1. Chỉ tiêu Giải đấu -->
+            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-emerald-600">emoji_events</span>
+                  <span>Giải đấu tổ chức</span>
+                </span>
+                <span class="text-xs font-extrabold ${actPct >= 100 ? 'text-emerald-600' : 'text-slate-600'}">${actPct}%</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(actPct, 100)}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500">
+                <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalActs}</b> giải</span>
+                <span>Chỉ tiêu: <b class="font-mono">${kpi.targetActivities || 20}</b></span>
+              </div>
+            </div>
+
+            <!-- 2. Chỉ tiêu Lượt VĐV -->
+            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-sky-600">groups</span>
+                  <span>Lượt VĐV tham gia</span>
+                </span>
+                <span class="text-xs font-extrabold ${partPct >= 100 ? 'text-sky-600' : 'text-slate-600'}">${partPct}%</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-sky-500 to-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(partPct, 100)}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500">
+                <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalParticipants.toLocaleString('vi-VN')}</b></span>
+                <span>Chỉ tiêu: <b class="font-mono">${(kpi.targetParticipants || 1500).toLocaleString('vi-VN')}</b></span>
+              </div>
+            </div>
+
+            <!-- 3. Chỉ tiêu Huy chương -->
+            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-amber-500">military_tech</span>
+                  <span>Thành tích Huy chương</span>
+                </span>
+                <span class="text-xs font-extrabold ${medalPct >= 100 ? 'text-amber-600' : 'text-slate-600'}">${medalPct}%</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(medalPct, 100)}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500">
+                <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalMedals}</b> HC</span>
+                <span>Chỉ tiêu: <b class="font-mono">${kpi.targetMedals || 30}</b> HC</span>
+              </div>
+            </div>
+
+            <!-- 4. Duy trì CLB cơ sở -->
+            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-purple-600">diversity_3</span>
+                  <span>CLB TDTT duy trì</span>
+                </span>
+                <span class="text-xs font-extrabold ${clubPct >= 100 ? 'text-purple-600' : 'text-slate-600'}">${clubPct}%</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(clubPct, 100)}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500">
+                <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${clubCount}</b> CLB</span>
+                <span>Chỉ tiêu: <b class="font-mono">${kpi.targetClubs || 5}</b> CLB</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function openKpiTargetsModal() {
+      const kpi = state.kpiTargets || {
+        targetActivities: 20,
+        targetParticipants: 1500,
+        targetMedals: 30,
+        targetClubs: 5,
+        planTitle: 'Kế hoạch phát triển TDTT Phường Tân Khai năm 2026'
+      };
+
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Thiết Lập Chỉ Tiêu Thi Đua Năm</h3>
+              <p class="text-[11px] text-slate-400">Căn cứ theo Kế hoạch UBND phường và Trung tâm DVTH giao</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveKpiTargets(event)" class="mt-4 space-y-3 text-xs">
+            <div>
+              <label class="block font-bold mb-1">Tên Kế hoạch / Căn cứ giao chỉ tiêu</label>
+              <input id="kpi_title" type="text" value="${kpi.planTitle || 'Kế hoạch phát triển TDTT Phường Tân Khai năm 2026'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-800 dark:text-slate-100" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Chỉ tiêu Giải đấu (giải)</label>
+                <input id="kpi_acts" type="number" min="1" value="${kpi.targetActivities || 20}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Chỉ tiêu Lượt VĐV (lượt)</label>
+                <input id="kpi_parts" type="number" min="1" value="${kpi.targetParticipants || 1500}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Chỉ tiêu Huy chương (HC)</label>
+                <input id="kpi_medals" type="number" min="0" value="${kpi.targetMedals || 30}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Chỉ tiêu Duy trì CLB (CLB)</label>
+                <input id="kpi_clubs" type="number" min="1" value="${kpi.targetClubs || 5}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu chỉ tiêu</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function handleSaveKpiTargets(e) {
+      e.preventDefault();
+      state.kpiTargets = {
+        planTitle: document.getElementById('kpi_title').value.trim() || 'Kế hoạch phát triển TDTT Phường Tân Khai',
+        targetActivities: parseInt(document.getElementById('kpi_acts').value) || 20,
+        targetParticipants: parseInt(document.getElementById('kpi_parts').value) || 1500,
+        targetMedals: parseInt(document.getElementById('kpi_medals').value) || 30,
+        targetClubs: parseInt(document.getElementById('kpi_clubs').value) || 5
+      };
+      saveAll();
+      closeModal();
+      showToast('Đã lưu chỉ tiêu thi đua', 'Hệ thống đã cập nhật tỷ lệ hoàn thành kế hoạch năm.');
+      renderApp();
     }
 
     function handleDashboardSearch(query) {
@@ -3332,20 +3559,20 @@
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-900 dark:text-white">Trợ lý Nhắc lịch Báo cáo ("Đại ca ơi...")</span>
+                    <span class="text-xs font-bold text-slate-900 dark:text-white">Trợ lý Nhắc lịch Báo cáo ("Sếp ơi...")</span>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">Tự động (Ngày 9 & 29)</span>
                   </div>
                   <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
                     Vào <b>ngày 9</b> (trước hạn nộp BC Nhà nước) và <b>ngày 29</b> (trước hạn nộp BC Chi bộ), Bot tự động gửi tin nhắn thân mật nhắc anh Được rà soát dữ liệu.
                   </p>
                   <p class="text-[10.5px] text-amber-800 dark:text-amber-300 mt-1 font-mono italic bg-amber-100/60 dark:bg-amber-950/40 px-2 py-1 rounded-lg">
-                    "👋 Đại ca ơi, ngày mai em làm báo cáo tháng, Đại ca xem có gì cần nhập thêm không ạ!"
+                    "👋 Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!"
                   </p>
                 </div>
               </div>
               <button onclick="sendDaiCaReminderTelegram(true)" title="Bấm để gửi thử tin nhắn này ngay vào Telegram" class="shrink-0 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm btn-press">
                 <span class="material-symbols-outlined text-[15px]">send</span>
-                <span>Gửi thử tin nhắc Đại ca</span>
+                <span>Gửi thử tin nhắc Sếp</span>
               </button>
             </div>
           </div>
@@ -3833,14 +4060,14 @@
       let msg = `🔔 <b>HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO</b>\n`;
       msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
       msg += `📅 Ngày gửi nhắc: <b>${dateStr}</b>\n\n`;
-      msg += `👋 <b>Đại ca ơi, ngày mai em làm báo cáo tháng, Đại ca xem có gì cần nhập thêm không ạ!</b>\n\n`;
+      msg += `👋 <b>Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!</b>\n\n`;
       msg += `📊 <b>Tình hình dữ liệu hiện tại trên hệ thống:</b>\n`;
       msg += `• Tổng số giải đấu ghi nhận: <b>${(state.activities || []).length}</b> giải\n`;
       msg += `• Giải đấu ⏳ <b>Chưa lập báo cáo:</b> <b>${unrepCount}</b> giải\n`;
       if (latest && latest.title) {
         msg += `• Hoạt động gần nhất (#1): <i>${latest.title}</i> (${latest.date})\n`;
       }
-      msg += `\n🔗 <i>Đại ca có thể bấm vào đường link để rà soát dữ liệu:</i>\nhttps://kawai-kun.github.io/quanly-tdtt/`;
+      msg += `\n🔗 <i>Sếp có thể bấm vào đường link để rà soát dữ liệu:</i>\nhttps://kawai-kun.github.io/quanly-tdtt/`;
 
       try {
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -3856,7 +4083,7 @@
         const res = await resp.json();
         if (res.ok) {
           if (isManual) {
-            alert('🎉 Tuyệt vời! Đã gửi tin nhắn nhắc nhở "Đại ca ơi..." vào Telegram của anh Trần Quốc Được!');
+            alert('🎉 Tuyệt vời! Đã gửi tin nhắn nhắc nhở "Sếp ơi..." vào Telegram của anh Trần Quốc Được!');
           }
           return true;
         } else {
