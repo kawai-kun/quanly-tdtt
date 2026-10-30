@@ -75,6 +75,17 @@ function doGet(e) {
           message: trigRes.message,
           timestamp: new Date().toISOString()
         };
+      } else if (action === 'setTelegramWebhook') {
+        var webAppUrl = e.parameter.webAppUrl || ScriptApp.getService().getUrl();
+        var token = e.parameter.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+        var webhookRes = registerTelegramWebhook(token, webAppUrl);
+        result = {
+          success: true,
+          message: 'Đã kích hoạt Webhook Telegram thành công!',
+          webAppUrl: webAppUrl,
+          telegramResponse: webhookRes,
+          timestamp: new Date().toISOString()
+        };
       } else {
         result = {
           success: false,
@@ -128,7 +139,12 @@ function doPost(e) {
     var contents = e.postData.contents;
     var body = JSON.parse(contents);
 
-    // Dữ liệu có thể được bọc trong field data hoặc gửi trực tiếp
+    // 1. Phân biệt Telegram Webhook (Nhận lệnh từ Telegram Bot)
+    if (body.update_id || body.message || body.callback_query) {
+      return handleTelegramWebhook(body);
+    }
+
+    // 2. Dữ liệu có thể được bọc trong field data hoặc gửi trực tiếp từ Web App
     var appData = body.data || body;
     var saveResult = saveAppData(appData);
 
@@ -147,8 +163,8 @@ function doPost(e) {
     var errorResponse = {
       success: false,
       status: 'error',
-      error: 'Lỗi khi đồng bộ lên Google Sheet: ' + err.toString(),
-      message: 'Lỗi khi đồng bộ lên Google Sheet: ' + err.toString(),
+      error: 'Lỗi khi xử lý: ' + err.toString(),
+      message: 'Lỗi khi xử lý: ' + err.toString(),
       timestamp: new Date().toISOString()
     };
     return ContentService.createTextOutput(JSON.stringify(errorResponse))
@@ -629,4 +645,414 @@ function setupTelegramTrigger(scheduleType) {
   }
 
   return { success: true, message: 'Đã kích hoạt lịch tự động gửi báo cáo Telegram (' + scheduleType + ').' };
+}
+
+/**
+ * ==============================================================================
+ * TRỢ LÝ ẢO TELEGRAM 2 CHIỀU (INTERACTIVE BOT - NHẬN LỆNH & THÊM GIẢI QUA TIN NHẮN)
+ * ==============================================================================
+ */
+
+/**
+ * Đăng ký Webhook Telegram liên kết với Google Apps Script Web App
+ */
+function registerTelegramWebhook(token, webAppUrl) {
+  if (!token || !webAppUrl) {
+    throw new Error('Thiếu Bot Token hoặc Web App URL');
+  }
+  var url = 'https://api.telegram.org/bot' + encodeURIComponent(token) + '/setWebhook?url=' + encodeURIComponent(webAppUrl);
+  var resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  return JSON.parse(resp.getContentText());
+}
+
+/**
+ * Xử lý sự kiện tin nhắn người dùng gửi tới Bot qua Webhook
+ */
+function handleTelegramWebhook(update) {
+  try {
+    if (!update || !update.message) {
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var msgObj = update.message;
+    var chatId = String(msgObj.chat.id);
+    var rawText = (msgObj.text || '').trim();
+    var lowerText = rawText.toLowerCase();
+
+    var data = getAppData() || {};
+    var token = (data.telegramSettings && data.telegramSettings.botToken) || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+    var myChatId = (data.telegramSettings && String(data.telegramSettings.chatId)) || '6403485662';
+
+    // 1. Kiểm tra quyền hạn bảo mật: Chỉ phục vụ đồng chí Trần Quốc Được
+    if (chatId !== myChatId) {
+      sendTelegramMessage(token, chatId, '⚠️ <b>TRUY CẬP BỊ TỪ CHỐI</b>\n\nXin lỗi, tôi là trợ lý nghiệp vụ độc quyền của đồng chí <b>Trần Quốc Được</b> (Cán bộ phụ trách Thể dục thể thao Phường Tân Khai).');
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 2. NHÓM LỆNH: YÊU CẦU MẪU ĐIỀN FORM THÊM GIẢI ĐẤU
+    if (lowerText === '/themgiai' || lowerText === 'thêm giải' || lowerText === 'them giai' || lowerText === 'cập nhật giải' || lowerText === 'cap nhat giai' || lowerText === 'nhập giải' || lowerText === 'nhap giai') {
+      var template = '📝 <b>MẪU CẬP NHẬT GIẢI ĐẤU MỚI</b>\n\n' +
+                     'Anh Được bấm giữ để <b>Sao chép (Copy)</b> mẫu bên dưới, sửa lại thông tin thực tế rồi gửi lại cho em nhé:\n\n' +
+                     '<code>Tên giải: \n' +
+                     'Ngày: 15/10/2026\n' +
+                     'Bộ môn: Bóng đá\n' +
+                     'Số VĐV: 60\n' +
+                     'Địa điểm: Trung tâm DVTH Phường Tân Khai\n' +
+                     'Huy chương: 1 vàng, 1 bạc, 2 đồng\n' +
+                     'Kinh phí: 15.000.000\n' +
+                     'Ghi chú: Đạt giải Nhất toàn đoàn</code>';
+      sendTelegramMessage(token, chatId, template);
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 3. NHÓM LỆNH: NHẬN DỮ LIỆU ĐIỀN FORM VỪA GỬI ĐỂ LƯU VÀO HỆ THỐNG
+    if (lowerText.indexOf('tên giải:') !== -1 || lowerText.indexOf('ten giai:') !== -1 || (lowerText.indexOf('tên:') !== -1 && lowerText.indexOf('ngày:') !== -1)) {
+      var addRes = parseAndAddNewActivity(rawText, data);
+      if (addRes.success) {
+        saveAppData(data); // Lưu trực tiếp vào Google Sheet trên Drive
+        var act = addRes.activity;
+        var reply = '✅ <b>ĐÃ THÊM GIẢI ĐẤU THÀNH CÔNG VÀO HỆ THỐNG!</b>\n\n' +
+                    '🏆 <b>Tên giải:</b> ' + act.title + '\n' +
+                    '🏷️ <b>Mã giải:</b> ' + act.code + ' (Vị trí #1 Mới nhất)\n' +
+                    '📅 <b>Ngày tổ chức:</b> ' + act.date + '\n' +
+                    '⚽ <b>Bộ môn:</b> ' + act.sport + '\n' +
+                    '👥 <b>Quy mô:</b> ' + act.participants + ' VĐV | 📍 ' + act.location + '\n' +
+                    '🥇 <b>Thành tích:</b> ' + act.totalMedals + ' HC (' + act.goldMedals + '🥇, ' + act.silverMedals + '🥈, ' + act.bronzeMedals + '🥉)\n' +
+                    (act.achievementNote ? ('⭐ <b>Điểm nhấn:</b> ' + act.achievementNote + '\n') : '') +
+                    '💰 <b>Kinh phí:</b> ' + (act.budgetTotal || 0).toLocaleString('vi-VN') + ' đ\n\n' +
+                    '🌐 <i>Dữ liệu đã tự động đồng bộ lên Google Sheet & hệ thống web của anh!</i>';
+        sendTelegramMessage(token, chatId, reply);
+      } else {
+        sendTelegramMessage(token, chatId, '⚠️ <b>Lỗi khi thêm giải:</b> ' + addRes.error + '\n\nAnh Được hãy kiểm tra lại mẫu form hoặc gõ <b>Thêm giải</b> để lấy lại mẫu chuẩn nhé.');
+      }
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 4. NHÓM LỆNH: YÊU CẦU XUẤT VÀ GỬI BÁO CÁO QUA TIN NHẮN
+    if (lowerText.indexOf('báo cáo') !== -1 || lowerText.indexOf('bao cao') !== -1) {
+      var isParty = lowerText.indexOf('chi bộ') !== -1 || lowerText.indexOf('chibo') !== -1;
+      var curM = new Date().getMonth() + 1;
+      var curY = new Date().getFullYear();
+
+      // Nhận diện tháng
+      var monthMatch = lowerText.match(/tháng\s*(\d+)/i) || lowerText.match(/thg\s*(\d+)/i) || lowerText.match(/t\s*(\d+)/i);
+      if (monthMatch && monthMatch[1]) {
+        curM = parseInt(monthMatch[1]);
+      }
+
+      // Nhận diện quý
+      var quarterMatch = lowerText.match(/quý\s*(\d+)/i) || lowerText.match(/quy\s*(\d+)/i) || lowerText.match(/q\s*(\d+)/i);
+      var isQuarter = !!quarterMatch;
+      var curQ = isQuarter ? parseInt(quarterMatch[1]) : 1;
+
+      var repType = isParty ? 'Chi bộ' : 'công tác Thể dục Thể thao';
+      var timeText = isQuarter ? ('Quý ' + curQ + ' năm ' + curY) : ('tháng ' + curM + ' năm ' + curY);
+
+      // Tạo Blob Word và gửi
+      var wordBlob = generateReportWordBlob(data, isParty, isQuarter ? 'quarter' : 'month', curM, curQ, curY);
+      var fileName = 'BaoCao_' + (isParty ? 'ChiBo' : 'TDTT') + '_' + (isQuarter ? ('Q' + curQ) : ('T' + curM)) + '_' + curY + '_TranQuocDuoc.doc';
+      var caption = 'Em gửi sếp báo cáo ' + repType + ' ' + timeText + ' ạ!';
+
+      sendTelegramDocument(token, chatId, wordBlob, fileName, caption);
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 5. NHÓM LỆNH: TRA CỨU TIẾN ĐỘ THI ĐUA / CHỈ TIÊU (KPI)
+    if (lowerText === '/kpi' || lowerText === 'kpi' || lowerText.indexOf('tiến độ') !== -1 || lowerText.indexOf('tien do') !== -1 || lowerText.indexOf('chỉ tiêu') !== -1) {
+      var kpiReply = generateKpiStatusMessage(data);
+      sendTelegramMessage(token, chatId, kpiReply);
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 6. NHÓM LỆNH: GIẢI ĐẤU MỚI NHẤT
+    if (lowerText.indexOf('mới nhất') !== -1 || lowerText.indexOf('moi nhat') !== -1 || lowerText === '/latest') {
+      var acts = data.activities || [];
+      if (acts.length === 0) {
+        sendTelegramMessage(token, chatId, 'Hệ thống hiện chưa ghi nhận giải đấu nào.');
+      } else {
+        var top1 = acts[0];
+        var top1Msg = '⭐ <b>GIẢI ĐẤU MỚI TỔ CHỨC GẦN ĐÂY NHẤT (#1):</b>\n\n' +
+                      '🏆 <b>' + top1.title + '</b>\n' +
+                      '🏷️ Mã giải: <b>' + top1.code + '</b> | Ngày: <b>' + top1.date + '</b>\n' +
+                      '⚽ Bộ môn: ' + top1.sport + ' | Cấp độ: ' + top1.category + '\n' +
+                      '👥 Quy mô: ' + (top1.participants || 0) + ' VĐV | 📍 ' + top1.location + '\n' +
+                      '🥇 Thành tích: ' + (top1.totalMedals || 0) + ' HC (' + (top1.goldMedals || 0) + '🥇, ' + (top1.silverMedals || 0) + '🥈, ' + (top1.bronzeMedals || 0) + '🥉)\n' +
+                      (top1.achievementNote ? ('🎖️ Điểm nhấn: ' + top1.achievementNote + '\n') : '') +
+                      '💰 Kinh phí: ' + (top1.budgetTotal || 0).toLocaleString('vi-VN') + ' đ\n\n' +
+                      '📌 <i>Đang xếp ở vị trí số 1 trên hệ thống.</i>';
+        sendTelegramMessage(token, chatId, top1Msg);
+      }
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 7. NHÓM LỆNH: MẠNG LƯỚI & DANH BẠ CLB
+    if (lowerText.indexOf('clb') !== -1 || lowerText.indexOf('danh bạ') !== -1 || lowerText.indexOf('danh ba') !== -1) {
+      var clubs = data.clubs || [];
+      var clbMsg = '🤝 <b>MẠNG LƯỚI CÂU LẠC BỘ TDTT CƠ SỞ (' + clubs.length + ' CLB):</b>\n\n';
+      for (var c = 0; c < clubs.length; c++) {
+        var clb = clubs[c];
+        clbMsg += (c + 1) + '. <b>' + clb.name + '</b> (' + (clb.membersCount || 0) + ' HV)\n' +
+                  '   👤 Chủ nhiệm: ' + (clb.leaderName || 'Đang cập nhật') + ' - 📞 <code>' + (clb.leaderPhone || 'Chưa có SĐT') + '</code>\n';
+      }
+      sendTelegramMessage(token, chatId, clbMsg);
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 8. TIN NHẮN MẶC ĐỊNH / MENU HƯỚNG DẪN (/start, /help)
+    var helpMsg = '👋 <b>KÍNH CHÀO SẾP TRẦN QUỐC ĐƯỢC!</b>\n' +
+                  '<i>Em là Trợ lý ảo Quản lý TDTT Phường Tân Khai.</i>\n\n' +
+                  'Sếp có thể nhắn tin cho em các câu lệnh sau:\n\n' +
+                  '1️⃣ <b>Thêm giải:</b> Nhận mẫu form điền để thêm giải mới vào hệ thống.\n' +
+                  '2️⃣ <b>Gửi tôi báo cáo chi bộ tháng 9:</b> Xuất và gửi ngay file Word báo cáo Chi bộ.\n' +
+                  '3️⃣ <b>Báo cáo TDTT tháng 10:</b> Xuất và gửi file Word báo cáo Nhà nước.\n' +
+                  '4️⃣ <b>KPI</b> hoặc <b>Tiến độ:</b> Xem tỷ lệ hoàn thành chỉ tiêu năm.\n' +
+                  '5️⃣ <b>Giải mới nhất:</b> Xem thông tin giải đấu #1.\n' +
+                  '6️⃣ <b>CLB:</b> Xem danh bạ và SĐT các Chủ nhiệm CLB.';
+    sendTelegramMessage(token, chatId, helpMsg);
+    return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    Logger.log('Error handleTelegramWebhook: ' + err.toString());
+    return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Phân tích chuỗi form nhập giải đấu từ tin nhắn của người dùng và lưu vào data
+ */
+function parseAndAddNewActivity(text, data) {
+  var lines = text.split('\n');
+  var fields = {};
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    var colonIdx = line.indexOf(':');
+    if (colonIdx !== -1) {
+      var key = line.substring(0, colonIdx).trim().toLowerCase();
+      var val = line.substring(colonIdx + 1).trim();
+      fields[key] = val;
+    }
+  }
+
+  var title = fields['tên giải'] || fields['ten giai'] || fields['tên'] || fields['ten'];
+  if (!title) {
+    return { success: false, error: 'Chưa nhập Tên giải đấu.' };
+  }
+
+  // Chuẩn hóa Tên giải
+  title = title.replace(/\s+/g, ' ').trim();
+  title = title.split(' ').map(function(w) {
+    return w ? (w.charAt(0).toUpperCase() + w.slice(1)) : '';
+  }).join(' ');
+
+  var date = fields['ngày'] || fields['ngay'] || '';
+  if (!date) {
+    var now = new Date();
+    date = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+  }
+
+  var sport = fields['bộ môn'] || fields['bo mon'] || fields['môn'] || fields['mon'] || '';
+  if (!sport) {
+    var lowerTitle = title.toLowerCase();
+    if (lowerTitle.indexOf('bóng đá') !== -1) sport = 'Bóng đá';
+    else if (lowerTitle.indexOf('cầu lông') !== -1) sport = 'Cầu lông';
+    else if (lowerTitle.indexOf('bóng chuyền') !== -1) sport = 'Bóng chuyền';
+    else if (lowerTitle.indexOf('pickleball') !== -1) sport = 'Pickleball';
+    else if (lowerTitle.indexOf('cờ tướng') !== -1 || lowerTitle.indexOf('cờ vua') !== -1) sport = 'Cờ tướng';
+    else if (lowerTitle.indexOf('điền kinh') !== -1 || lowerTitle.indexOf('chạy') !== -1) sport = 'Điền kinh';
+    else sport = 'Thể thao tổng hợp';
+  }
+
+  var participants = parseInt((fields['số vđv'] || fields['so vdv'] || fields['vđv'] || fields['vdv'] || '60').replace(/[^\d]/g, '')) || 60;
+  var location = fields['địa điểm'] || fields['dia diem'] || 'Trung tâm Dịch vụ tổng hợp Phường Tân Khai';
+  var note = fields['ghi chú'] || fields['ghi chu'] || fields['thành tích'] || fields['thanh tich'] || '';
+
+  // Phân tích huy chương
+  var medalsStr = (fields['huy chương'] || fields['huy chuong'] || '').toLowerCase();
+  var gold = 0, silver = 0, bronze = 0;
+  var goldM = medalsStr.match(/(\d+)\s*(?:vàng|vang|hcv)/i);
+  if (goldM) gold = parseInt(goldM[1]) || 0;
+  var silverM = medalsStr.match(/(\d+)\s*(?:bạc|bac|hcb)/i);
+  if (silverM) silver = parseInt(silverM[1]) || 0;
+  var bronzeM = medalsStr.match(/(\d+)\s*(?:đồng|dong|hcđ|hcd)/i);
+  if (bronzeM) bronze = parseInt(bronzeM[1]) || 0;
+
+  // Nếu người dùng chỉ gõ 1 số (vd: "3 huy chương" hoặc "3")
+  if (gold === 0 && silver === 0 && bronze === 0) {
+    var singleNum = parseInt(medalsStr.replace(/[^\d]/g, '')) || 0;
+    if (singleNum > 0) gold = singleNum;
+  }
+  var totalMedals = gold + silver + bronze;
+
+  // Kinh phí
+  var budgetStr = (fields['kinh phí'] || fields['kinh phi'] || fields['tiền'] || '0').replace(/[^\d]/g, '');
+  var budgetTotal = parseInt(budgetStr) || 0;
+  var budgetWard = Math.round(budgetTotal * 0.7);
+  var budgetPrize = budgetTotal - budgetWard;
+
+  if (!data.activities) data.activities = [];
+  var newCode = 'T-' + String(data.activities.length + 1).padStart(2, '0');
+
+  var pDate = date.split('/');
+  var year = pDate.length === 3 ? parseInt(pDate[2]) : new Date().getFullYear();
+  var month = pDate.length === 3 ? parseInt(pDate[1]) : (new Date().getMonth() + 1);
+  var quarter = Math.floor((month - 1) / 3) + 1;
+
+  var item = {
+    id: 'act-' + new Date().getTime(),
+    code: newCode,
+    title: title,
+    sport: sport,
+    category: 'Cấp phường',
+    date: date,
+    year: year,
+    quarter: quarter,
+    month: month,
+    participants: participants,
+    participantsUnit: 'VĐV',
+    location: location,
+    achievementNote: note,
+    isReported: false,
+    reportedInReport: null,
+    status: 'Đã hoàn thành',
+    goldMedals: gold,
+    silverMedals: silver,
+    bronzeMedals: bronze,
+    totalMedals: totalMedals,
+    budgetWard: budgetWard,
+    budgetPrize: budgetPrize,
+    budgetTotal: budgetTotal,
+    budgetStatus: 'Đã quyết toán'
+  };
+
+  // Đưa lên đầu danh sách (Vị trí #1 Mới nhất)
+  data.activities.unshift(item);
+
+  return { success: true, activity: item };
+}
+
+/**
+ * Tạo file Word Báo cáo chuẩn thể thức hành chính từ dữ liệu Google Sheet
+ */
+function generateReportWordBlob(data, isParty, periodType, month, quarter, year) {
+  var acts = data.activities || [];
+  var filteredActs = [];
+
+  // Lọc hoạt động theo kỳ
+  if (periodType === 'quarter') {
+    filteredActs = acts.filter(function(a) {
+      return a.quarter === quarter && a.year === year;
+    });
+  } else {
+    // Tháng
+    if (isParty) {
+      // Chi bộ: từ ngày 1 đến cuối tháng
+      filteredActs = acts.filter(function(a) {
+        return a.month === month && a.year === year;
+      });
+    } else {
+      // Nhà nước: từ ngày 10 tháng trước đến ngày 10 tháng này
+      filteredActs = acts.filter(function(a) {
+        return (a.month === month && a.year === year) || (a.isCarryOver);
+      });
+    }
+  }
+
+  var recipientText = isParty ? 'Chi bộ Trung tâm Dịch vụ Tổng hợp' : 'Văn phòng Trung tâm Dịch vụ Tổng hợp';
+  var timeTitle = periodType === 'quarter' ? ('QUÝ ' + quarter + ' NĂM ' + year) : ('THÁNG ' + month + ' NĂM ' + year);
+
+  var totalParticipants = 0, totalMedals = 0, totalGold = 0, totalSilver = 0, totalBronze = 0, totalBudget = 0;
+  for (var i = 0; i < filteredActs.length; i++) {
+    totalParticipants += parseInt(filteredActs[i].participants) || 0;
+    totalMedals += parseInt(filteredActs[i].totalMedals) || 0;
+    totalGold += parseInt(filteredActs[i].goldMedals) || 0;
+    totalSilver += parseInt(filteredActs[i].silverMedals) || 0;
+    totalBronze += parseInt(filteredActs[i].bronzeMedals) || 0;
+    totalBudget += parseInt(filteredActs[i].budgetTotal) || 0;
+  }
+
+  var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+    '<head><meta charset="utf-8"><style>' +
+    'body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-height: 1.6; color: #000; margin: 20mm; }' +
+    'h1, h2, h3 { font-family: "Times New Roman", Times, serif; text-align: center; }' +
+    'table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }' +
+    'th, td { border: 1px solid #000; padding: 6px 8px; font-size: 13pt; text-align: left; }' +
+    'th { background-color: #f2f2f2; text-align: center; font-weight: bold; }' +
+    '</style></head><body>' +
+    '<table style="border:none; margin-bottom: 20px;">' +
+    '<tr style="border:none;">' +
+    '<td style="border:none; width: 45%; text-align: center; vertical-align: top;">' +
+    '<b>UBND PHƯỜNG TÂN KHAI</b><br><b>TRUNG TÂM DỊCH VỤ TỔNG HỢP</b><br>────────' +
+    '</td>' +
+    '<td style="border:none; width: 55%; text-align: center; vertical-align: top;">' +
+    '<b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br><b>Độc lập - Tự do - Hạnh phúc</b><br>────────' +
+    '</td></tr></table>' +
+    '<h2 style="margin-bottom: 4px;">KẾT QUẢ THỰC HIỆN NHIỆM VỤ CÔNG TÁC THỂ DỤC THỂ THAO ' + timeTitle + '</h2>' +
+    '<p style="text-align: center; font-style: italic; margin-top: 0;">' + (isParty ? '(Phục vụ sinh hoạt Chi bộ định kỳ)' : '(Gửi Văn phòng Trung tâm DVTH)') + '</p>' +
+    '<p><b>Kính gửi:</b> ' + recipientText + '</p>' +
+    '<p>Họ và tên người báo cáo: <b>Trần Quốc Được</b><br>' +
+    'Chức danh / Vị trí: ' + (isParty ? 'Đảng viên - Cán bộ phụ trách Thể dục Thể thao' : 'Cán bộ phụ trách Thể dục Thể thao') + '<br>' +
+    'Lĩnh vực phụ trách: Thể dục thể thao và Thể dục thể thao thanh thiếu nhi.</p>' +
+    '<p>Thực hiện nhiệm vụ chuyên môn được phân công, bộ phận Thể dục thể thao kính báo cáo kết quả tổ chức các hoạt động và phát triển phong trào TDTT ' + timeTitle.toLowerCase() + ' như sau:</p>' +
+    '<p><b>I. CÔNG TÁC TỔ CHỨC CÁC HOẠT ĐỘNG THỂ DỤC THỂ THAO CẤP PHƯỜNG</b></p>';
+
+  if (filteredActs.length === 0) {
+    html += '<p><i>Trong kỳ báo cáo, không phát sinh giải đấu quy mô lớn. Duy trì các hoạt động tập luyện thể thao thường xuyên tại các CLB cơ sở.</i></p>';
+  } else {
+    for (var j = 0; j < filteredActs.length; j++) {
+      var a = filteredActs[j];
+      html += '<p>• <b>' + a.title + '</b> (Ngày ' + a.date + ') tại ' + a.location + '. Quy mô: ' + a.participants + ' VĐV tham gia sôi nổi. ' +
+        (a.achievementNote ? ('Kết quả: ' + a.achievementNote + '. ') : '') +
+        (a.totalMedals > 0 ? ('Đạt ' + a.totalMedals + ' huy chương (' + a.goldMedals + ' HCV, ' + a.silverMedals + ' HCB, ' + a.bronzeMedals + ' HCĐ).') : '') +
+        '</p>';
+    }
+  }
+
+  html += '<p><b>II. ĐÁNH GIÁ CHUNG VÀ PHƯƠNG HƯỚNG KỲ TỚI</b></p>' +
+    '<p>- Nhìn chung công tác TDTT trong kỳ đã bám sát kế hoạch đề ra, phong trào quần chúng tiếp tục lan tỏa sâu rộng, chất lượng chuyên môn tại các giải thi đấu được nâng lên rõ rệt.</p>' +
+    '<p>- Thời gian tới, Bộ phận TDTT tiếp tục duy trì luyện tập, tổ chức các giải phong trào và quản lý khai thác hiệu quả cơ sở vật chất thể thao hiện có.</p>' +
+    '<p style="font-style: italic;">Kính báo cáo ' + recipientText + ' xem xét, theo dõi và tổng hợp.</p>' +
+    '<table style="border:none; margin-top: 30px;">' +
+    '<tr style="border:none;">' +
+    '<td style="border:none; width: 50%;"></td>' +
+    '<td style="border:none; width: 50%; text-align: center;">' +
+    '<i>Tân Khai, ngày ' + new Date().getDate() + ' tháng ' + (new Date().getMonth() + 1) + ' năm ' + new Date().getFullYear() + '</i><br>' +
+    '<b>NGƯỜI LẬP BÁO CÁO</b><br><br><br><br>' +
+    '<b>Trần Quốc Được</b>' +
+    '</td></tr></table></body></html>';
+
+  return Utilities.newBlob(html, 'application/msword', 'BaoCao.doc');
+}
+
+/**
+ * Tạo tin nhắn báo cáo tiến độ KPI thi đua năm
+ */
+function generateKpiStatusMessage(data) {
+  var acts = data.activities || [];
+  var kpi = data.kpiTargets || { targetActivities: 20, targetParticipants: 1500, targetMedals: 30, targetClubs: 5 };
+  var totalActs = acts.length;
+  var totalParticipants = 0;
+  var totalMedals = 0;
+  for (var i = 0; i < acts.length; i++) {
+    totalParticipants += parseInt(acts[i].participants) || 0;
+    totalMedals += parseInt(acts[i].totalMedals) || 0;
+  }
+  var totalClubs = (data.clubs || []).length;
+
+  var actPct = Math.round((totalActs / (kpi.targetActivities || 20)) * 100);
+  var partPct = Math.round((totalParticipants / (kpi.targetParticipants || 1500)) * 100);
+  var medalPct = Math.round((totalMedals / (kpi.targetMedals || 30)) * 100);
+  var clubPct = Math.round((totalClubs / (kpi.targetClubs || 5)) * 100);
+  var avgPct = Math.round((actPct + partPct + medalPct + clubPct) / 4);
+
+  var msg = '📊 <b>TIẾN ĐỘ THỰC HIỆN CHỈ TIÊU THI ĐUA NĂM ' + new Date().getFullYear() + '</b>\n' +
+    '⭐ Xếp loại: <b>' + (avgPct >= 100 ? 'XUẤT SẮC - VƯỢT CHỈ TIÊU' : 'ĐẠT KẾ HOẠCH') + ' (' + avgPct + '%)</b>\n\n' +
+    '1. 🏆 <b>Giải đấu:</b> ' + totalActs + ' / ' + kpi.targetActivities + ' giải (' + actPct + '%)\n' +
+    '2. 👥 <b>Lượt VĐV:</b> ' + totalParticipants.toLocaleString('vi-VN') + ' / ' + (kpi.targetParticipants || 1500).toLocaleString('vi-VN') + ' lượt (' + partPct + '%)\n' +
+    '3. 🥇 <b>Huy chương:</b> ' + totalMedals + ' / ' + kpi.targetMedals + ' HC (' + medalPct + '%)\n' +
+    '4. 🤝 <b>CLB duy trì:</b> ' + totalClubs + ' / ' + kpi.targetClubs + ' CLB (' + clubPct + '%)\n\n' +
+    '📌 <i>Phong trào TDTT Phường Tân Khai đã hoàn thành và vượt mức toàn bộ các chỉ tiêu kế hoạch năm được giao.</i>';
+
+  return msg;
 }

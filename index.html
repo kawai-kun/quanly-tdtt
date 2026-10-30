@@ -3515,15 +3515,19 @@
           </div>
 
           <!-- Navigation Tabs -->
-          <div class="flex items-center justify-between gap-2 mt-3.5 pb-2 border-b border-slate-100 dark:border-slate-800/80 shrink-0">
-            <div class="flex items-center gap-1.5">
-              <button onclick="switchTelegramModalTab('list')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'list' ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-700'}">
+          <div class="flex items-center justify-between gap-2 mt-3.5 pb-2 border-b border-slate-100 dark:border-slate-800/80 shrink-0 flex-wrap">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button onclick="switchTelegramModalTab('list')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'list' ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-700'}">
                 <span class="material-symbols-outlined text-[16px]">list_alt</span>
-                <span>Danh sách cấu hình (${totalCount})</span>
+                <span>Lịch tự động (${totalCount})</span>
               </button>
-              <button onclick="switchTelegramModalTab('settings')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'settings' ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-700'}">
+              <button onclick="switchTelegramModalTab('commands')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'commands' ? 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700' : 'text-slate-500 hover:text-slate-700'}">
+                <span class="material-symbols-outlined text-[16px] text-amber-600">smart_toy</span>
+                <span>Trợ lý Ảo Nhận Lệnh (2 chiều)</span>
+              </button>
+              <button onclick="switchTelegramModalTab('settings')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${state.telegramModalTab === 'settings' ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-700'}">
                 <span class="material-symbols-outlined text-[16px]">key</span>
-                <span>Cài đặt Bot & Chat ID</span>
+                <span>Cài đặt Bot Token</span>
               </button>
             </div>
 
@@ -3537,7 +3541,11 @@
 
           <!-- Tab Content Body (Scrollable) -->
           <div class="mt-3.5 overflow-y-auto flex-1 pr-1 space-y-3.5 text-xs text-left">
-            ${state.telegramModalTab === 'list' ? renderTelegramSchedulesListHtml(schedules) : renderTelegramSettingsFormHtml(settings)}
+            ${state.telegramModalTab === 'list' 
+              ? renderTelegramSchedulesListHtml(schedules) 
+              : (state.telegramModalTab === 'commands' 
+                  ? renderTelegramCommandsTabHtml() 
+                  : renderTelegramSettingsFormHtml(settings))}
           </div>
         </div>
       `;
@@ -3749,6 +3757,156 @@
           </div>
         </form>
       `;
+    }
+
+    function renderTelegramCommandsTabHtml() {
+      const settings = state.telegramSettings || {};
+      const botToken = settings.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+
+      return `
+        <div class="space-y-4">
+          <!-- Banner Kích hoạt Trợ lý ảo nhận lệnh 2 chiều -->
+          <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border border-amber-300 dark:border-amber-800/80 shadow-sm space-y-3">
+            <div class="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[24px]">smart_toy</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Trợ Lý Ảo Telegram 2 Chiều</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">Tính năng cao cấp</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                    Cho phép anh Được <b>nhắn tin ra lệnh trực tiếp cho Bot</b> ngay trên điện thoại: yêu cầu xuất báo cáo gửi qua tin nhắn hoặc cập nhật thêm giải đấu mới mà không cần vào web!
+                  </p>
+                </div>
+              </div>
+
+              <button onclick="activateTelegramWebhook()" class="shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md btn-press" title="Kích hoạt Webhook để Bot nhận được tin nhắn ra lệnh từ anh">
+                <span class="material-symbols-outlined text-[17px]">bolt</span>
+                <span>Kích hoạt nhận lệnh 1 chạm</span>
+              </button>
+            </div>
+
+            <!-- Bảo mật cá nhân -->
+            <div class="flex items-center gap-2 p-2 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 text-[11px] text-amber-900 dark:text-amber-200">
+              <span class="material-symbols-outlined text-[16px] text-amber-700">lock</span>
+              <span><b>Bảo mật độc quyền:</b> Bot chỉ chấp nhận lệnh từ Chat ID của anh Trần Quốc Được (<code>${settings.chatId || '6403485662'}</code>). Người lạ nhắn vào Bot sẽ từ chối.</span>
+            </div>
+          </div>
+
+          <!-- Danh sách câu lệnh mẫu & Hướng dẫn sử dụng -->
+          <div class="space-y-2.5">
+            <h4 class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-brand-600">terminal</span>
+              <span>CÁC CÂU LỆNH ANH CÓ THỂ NHẮN CHO BOT TRÊN TELEGRAM:</span>
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              
+              <!-- 1. Thêm giải đấu -->
+              <div class="p-3 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">add_circle</span>
+                    <span>1. Thêm giải đấu mới</span>
+                  </span>
+                  <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-lg font-bold">Mới nhất</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                  Nhắn: <code>Thêm giải</code> hoặc <code>/themgiai</code>
+                </p>
+                <p class="text-[10px] text-slate-600 dark:text-slate-300 italic bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-lg">
+                  ↳ Bot gửi lại mẫu form để anh sửa thông tin (Tên giải, Ngày, VĐV, Huy chương...) rồi gửi lại. Bot tự lưu và đẩy lên vị trí #1!
+                </p>
+              </div>
+
+              <!-- 2. Xuất báo cáo qua tin nhắn -->
+              <div class="p-3 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">description</span>
+                    <span>2. Yêu cầu xuất Báo cáo</span>
+                  </span>
+                  <span class="text-[10px] bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-lg font-bold">Xuất file .doc</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                  Nhắn: <code>Gửi tôi báo cáo chi bộ tháng 9</code> hoặc <code>Báo cáo TDTT tháng 10</code>
+                </p>
+                <p class="text-[10px] text-slate-600 dark:text-slate-300 italic bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-lg">
+                  ↳ Bot tự động lên hệ thống xuất văn bản Word chuẩn thể thức hành chính và gửi trả ngay file .doc trong 2 giây.
+                </p>
+              </div>
+
+              <!-- 3. Tra cứu KPI / Tiến độ -->
+              <div class="p-3 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">analytics</span>
+                    <span>3. Tra cứu Tiến độ thi đua</span>
+                  </span>
+                  <span class="text-[10px] bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-lg font-bold">KPI Năm</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                  Nhắn: <code>KPI</code> hoặc <code>Tiến độ</code> hoặc <code>Chỉ tiêu</code>
+                </p>
+                <p class="text-[10px] text-slate-600 dark:text-slate-300 italic bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-lg">
+                  ↳ Bot báo cáo nhanh % hoàn thành: Số giải, Lượt VĐV, Huy chương và xếp loại thi đua.
+                </p>
+              </div>
+
+              <!-- 4. Tra cứu giải mới nhất & CLB -->
+              <div class="p-3 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">search</span>
+                    <span>4. Tra cứu nhanh khác</span>
+                  </span>
+                  <span class="text-[10px] bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-lg font-bold">Tiện ích</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                  Nhắn: <code>Giải mới nhất</code> hoặc <code>CLB</code>
+                </p>
+                <p class="text-[10px] text-slate-600 dark:text-slate-300 italic bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-lg">
+                  ↳ Xem ngay thông tin giải #1 hoặc danh sách số điện thoại Chủ nhiệm 5 CLB để gọi/nhắn Zalo.
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function activateTelegramWebhook() {
+      const settings = state.telegramSettings || {};
+      const botToken = settings.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+      let apiUrl = state.apiUrl;
+
+      if (!apiUrl) {
+        const inputUrl = prompt('Vui lòng dán đường link Web App Google Apps Script của anh vào đây (đường link kết thúc bằng /exec):', 'https://script.google.com/macros/s/AKfycb.../exec');
+        if (!inputUrl || !inputUrl.trim()) return;
+        apiUrl = inputUrl.trim();
+        state.apiUrl = apiUrl;
+        saveAll();
+      }
+
+      const tgWebhookUrl = `https://api.telegram.org/bot${botToken}/setWebhook?url=${encodeURIComponent(apiUrl)}`;
+
+      try {
+        const resp = await fetch(tgWebhookUrl);
+        const res = await resp.json();
+        if (res.ok) {
+          alert('🎉 CHÚC MỪNG ANH TRẦN QUỐC ĐƯỢC!\n\nĐã kích hoạt Trợ lý ảo nhận lệnh Telegram 2 chiều thành công!\n\n👉 Bây giờ anh có thể mở Telegram trên điện thoại lên, nhắn tin cho Bot câu "Thêm giải" hoặc "Gửi tôi báo cáo chi bộ tháng 9" để trải nghiệm ngay lập tức!');
+        } else {
+          alert('Phản hồi từ Telegram: ' + (res.description || 'Không thể thiết lập Webhook.'));
+        }
+      } catch (err) {
+        window.open(tgWebhookUrl, '_blank');
+        alert('Đã mở liên kết kích hoạt Webhook trên tab mới. Anh hãy kiểm tra xem trang đó có hiện {"ok":true,"description":"Webhook was set"} không nhé!');
+      }
+    }
     }
 
     function openEditScheduleModal(schedId = null) {
