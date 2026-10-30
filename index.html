@@ -3041,7 +3041,11 @@
         if (res.ok) {
           alert('🎉 Tuyệt vời! Tin nhắn đã được gửi thẳng vào Telegram của anh Trần Quốc Được thành công!');
         } else {
-          alert('Lỗi Telegram API: ' + (res.description || 'Không thể gửi tin nhắn. Hãy kiểm tra lại Bot Token và Chat ID.'));
+          if (res.description && res.description.toLowerCase().includes('chat not found')) {
+            alert('⚠️ Lỗi Telegram: "Bad Request: chat not found"\n\nNguyên nhân: Telegram có quy định bảo mật là Bot KHÔNG THỂ tự ý gửi tin nhắn trước nếu anh chưa từng bấm "Start" với con Bot đó.\n\n👉 Cách khắc phục ngay (mất 5 giây):\n1. Mở ứng dụng Telegram của anh.\n2. Mở cuộc trò chuyện với con Bot mà anh vừa tạo từ @BotFather.\n3. Bấm nút "START" (Bắt đầu) ở dưới đáy màn hình (hoặc gõ chữ "hi" hay "/start" gửi cho con Bot).\n4. Quay lại đây bấm nút "Gửi thử nghiệm ngay" là sẽ nhận được tin nhắn báo cáo ngay lập tức!');
+          } else {
+            alert('Lỗi Telegram API: ' + (res.description || 'Không thể gửi tin nhắn. Hãy kiểm tra lại Bot Token và Chat ID.'));
+          }
         }
       } catch (err) {
         alert('Lỗi kết nối mạng hoặc CORS: ' + err.message);
@@ -3111,7 +3115,11 @@
         if (res.ok) {
           showToast('Đã gửi Telegram', `Báo cáo ${getPeriodTitle()} đã gửi vào Telegram của anh Được.`);
         } else {
-          alert('Lỗi gửi Telegram: ' + (res.description || 'Không thể gửi.'));
+          if (res.description && res.description.toLowerCase().includes('chat not found')) {
+            alert('⚠️ Lỗi: Telegram báo "Bad Request: chat not found"!\n\nAnh chỉ cần mở con Bot của mình trên Telegram và bấm nút START (hoặc gửi 1 tin nhắn cho Bot), sau đó quay lại gửi lại là được ngay ạ!');
+          } else {
+            alert('Lỗi gửi Telegram: ' + (res.description || 'Không thể gửi.'));
+          }
         }
       } catch (err) {
         alert('Lỗi kết nối Telegram: ' + err.message);
