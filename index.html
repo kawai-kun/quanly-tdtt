@@ -518,6 +518,7 @@
       tournamentsFilter: {
         category: 'all',
         sport: 'all',
+        reportStatus: 'all', // 'all' | 'unreported' | 'reported'
         search: '',
         viewMode: 'cards'
       },
@@ -584,6 +585,17 @@
             changed = true;
           }
         }
+        // 5. Khởi tạo danh sách giải đã đưa vào báo cáo số 09/BC-TDTT (Giai đoạn 2025 - T7/2026)
+        if (Array.isArray(state.savedReports)) {
+          const rep09 = state.savedReports.find(r => r.id === 'rep-09' || r.code === '09/BC-TDTT');
+          if (rep09 && (!rep09.reportedActIds || !rep09.reportedActIds.length)) {
+            rep09.reportedActIds = [
+              'act-1', 'act-2', 'act-3', 'act-4', 'act-5', 'act-6', 'act-7', 'act-8', 'act-9', 'act-10',
+              'act-11', 'act-12', 'act-13', 'act-14', 'act-15', 'act-16', 'act-17', 'act-18', 'act-19', 'act-20'
+            ];
+            changed = true;
+          }
+        }
         if (changed) {
           saveAll();
         }
@@ -592,6 +604,52 @@
       }
     }
     healDataEncoding();
+
+    /* ==============================================================================
+       QUẢN LÝ TRẠNG THÁI BÁO CÁO GIẢI ĐẤU (ĐÃ BÁO CÁO / CHƯA BÁO CÁO)
+       ============================================================================== */
+    function getActivityReportStatus(act) {
+      if (!act) return { isReported: false };
+      if (act.isReported && act.reportedInReport) {
+        return { isReported: true, reportCode: act.reportedInReport };
+      }
+      if (act.isReported === false) {
+        return { isReported: false };
+      }
+      for (const r of (state.savedReports || [])) {
+        if (Array.isArray(r.reportedActIds) && r.reportedActIds.includes(act.id)) {
+          return { isReported: true, reportCode: r.code, reportTitle: r.title, reportDate: r.reportDate };
+        }
+      }
+      return { isReported: false };
+    }
+
+    function toggleActivityReportStatus(actId, event) {
+      if (event) event.stopPropagation();
+      const act = state.activities.find(a => a.id === actId);
+      if (!act) return;
+      const status = getActivityReportStatus(act);
+      if (status.isReported) {
+        if (confirm(`Giải đấu "${act.title}" đang được đánh dấu "Đã báo cáo (${status.reportCode})".\n\nBạn có muốn chuyển trạng thái sang "Chưa lập báo cáo" không?`)) {
+          act.isReported = false;
+          delete act.reportedInReport;
+          (state.savedReports || []).forEach(r => {
+            if (Array.isArray(r.reportedActIds)) {
+              r.reportedActIds = r.reportedActIds.filter(id => id !== actId);
+            }
+          });
+          saveAll();
+          showToast('Đã chuyển trạng thái', `Giải "${act.title}" đã chuyển sang Chưa báo cáo.`);
+          renderApp();
+        }
+      } else {
+        act.isReported = true;
+        act.reportedInReport = 'Đã chốt BC';
+        saveAll();
+        showToast('Đã đánh dấu Đã báo cáo', `Giải "${act.title}" đã được đánh dấu Đã báo cáo.`);
+        renderApp();
+      }
+    }
 
     function getAvailableYears() {
       const yearsSet = new Set();
@@ -1243,12 +1301,25 @@
       const f = state.tournamentsFilter;
       const availableYears = getAvailableYears();
 
+      // Danh sách hoạt động theo năm để tính tổng số lượng
+      const allYearActs = state.selectedYear === 'all'
+        ? state.activities
+        : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
+      
+      const unreportedCount = allYearActs.filter(a => !getActivityReportStatus(a).isReported).length;
+      const reportedCount = allYearActs.filter(a => getActivityReportStatus(a).isReported).length;
+
       // Lọc danh sách giải đấu
       let acts = state.activities.filter(a => {
         const y = String(a.year || extractYearFromDate(a.date));
         if (state.selectedYear !== 'all' && y !== String(state.selectedYear)) return false;
         if (f.category !== 'all' && a.category !== f.category) return false;
         if (f.sport !== 'all' && a.sport !== f.sport) return false;
+        if (f.reportStatus && f.reportStatus !== 'all') {
+          const repStatus = getActivityReportStatus(a);
+          if (f.reportStatus === 'reported' && !repStatus.isReported) return false;
+          if (f.reportStatus === 'unreported' && repStatus.isReported) return false;
+        }
         if (f.search) {
           const q = f.search.toLowerCase();
           const matchTitle = (a.title || '').toLowerCase().includes(q);
@@ -1275,8 +1346,12 @@
               <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Quản Lý Giải Thi Đấu & Sự Kiện
               </h1>
-              <p class="text-xs text-slate-500 mt-1">
-                Danh sách các giải thể thao cấp phường và thành phố (${acts.length} hoạt động)
+              <p class="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                <span>Tổng số: <b>${acts.length}</b> hoạt động</span>
+                <span>•</span>
+                <span class="text-emerald-700 dark:text-emerald-400 font-bold">✓ Đã báo cáo: ${reportedCount}</span>
+                <span>•</span>
+                <span class="text-amber-700 dark:text-amber-400 font-bold">⏳ Chưa báo cáo: ${unreportedCount}</span>
               </p>
             </div>
 
@@ -1291,7 +1366,7 @@
             
             <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[280px]">
               <!-- Search Input -->
-              <div class="relative flex-1 min-w-[200px] h-10">
+              <div class="relative flex-1 min-w-[180px] h-10">
                 <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-2.5 pointer-events-none">search</span>
                 <input type="text" value="${f.search}" oninput="setTournamentsFilter('search', this.value)" placeholder="Tìm tên giải, mã giải, địa điểm..." class="w-full h-full pl-9 pr-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400" />
               </div>
@@ -1322,6 +1397,16 @@
                   <option value="Cấp phường" ${f.category === 'Cấp phường' ? 'selected' : ''}>Cấp phường</option>
                   <option value="Cấp thành phố" ${f.category === 'Cấp thành phố' ? 'selected' : ''}>Cấp thành phố</option>
                   <option value="Hành chính" ${f.category === 'Hành chính' ? 'selected' : ''}>Hành chính</option>
+                </select>
+              </div>
+
+              <!-- Report Status Filter (Chức năng 3) -->
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+                <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">fact_check</span>
+                <select onchange="setTournamentsFilter('reportStatus', this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
+                  <option value="all" ${f.reportStatus === 'all' ? 'selected' : ''}>Tất cả trạng thái BC</option>
+                  <option value="unreported" ${f.reportStatus === 'unreported' ? 'selected' : ''}>⏳ Chưa báo cáo (${unreportedCount})</option>
+                  <option value="reported" ${f.reportStatus === 'reported' ? 'selected' : ''}>✓ Đã lập báo cáo (${reportedCount})</option>
                 </select>
               </div>
             </div>
@@ -1368,6 +1453,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           ${acts.map((a, i) => {
             const badge = getSportBadge(a.sport);
+            const repStatus = getActivityReportStatus(a);
             return `
               <div class="p-5 rounded-3xl glass-card border ${i === 0 ? 'border-brand-500/80 dark:border-brand-400 ring-2 ring-brand-500/20' : 'border-slate-200/90 dark:border-slate-800'} shadow-mobbin card-lift flex flex-col justify-between relative overflow-hidden">
                 ${i === 0 ? `
@@ -1395,7 +1481,26 @@
                     </div>
                   ` : ''}
 
-                  <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                  <!-- Trạng thái đưa vào Báo cáo (Chức năng 3) -->
+                  <div class="mt-3 p-2 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between gap-2">
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">fact_check</span>
+                      <span>Báo cáo:</span>
+                    </span>
+                    ${repStatus.isReported ? `
+                      <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2 py-0.5 rounded-lg text-[10.5px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press" title="Bấm để chuyển sang Chưa báo cáo">
+                        <span class="material-symbols-outlined text-[12px] text-emerald-600">check_circle</span>
+                        <span>Đã báo cáo (${repStatus.reportCode})</span>
+                      </button>
+                    ` : `
+                      <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2 py-0.5 rounded-lg text-[10.5px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press" title="Bấm để đánh dấu Đã báo cáo">
+                        <span class="material-symbols-outlined text-[12px] text-amber-600">pending</span>
+                        <span>Chưa lập báo cáo</span>
+                      </button>
+                    `}
+                  </div>
+
+                  <div class="mt-3.5 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <div class="flex items-center justify-between">
                       <span class="text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span>Ngày tổ chức:</span>
                       <span class="font-semibold font-mono text-brand-700 dark:text-brand-400">${a.date}</span>
@@ -1411,7 +1516,7 @@
                   </div>
 
                   <!-- Medals Badge Row -->
-                  <div class="mt-4 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-around text-xs">
+                  <div class="mt-3.5 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-around text-xs">
                     <div class="text-center"><span class="text-[10px] text-amber-700 font-bold block">VÀNG</span><b class="text-amber-600">${a.goldMedals || 0}</b></div>
                     <div class="w-px h-5 bg-amber-500/20"></div>
                     <div class="text-center"><span class="text-[10px] text-slate-500 font-bold block">BẠC</span><b class="text-slate-600 dark:text-slate-300">${a.silverMedals || 0}</b></div>
@@ -1449,6 +1554,7 @@
                 <th class="p-3.5 align-middle whitespace-nowrap w-14 text-center">STT</th>
                 <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
                 <th class="p-3.5 align-middle min-w-[240px]">Tên giải đấu</th>
+                <th class="p-3.5 align-middle whitespace-nowrap text-center">Trạng thái BC</th>
                 <th class="p-3.5 align-middle whitespace-nowrap">Bộ môn</th>
                 <th class="p-3.5 align-middle whitespace-nowrap">Cấp độ</th>
                 <th class="p-3.5 align-middle whitespace-nowrap">Ngày tổ chức</th>
@@ -1459,43 +1565,59 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-              ${acts.map((a, i) => `
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors ${i === 0 ? 'bg-brand-50/30 dark:bg-brand-950/30 font-medium' : ''}">
-                  <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
-                    ${i === 0 ? `
-                      <span class="px-2 py-0.5 rounded-full bg-brand-700 text-white font-bold text-[10px] inline-flex items-center gap-0.5 shadow-sm">
-                        #1 Mới
-                      </span>
-                    ` : `
-                      <span class="text-slate-400 font-bold">${i + 1}</span>
-                    `}
-                  </td>
-                  <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${a.code}</td>
-                  <td class="p-3.5 align-middle min-w-[240px] max-w-sm">
-                    <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${a.title}</div>
-                    ${a.achievementNote ? `
-                      <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
-                        <span class="material-symbols-outlined text-[13px] text-amber-600">military_tech</span>
-                        <span>${a.achievementNote}</span>
-                      </div>
-                    ` : ''}
-                  </td>
-                  <td class="p-3.5 align-middle whitespace-nowrap"><span class="font-semibold text-slate-600 dark:text-slate-300">${a.sport}</span></td>
-                  <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${a.category}</span></td>
-                  <td class="p-3.5 align-middle whitespace-nowrap text-brand-700 dark:text-brand-400 font-bold font-mono">${a.date}</td>
-                  <td class="p-3.5 align-middle whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-300">${a.participants}</td>
-                  <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
-                    <span class="text-amber-600 font-bold">${a.goldMedals || 0}V</span> - 
-                    <span class="text-slate-500 font-bold">${a.silverMedals || 0}B</span> - 
-                    <span class="text-orange-600 font-bold">${a.bronzeMedals || 0}Đ</span>
-                  </td>
-                  <td class="p-3.5 align-middle whitespace-nowrap text-right font-bold text-slate-800 dark:text-slate-200">${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ</td>
-                  <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
-                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
-                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
-                  </td>
-                </tr>
-              `).join('')}
+              ${acts.map((a, i) => {
+                const rep = getActivityReportStatus(a);
+                return `
+                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors ${i === 0 ? 'bg-brand-50/30 dark:bg-brand-950/30 font-medium' : ''}">
+                    <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
+                      ${i === 0 ? `
+                        <span class="px-2 py-0.5 rounded-full bg-brand-700 text-white font-bold text-[10px] inline-flex items-center gap-0.5 shadow-sm">
+                          #1 Mới
+                        </span>
+                      ` : `
+                        <span class="text-slate-400 font-bold">${i + 1}</span>
+                      `}
+                    </td>
+                    <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${a.code}</td>
+                    <td class="p-3.5 align-middle min-w-[240px] max-w-sm">
+                      <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${a.title}</div>
+                      ${a.achievementNote ? `
+                        <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+                          <span class="material-symbols-outlined text-[13px] text-amber-600">military_tech</span>
+                          <span>${a.achievementNote}</span>
+                        </div>
+                      ` : ''}
+                    </td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-center">
+                      ${rep.isReported ? `
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press" title="Bấm để đổi trạng thái">
+                          <span class="material-symbols-outlined text-[12px] text-emerald-600">check_circle</span>
+                          <span>Đã BC (${rep.reportCode})</span>
+                        </button>
+                      ` : `
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press" title="Bấm để đổi trạng thái">
+                          <span class="material-symbols-outlined text-[12px] text-amber-600">pending</span>
+                          <span>Chưa BC</span>
+                        </button>
+                      `}
+                    </td>
+                    <td class="p-3.5 align-middle whitespace-nowrap"><span class="font-semibold text-slate-600 dark:text-slate-300">${a.sport}</span></td>
+                    <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${a.category}</span></td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-brand-700 dark:text-brand-400 font-bold font-mono">${a.date}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-300">${a.participants}</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
+                      <span class="text-amber-600 font-bold">${a.goldMedals || 0}V</span> - 
+                      <span class="text-slate-500 font-bold">${a.silverMedals || 0}B</span> - 
+                      <span class="text-orange-600 font-bold">${a.bronzeMedals || 0}Đ</span>
+                    </td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-right font-bold text-slate-800 dark:text-slate-200">${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
+                      <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
+                      <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -3201,6 +3323,33 @@
 
       return `
         <div class="space-y-3">
+          <!-- Card: Trợ lý Nhắc việc trước ngày làm Báo cáo (Ngày 9 & Ngày 29) -->
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 dark:border-amber-800/70 shadow-sm">
+            <div class="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
+              <div class="flex items-start gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white">Trợ lý Nhắc lịch Báo cáo ("Đại ca ơi...")</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">Tự động (Ngày 9 & 29)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                    Vào <b>ngày 9</b> (trước hạn nộp BC Nhà nước) và <b>ngày 29</b> (trước hạn nộp BC Chi bộ), Bot tự động gửi tin nhắn thân mật nhắc anh Được rà soát dữ liệu.
+                  </p>
+                  <p class="text-[10.5px] text-amber-800 dark:text-amber-300 mt-1 font-mono italic bg-amber-100/60 dark:bg-amber-950/40 px-2 py-1 rounded-lg">
+                    "👋 Đại ca ơi, ngày mai em làm báo cáo tháng, Đại ca xem có gì cần nhập thêm không ạ!"
+                  </p>
+                </div>
+              </div>
+              <button onclick="sendDaiCaReminderTelegram(true)" title="Bấm để gửi thử tin nhắn này ngay vào Telegram" class="shrink-0 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm btn-press">
+                <span class="material-symbols-outlined text-[15px]">send</span>
+                <span>Gửi thử tin nhắc Đại ca</span>
+              </button>
+            </div>
+          </div>
+
           ${schedules.map((s) => {
             const isParty = s.mode === 'party';
             const periodLabel = s.period === 'quarter' ? 'Hàng Quý' : (s.period === 'half' ? '6 Tháng' : (s.period === 'nine' ? '9 Tháng' : (s.period === 'year' ? 'Hàng Năm' : 'Hàng Tháng')));
@@ -3662,6 +3811,68 @@
       }
     }
 
+    async function sendDaiCaReminderTelegram(isManual = false) {
+      const settings = state.telegramSettings || {};
+      const botToken = settings.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+      const chatId = settings.chatId || '6403485662';
+
+      if (!botToken || !chatId) {
+        alert('Vui lòng nhập Bot Token và Chat ID trong Cài đặt Telegram trước!');
+        return;
+      }
+
+      const today = new Date();
+      const dateStr = String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear();
+      
+      const unrepCount = (state.activities || []).filter(a => {
+        const s = getActivityReportStatus(a);
+        return !s.isReported;
+      }).length;
+      const latest = (state.activities || [])[0] || {};
+
+      let msg = `🔔 <b>HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO</b>\n`;
+      msg += `📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n`;
+      msg += `📅 Ngày gửi nhắc: <b>${dateStr}</b>\n\n`;
+      msg += `👋 <b>Đại ca ơi, ngày mai em làm báo cáo tháng, Đại ca xem có gì cần nhập thêm không ạ!</b>\n\n`;
+      msg += `📊 <b>Tình hình dữ liệu hiện tại trên hệ thống:</b>\n`;
+      msg += `• Tổng số giải đấu ghi nhận: <b>${(state.activities || []).length}</b> giải\n`;
+      msg += `• Giải đấu ⏳ <b>Chưa lập báo cáo:</b> <b>${unrepCount}</b> giải\n`;
+      if (latest && latest.title) {
+        msg += `• Hoạt động gần nhất (#1): <i>${latest.title}</i> (${latest.date})\n`;
+      }
+      msg += `\n🔗 <i>Đại ca có thể bấm vào đường link để rà soát dữ liệu:</i>\nhttps://kawai-kun.github.io/quanly-tdtt/`;
+
+      try {
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: msg,
+            parse_mode: 'HTML'
+          })
+        });
+        const res = await resp.json();
+        if (res.ok) {
+          if (isManual) {
+            alert('🎉 Tuyệt vời! Đã gửi tin nhắn nhắc nhở "Đại ca ơi..." vào Telegram của anh Trần Quốc Được!');
+          }
+          return true;
+        } else {
+          if (isManual) {
+            alert('Lỗi Telegram API: ' + (res.description || 'Không thể gửi tin nhắn.'));
+          }
+          return false;
+        }
+      } catch (err) {
+        if (isManual) {
+          alert('Lỗi kết nối khi gửi Telegram: ' + err.message);
+        }
+        return false;
+      }
+    }
+
     async function executeTelegramSchedule(schedId, isManual = false) {
       const sched = (state.telegramSchedules || []).find(s => s.id === schedId);
       if (!sched) {
@@ -4091,6 +4302,21 @@
               </div>
             </div>
 
+            <!-- Tình trạng đưa vào Báo cáo định kỳ -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-brand-600">assignment_turned_in</span>
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-100">Tình trạng báo cáo định kỳ</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-0.5">Đánh dấu nếu giải đấu này đã được tổng hợp gửi văn phòng/chi bộ</p>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <input type="checkbox" id="act_isReported" ${act && getActivityReportStatus(act).isReported ? 'checked' : ''} class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Đã báo cáo</span>
+              </label>
+            </div>
+
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu giải đấu</button>
@@ -4152,6 +4378,14 @@
       const sport = rawSport.trim() ? normalizeTitle(rawSport) : autoDetectSport(cleanTitle);
 
       const rawNote = document.getElementById('act_note') ? document.getElementById('act_note').value.trim() : '';
+      const isReportedChecked = document.getElementById('act_isReported') ? document.getElementById('act_isReported').checked : false;
+      const prevAct = id ? state.activities.find(a => a.id === id) : null;
+      let reportedInReport = prevAct ? prevAct.reportedInReport : null;
+      if (isReportedChecked && !reportedInReport) {
+        reportedInReport = 'Đã xác nhận';
+      } else if (!isReportedChecked) {
+        reportedInReport = null;
+      }
 
       const item = {
         id: id || 'act-' + Date.now(),
@@ -4167,6 +4401,8 @@
         participantsUnit: 'VĐV',
         location: normalizeTitle(document.getElementById('act_location').value),
         achievementNote: rawNote,
+        isReported: isReportedChecked,
+        reportedInReport: reportedInReport,
         status: 'Đã hoàn thành',
         goldMedals: g,
         silverMedals: s,

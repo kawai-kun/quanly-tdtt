@@ -530,8 +530,8 @@ function scheduledTelegramReportTrigger() {
     var data = getAppData();
     if (!data) return;
 
-    var token = (data.telegramSettings && data.telegramSettings.botToken) || (data.telegramConfig && data.telegramConfig.botToken);
-    var chat = (data.telegramSettings && data.telegramSettings.chatId) || (data.telegramConfig && data.telegramConfig.chatId);
+    var token = (data.telegramSettings && data.telegramSettings.botToken) || (data.telegramConfig && data.telegramConfig.botToken) || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+    var chat = (data.telegramSettings && data.telegramSettings.chatId) || (data.telegramConfig && data.telegramConfig.chatId) || '6403485662';
 
     if (!token || !chat) {
       Logger.log('Missing Telegram Bot Token or Chat ID');
@@ -542,6 +542,19 @@ function scheduledTelegramReportTrigger() {
     var today = new Date();
     var curDay = today.getDate();
 
+    // 1. Nhắc nhở Đại ca vào ngày 9 (trước BC Nhà nước) và ngày 29 (trước BC Chi bộ)
+    if (curDay === 9 || curDay === 29) {
+      var bcType = (curDay === 9) ? 'Nhà nước (ngày 10)' : 'Chi bộ (ngày 30)';
+      var reminderMsg = '🔔 <b>HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO</b>\n' +
+                        '📍 <i>Trung tâm Dịch vụ tổng hợp Phường Tân Khai</i>\n\n' +
+                        '👋 <b>Đại ca ơi, ngày mai em làm báo cáo tháng (' + bcType + '), Đại ca xem có gì cần nhập thêm không ạ!</b>\n\n' +
+                        '📊 Hiện có: <b>' + (data.activities || []).length + '</b> giải đấu trên hệ thống.\n' +
+                        '🔗 <i>Đường link cập nhật:</i> https://kawai-kun.github.io/quanly-tdtt/';
+      sendTelegramMessage(token, chat, reminderMsg);
+      Logger.log('Sent Dai Ca reminder message on day: ' + curDay);
+    }
+
+    // 2. Chạy gửi báo cáo theo lịch cấu hình đã thiết lập
     if (schedules.length > 0) {
       for (var s = 0; s < schedules.length; s++) {
         var sched = schedules[s];
