@@ -85,9 +85,22 @@ function doGet(e) {
           message: trigRes.message,
           timestamp: new Date().toISOString()
         };
+      } else if (action === 'saveTelegramToken') {
+        var token = e.parameter.botToken;
+        var chat = e.parameter.chatId;
+        if (token) PropertiesService.getScriptProperties().setProperty('BOT_TOKEN', token);
+        if (chat) PropertiesService.getScriptProperties().setProperty('CHAT_ID', chat);
+        result = {
+          success: true,
+          message: 'Đã lưu cấu hình Bot Token vào Google Apps Script thành công!',
+          timestamp: new Date().toISOString()
+        };
       } else if (action === 'setTelegramWebhook') {
         var webAppUrl = e.parameter.webAppUrl || ScriptApp.getService().getUrl();
-        var token = e.parameter.botToken || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+        var token = e.parameter.botToken || PropertiesService.getScriptProperties().getProperty('BOT_TOKEN') || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+        if (e.parameter.botToken) {
+          PropertiesService.getScriptProperties().setProperty('BOT_TOKEN', e.parameter.botToken);
+        }
         var webhookRes = registerTelegramWebhook(token, webAppUrl);
         result = {
           success: true,
@@ -690,9 +703,10 @@ function handleTelegramWebhook(update) {
     var rawText = (msgObj.text || '').trim();
     var lowerText = rawText.toLowerCase();
 
+    var scriptProps = PropertiesService.getScriptProperties();
     var data = getAppData() || {};
-    var token = (data.telegramSettings && data.telegramSettings.botToken) || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
-    var myChatId = (data.telegramSettings && String(data.telegramSettings.chatId)) || '6403485662';
+    var token = scriptProps.getProperty('BOT_TOKEN') || (data.telegramSettings && data.telegramSettings.botToken) || '9210349656:AAHjejkU7x5MWi71IBoHpQlhKAG59Z3BJA';
+    var myChatId = scriptProps.getProperty('CHAT_ID') || (data.telegramSettings && String(data.telegramSettings.chatId)) || '6403485662';
 
     // 1. Kiểm tra quyền hạn bảo mật: Chỉ phục vụ đồng chí Trần Quốc Được
     if (chatId !== myChatId) {

@@ -3916,6 +3916,11 @@
       state.apiUrl = apiUrl;
       saveAll();
 
+      // Đồng bộ ngay botToken và chatId lên Google Apps Script để backend biết token mà trả lời
+      try {
+        fetch(apiUrl + (apiUrl.includes('?') ? '&' : '?') + 'action=saveTelegramToken&botToken=' + encodeURIComponent(botToken) + '&chatId=' + encodeURIComponent(settings.chatId || '6403485662'));
+      } catch (e) {}
+
       const tgWebhookUrl = `https://api.telegram.org/bot${botToken}/setWebhook?url=${encodeURIComponent(apiUrl)}&drop_pending_updates=true`;
 
       try {
@@ -4230,7 +4235,7 @@
       renderApp();
     }
 
-    function handleSaveTelegramSettings(e) {
+    async function handleSaveTelegramSettings(e) {
       e.preventDefault();
       const botToken = document.getElementById('tg_bot_token').value.trim();
       const chatId = document.getElementById('tg_chat_id').value.trim();
@@ -4242,6 +4247,15 @@
         reminderMsg: reminderMsg || 'Sếp ơi, ngày mai em làm báo cáo tháng, Sếp xem có gì cần bổ sung không ạ!'
       };
       saveAll();
+
+      // Đồng bộ ngay lên Google Apps Script và Google Sheet
+      if (state.apiUrl) {
+        try {
+          fetch(state.apiUrl + (state.apiUrl.includes('?') ? '&' : '?') + 'action=saveTelegramToken&botToken=' + encodeURIComponent(botToken) + '&chatId=' + encodeURIComponent(chatId));
+          pushToGoogleSheet(false);
+        } catch (err) {}
+      }
+
       showToast('Đã lưu cài đặt Telegram', 'Bot Token, Chat ID và nội dung tin nhắn nhắc việc đã được lưu an toàn.');
     }
 
@@ -4977,6 +4991,8 @@
         facilities: state.facilities,
         budget: state.budgetItems,
         reports: state.savedReports,
+        telegramSettings: state.telegramSettings,
+        telegramSchedules: state.telegramSchedules,
         timestamp: new Date().toISOString()
       };
 
