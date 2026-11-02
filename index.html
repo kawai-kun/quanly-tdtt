@@ -3762,7 +3762,8 @@
     function renderTelegramCommandsTabHtml() {
       const settings = state.telegramSettings || {};
       const botToken = settings.botToken || '';
-      const currentApiUrl = state.apiUrl || '';
+      const defaultFullApiUrl = 'https://script.google.com/macros/s/AKfycbyC4Wt2w_6PXcX2W0_ISqXyVhpPpHEEwjFPI6nqgokrvYZKpzLKu1sx8MekFXwrlQ8/exec';
+      const currentApiUrl = (state.apiUrl && state.apiUrl.length > 30) ? state.apiUrl : defaultFullApiUrl;
 
       return `
         <div class="space-y-4">
@@ -3915,7 +3916,7 @@
       state.apiUrl = apiUrl;
       saveAll();
 
-      const tgWebhookUrl = `https://api.telegram.org/bot${botToken}/setWebhook?url=${encodeURIComponent(apiUrl)}`;
+      const tgWebhookUrl = `https://api.telegram.org/bot${botToken}/setWebhook?url=${encodeURIComponent(apiUrl)}&drop_pending_updates=true`;
 
       try {
         const resp = await fetch(tgWebhookUrl);
@@ -3949,9 +3950,9 @@
           msg += `• Đường link Webhook đang liên kết: ${info.url || '(Chưa liên kết)'}\n`;
           msg += `• Số tin nhắn đang chờ xử lý: ${info.pending_update_count || 0}\n`;
           if (info.last_error_message) {
-            msg += `\n⚠️ CẢNH BÁO LỖI GẦN NHẤT TỪ GOOGLE APPS SCRIPT:\n${info.last_error_message}\n(Thời điểm: ${new Date(info.last_error_date * 1000).toLocaleString('vi-VN')})\n\n👉 Cách khắc phục: Hãy đảm bảo trong Google Apps Script, mục "Ai có quyền truy cập (Who has access)" anh đã chọn là "Bất kỳ ai (Anyone)".`;
+            msg += `\n⚠️ CẢNH BÁO LỖI GẦN NHẤT TỪ GOOGLE APPS SCRIPT:\n${info.last_error_message}\n(Thời điểm: ${new Date(info.last_error_date * 1000).toLocaleString('vi-VN')})\n\n👉 Cách khắc phục:\n1. Dán code mới dùng HtmlService vào Apps Script.\n2. Bấm 'Kích hoạt Webhook' để xóa sạch các tin nhắn bị tắc cũ.\n3. Gửi tin nhắn mới cho Bot.`;
           } else if (info.url) {
-            msg += `\n✅ Trạng thái: KẾT NỐI HOÀN TOÀN TỐT! Không có lỗi nào từ máy chủ.`;
+            msg += `\n✅ Trạng thái: KẾT NỐI HOÀN TOÀN TỐT! Webhook đang hoạt động thông suốt.`;
           }
           alert(msg);
         } else {

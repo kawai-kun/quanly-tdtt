@@ -151,7 +151,8 @@ function doPost(e) {
 
     // 1. Phân biệt Telegram Webhook (Nhận lệnh từ Telegram Bot)
     if (body.update_id || body.message || body.callback_query) {
-      return handleTelegramWebhook(body);
+      handleTelegramWebhook(body);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 2. Dữ liệu có thể được bọc trong field data hoặc gửi trực tiếp từ Web App
@@ -681,7 +682,7 @@ function registerTelegramWebhook(token, webAppUrl) {
 function handleTelegramWebhook(update) {
   try {
     if (!update || !update.message) {
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     var msgObj = update.message;
@@ -696,7 +697,7 @@ function handleTelegramWebhook(update) {
     // 1. Kiểm tra quyền hạn bảo mật: Chỉ phục vụ đồng chí Trần Quốc Được
     if (chatId !== myChatId) {
       sendTelegramMessage(token, chatId, '⚠️ <b>TRUY CẬP BỊ TỪ CHỐI</b>\n\nXin lỗi, tôi là trợ lý nghiệp vụ độc quyền của đồng chí <b>Trần Quốc Được</b> (Cán bộ phụ trách Thể dục thể thao Phường Tân Khai).');
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 2. NHÓM LỆNH: YÊU CẦU MẪU ĐIỀN FORM THÊM GIẢI ĐẤU
@@ -712,7 +713,7 @@ function handleTelegramWebhook(update) {
                      'Kinh phí: 15.000.000\n' +
                      'Ghi chú: Đạt giải Nhất toàn đoàn</code>';
       sendTelegramMessage(token, chatId, template);
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 3. NHÓM LỆNH: NHẬN DỮ LIỆU ĐIỀN FORM VỪA GỬI ĐỂ LƯU VÀO HỆ THỐNG
@@ -735,7 +736,7 @@ function handleTelegramWebhook(update) {
       } else {
         sendTelegramMessage(token, chatId, '⚠️ <b>Lỗi khi thêm giải:</b> ' + addRes.error + '\n\nAnh Được hãy kiểm tra lại mẫu form hoặc gõ <b>Thêm giải</b> để lấy lại mẫu chuẩn nhé.');
       }
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 4. NHÓM LỆNH: YÊU CẦU XUẤT VÀ GỬI BÁO CÁO QUA TIN NHẮN
@@ -764,14 +765,14 @@ function handleTelegramWebhook(update) {
       var caption = 'Em gửi sếp báo cáo ' + repType + ' ' + timeText + ' ạ!';
 
       sendTelegramDocument(token, chatId, wordBlob, fileName, caption);
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 5. NHÓM LỆNH: TRA CỨU TIẾN ĐỘ THI ĐUA / CHỈ TIÊU (KPI)
     if (lowerText === '/kpi' || lowerText === 'kpi' || lowerText.indexOf('tiến độ') !== -1 || lowerText.indexOf('tien do') !== -1 || lowerText.indexOf('chỉ tiêu') !== -1) {
       var kpiReply = generateKpiStatusMessage(data);
       sendTelegramMessage(token, chatId, kpiReply);
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 6. NHÓM LỆNH: GIẢI ĐẤU MỚI NHẤT
@@ -792,7 +793,7 @@ function handleTelegramWebhook(update) {
                       '📌 <i>Đang xếp ở vị trí số 1 trên hệ thống.</i>';
         sendTelegramMessage(token, chatId, top1Msg);
       }
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 7. NHÓM LỆNH: MẠNG LƯỚI & DANH BẠ CLB
@@ -805,7 +806,7 @@ function handleTelegramWebhook(update) {
                   '   👤 Chủ nhiệm: ' + (clb.leaderName || 'Đang cập nhật') + ' - 📞 <code>' + (clb.leaderPhone || 'Chưa có SĐT') + '</code>\n';
       }
       sendTelegramMessage(token, chatId, clbMsg);
-      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+      return HtmlService.createHtmlOutput('OK');
     }
 
     // 8. TIN NHẮN MẶC ĐỊNH / MENU HƯỚNG DẪN (/start, /help)
@@ -819,11 +820,11 @@ function handleTelegramWebhook(update) {
                   '5️⃣ <b>Giải mới nhất:</b> Xem thông tin giải đấu #1.\n' +
                   '6️⃣ <b>CLB:</b> Xem danh bạ và SĐT các Chủ nhiệm CLB.';
     sendTelegramMessage(token, chatId, helpMsg);
-    return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    return HtmlService.createHtmlOutput('OK');
 
   } catch (err) {
     Logger.log('Error handleTelegramWebhook: ' + err.toString());
-    return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    return HtmlService.createHtmlOutput('OK');
   }
 }
 
