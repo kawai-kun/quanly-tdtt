@@ -9,7 +9,7 @@
   <!-- Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
   <!-- Tailwind CSS & Libraries -->
@@ -24,35 +24,50 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+            sans: ['"Be Vietnam Pro"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['"Be Vietnam Pro"', 'sans-serif']
           },
           colors: {
             brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              200: '#a7f3d0',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#006948', // Màu xanh chủ đạo UBND Phường Tân Khai
-              800: '#005236',
-              900: '#023824',
-              950: '#011e13'
+              50: '#f2fcf0',
+              100: '#e2f8dc',
+              200: '#c5f2b8',
+              300: '#a7ec94',
+              400: '#8be33a', // Primary athletic neon lime (DESIGN.md)
+              500: '#70cc22',
+              600: '#54a814',
+              700: '#006948', // Màu xanh ngọc lục bảo UBND Phường Tân Khai (sáng đẹp, tương phản cao)
+              800: '#052313',
+              900: '#03170c',
+              950: '#000000'  // Base black (DESIGN.md)
+            },
+            sport: {
+              neon: '#8be33a',
+              base: '#000000',
+              dark: '#050f09',
+              raised: '#06301a',
+              card: '#092817',
+              border: 'rgba(139, 227, 58, 0.22)',
+              muted: 'oklab(0.999994 0.0000455678 0.0000200868 / 0.05)',
+              textMuted: '#6b7f72',
+              textLight: '#d6e0d8',
+              textPrimary: '#0e1f14'
             },
             medal: {
               gold: '#F59E0B',
               silver: '#94A3B8',
-              bronze: '#D97706'
+              bronze: '#D97706',
+              fire: '#f97316'
             }
           },
           boxShadow: {
-            'mobbin-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.02)',
-            'mobbin': '0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03)',
-            'mobbin-hover': '0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.05)',
-            'glow-brand': '0 0 24px -2px rgba(0, 105, 72, 0.35)',
-            'glow-amber': '0 0 24px -2px rgba(245, 158, 11, 0.35)'
+            'mobbin-sm': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+            'mobbin': '0 4px 20px -2px rgba(0, 0, 0, 0.3), 0 2px 6px -1px rgba(0, 0, 0, 0.2)',
+            'mobbin-hover': '0 14px 28px -4px rgba(0, 0, 0, 0.45), 0 0 20px -2px rgba(139, 227, 58, 0.28)',
+            'glow-brand': '0 0 24px -2px rgba(139, 227, 58, 0.45)',
+            'glow-amber': '0 0 24px -2px rgba(245, 158, 11, 0.4)',
+            'glow-fire': '0 0 21.8px -2px rgba(249, 115, 22, 0.45)',
+            'glow-neon': '0 0 0 4px rgba(139, 227, 58, 0.2), 0 8px 24px -8px rgb(139, 227, 58)'
           }
         }
       }
@@ -60,74 +75,105 @@
   </script>
 
   <style>
-    /* Custom Scrollbar */
+    /* Design Tokens from DESIGN.md (Cổng thể thao thanh niên Đồng Nai) */
+    :root {
+      --color-text-primary: #0e1f14;
+      --color-text-secondary: #ffffff;
+      --color-text-tertiary: #6b7f72;
+      --color-text-inverse: #8be33a;
+      --color-surface-base: #f0f5f2;
+      --color-surface-raised: #ffffff;
+      --color-surface-card: #ffffff;
+      --color-surface-muted: rgba(6, 48, 26, 0.04);
+      --color-border-strong: #d6e0d8;
+      --font-family-primary: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+    }
+    .dark {
+      --color-text-primary: #ffffff;
+      --color-text-secondary: #d6e0d8;
+      --color-text-tertiary: #6b7f72;
+      --color-text-inverse: #8be33a;
+      --color-surface-base: #000000;
+      --color-surface-raised: #06301a;
+      --color-surface-card: #092817;
+      --color-surface-muted: rgba(255, 255, 255, 0.05);
+      --color-border-strong: rgba(139, 227, 58, 0.22);
+    }
+
+    /* Custom Scrollbar with Neon Hint */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-    .dark ::-webkit-scrollbar-thumb { background: #334155; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .dark ::-webkit-scrollbar-thumb { background: #164a2b; }
+    ::-webkit-scrollbar-thumb:hover { background: #8be33a; }
 
-    /* Mobbin Ambient Mesh Background - Tinh chỉnh dịu mắt (Chống chói ở Light mode, Tách bạch ở Dark mode) */
+    /* Athletic Ambient Mesh Background */
     body {
-      background-color: #f1f5f9;
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f1f5f2;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.03) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.02) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(139, 227, 58, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(6, 48, 26, 0.07) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(249, 115, 22, 0.03) 0px, transparent 50%);
       background-attachment: fixed;
     }
     .dark body {
-      background-color: #0b1120;
+      background-color: #000000;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.08) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(6, 48, 26, 0.75) 0px, transparent 55%),
+        radial-gradient(at 100% 0%, rgba(139, 227, 58, 0.12) 0px, transparent 45%),
+        radial-gradient(at 50% 100%, rgba(9, 40, 23, 0.6) 0px, transparent 50%);
+      background-attachment: fixed;
     }
 
-    /* Mobbin Glassmorphism & Tương phản sắc nét */
+    /* Athletic Glassmorphic Surface Cards */
     .glass-card {
       background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid #d6e0d8;
     }
     .dark .glass-card {
-      background: rgba(24, 34, 53, 0.95);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-color: rgba(51, 65, 85, 0.7) !important;
+      background: rgba(9, 40, 23, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(139, 227, 58, 0.18) !important;
     }
 
-    /* Khắc phục triệt để lỗi hiển thị dropdown select & option trên Dark Mode & Light Mode */
+    /* Strict Select & Form Elements */
     select {
       background-color: #ffffff;
-      color: #0f172a;
+      color: #0e1f14;
     }
     select option {
       background-color: #ffffff !important;
-      color: #0f172a !important;
+      color: #0e1f14 !important;
       padding: 6px 10px;
     }
     .dark select {
-      background-color: #1e293b !important;
-      color: #f8fafc !important;
+      background-color: #06301a !important;
+      color: #ffffff !important;
     }
     .dark select option {
-      background-color: #1e293b !important;
-      color: #f8fafc !important;
+      background-color: #06301a !important;
+      color: #ffffff !important;
       padding: 6px 10px;
     }
     .dark input, .dark textarea {
       color-scheme: dark;
     }
 
-    /* Tối ưu hóa phông chữ tiếng Việt sắc nét, chuẩn thể thức văn bản hành chính */
+    /* Typography & Legibility */
     * {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
 
-    body {
-      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Accessibility Focus-Visible Ring (WCAG 2.2 AA) */
+    *:focus-visible {
+      outline: 2px solid #8be33a !important;
+      outline-offset: 2px !important;
     }
 
     .admin-doc-paper {
@@ -136,7 +182,6 @@
       line-height: 1.65;
       color: #0f172a;
     }
-
     .admin-doc-paper p, .admin-doc-paper div, .admin-doc-paper span, .admin-doc-paper table {
       font-family: 'Times New Roman', Times, 'Liberation Serif', serif !important;
     }
@@ -149,11 +194,11 @@
       .print-container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; }
     }
 
-    /* Smooth Mobbin Entrance Animations */
+    /* Smooth Athletic Animations */
     @keyframes tabEnter {
       from {
         opacity: 0;
-        transform: translateY(10px) scale(0.996);
+        transform: translateY(8px) scale(0.996);
       }
       to {
         opacity: 1;
@@ -161,13 +206,13 @@
       }
     }
     .tab-pane-animate {
-      animation: tabEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: tabEnter 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @keyframes modalPop {
       from {
         opacity: 0;
-        transform: scale(0.95) translateY(12px);
+        transform: scale(0.96) translateY(10px);
       }
       to {
         opacity: 1;
@@ -175,24 +220,30 @@
       }
     }
     .modal-animate {
-      animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Card Hover Lift */
+    /* Card Hover Lift with Athletic Glow */
     .card-lift {
-      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
     }
     .card-lift:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.35), 0 0 18px -2px rgba(139, 227, 58, 0.25);
     }
 
     /* Button Press Micro-interaction */
     .btn-press {
-      transition: transform 0.12s ease-out, filter 0.15s ease-out;
+      transition: transform 0.12s ease-out, filter 0.15s ease-out, box-shadow 0.15s ease-out;
     }
     .btn-press:active {
       transform: scale(0.96);
+    }
+
+    /* Neon Border Glow Utility */
+    .neon-border {
+      border: 1px solid rgba(139, 227, 58, 0.35);
+      box-shadow: 0 0 14px -2px rgba(139, 227, 58, 0.3);
     }
   </style>
 </head>
@@ -221,41 +272,38 @@
     function getSportBadge(sportType) {
       const s = (sportType || '').toLowerCase();
       if (s.includes('bóng đá')) {
-        return { label: 'Bóng đá', icon: 'sports_soccer', bg: 'bg-emerald-50 dark:bg-emerald-950/60', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' };
+        return { label: 'Bóng đá', icon: 'sports_soccer', bg: 'bg-emerald-50 dark:bg-[#06301a]', text: 'text-emerald-800 dark:text-[#8be33a]', border: 'border-emerald-200 dark:border-[#8be33a]/30' };
       }
       if (s.includes('cầu lông')) {
-        return { label: 'Cầu lông', icon: 'sports_tennis', bg: 'bg-sky-50 dark:bg-sky-950/60', text: 'text-sky-700 dark:text-sky-400', border: 'border-sky-200 dark:border-sky-800' };
+        return { label: 'Cầu lông', icon: 'sports_tennis', bg: 'bg-sky-50 dark:bg-sky-950/70', text: 'text-sky-800 dark:text-sky-300', border: 'border-sky-200 dark:border-sky-700/50' };
       }
       if (s.includes('pickleball')) {
-        return { label: 'Pickleball', icon: 'sports_baseball', bg: 'bg-amber-50 dark:bg-amber-950/60', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800' };
+        return { label: 'Pickleball', icon: 'sports_baseball', bg: 'bg-amber-50 dark:bg-[#092817]', text: 'text-amber-800 dark:text-[#f97316]', border: 'border-amber-200 dark:border-[#f97316]/40' };
       }
       if (s.includes('bóng chuyền')) {
-        return { label: 'Bóng chuyền', icon: 'sports_volleyball', bg: 'bg-indigo-50 dark:bg-indigo-950/60', text: 'text-indigo-700 dark:text-indigo-400', border: 'border-indigo-200 dark:border-indigo-800' };
+        return { label: 'Bóng chuyền', icon: 'sports_volleyball', bg: 'bg-indigo-50 dark:bg-indigo-950/70', text: 'text-indigo-800 dark:text-indigo-300', border: 'border-indigo-200 dark:border-indigo-700/50' };
       }
       if (s.includes('võ') || s.includes('taekwondo') || s.includes('boxing') || s.includes('kickboxing') || s.includes('wushu')) {
-        return { label: 'Võ thuật', icon: 'sports_kabaddi', bg: 'bg-rose-50 dark:bg-rose-950/60', text: 'text-rose-700 dark:text-rose-400', border: 'border-rose-200 dark:border-rose-800' };
+        return { label: 'Võ thuật', icon: 'sports_kabaddi', bg: 'bg-rose-50 dark:bg-rose-950/70', text: 'text-rose-800 dark:text-rose-300', border: 'border-rose-200 dark:border-rose-700/50' };
       }
       if (s.includes('dưỡng sinh')) {
-        return { label: 'Dưỡng sinh', icon: 'self_improvement', bg: 'bg-teal-50 dark:bg-teal-950/60', text: 'text-teal-700 dark:text-teal-400', border: 'border-teal-200 dark:border-teal-800' };
+        return { label: 'Dưỡng sinh', icon: 'self_improvement', bg: 'bg-teal-50 dark:bg-teal-950/70', text: 'text-teal-800 dark:text-teal-300', border: 'border-teal-200 dark:border-teal-700/50' };
       }
       if (s.includes('điền kinh') || s.includes('chạy') || s.includes('đi bộ')) {
-        return { label: 'Điền kinh', icon: 'directions_run', bg: 'bg-purple-50 dark:bg-purple-950/60', text: 'text-purple-700 dark:text-purple-400', border: 'border-purple-200 dark:border-purple-800' };
+        return { label: 'Điền kinh', icon: 'directions_run', bg: 'bg-lime-50 dark:bg-[#06301a]', text: 'text-lime-800 dark:text-[#8be33a]', border: 'border-lime-200 dark:border-[#8be33a]/40' };
       }
       if (s.includes('cờ tướng') || s.includes('cờ')) {
-        return { label: 'Cờ tướng', icon: 'casino', bg: 'bg-yellow-50 dark:bg-yellow-950/60', text: 'text-yellow-700 dark:text-yellow-400', border: 'border-yellow-200 dark:border-yellow-800' };
+        return { label: 'Cờ tướng / Cờ vua', icon: 'casino', bg: 'bg-amber-50 dark:bg-[#092817]', text: 'text-amber-800 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-700/50' };
       }
       if (s.includes('bơi')) {
-        return { label: 'Bơi lội', icon: 'pool', bg: 'bg-cyan-50 dark:bg-cyan-950/60', text: 'text-cyan-700 dark:text-cyan-400', border: 'border-cyan-200 dark:border-cyan-800' };
+        return { label: 'Bơi lội', icon: 'pool', bg: 'bg-cyan-50 dark:bg-cyan-950/70', text: 'text-cyan-800 dark:text-cyan-300', border: 'border-cyan-200 dark:border-cyan-700/50' };
       }
       if (s.includes('kéo co') || s.includes('đẩy gậy') || s.includes('bi sắt')) {
-        return { label: 'Thể thao TT', icon: 'fitness_center', bg: 'bg-orange-50 dark:bg-orange-950/60', text: 'text-orange-700 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-800' };
+        return { label: 'Thể thao TT', icon: 'fitness_center', bg: 'bg-orange-50 dark:bg-[#092817]', text: 'text-orange-800 dark:text-[#f97316]', border: 'border-orange-200 dark:border-[#f97316]/40' };
       }
-      return { label: 'Hành chính / Sự kiện', icon: 'event_available', bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700' };
+      return { label: 'Hành chính / Sự kiện', icon: 'event_available', bg: 'bg-slate-100 dark:bg-[#092817]', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200 dark:border-[#8be33a]/25' };
     }
 
-    /* ==============================================================================
-       2. NORMALIZATION ENGINE (TỰ ĐỘNG CHUẨN HÓA KHUÔN MẪU DỮ LIỆU)
-       ============================================================================== */
     function normalizeTitle(str) {
       if (!str) return '';
       let s = str.trim().replace(/\s+/g, ' ');
@@ -914,7 +962,7 @@
             <!-- Official Brand Header: Dedicated to Logo + HỆ THỐNG QUẢN LÝ TDTT (Góc bên trái) -->
             <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/60 dark:border-slate-800/60 pb-5 mb-4">
               <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-full bg-white/95 dark:bg-slate-800/95 shadow-md border border-slate-200/80 dark:border-slate-700 overflow-hidden group">
-                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105" alt="Huy hiệu UBND Phường Tân Khai" />
+                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_8px_rgba(139,227,58,0.35)]" alt="Huy hiệu UBND Phường Tân Khai" />
               </div>
               <div class="flex flex-col text-left min-w-0">
                 <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">PHƯỜNG TÂN KHAI</span>
@@ -928,8 +976,8 @@
               ${navs.map(item => {
                 const isActive = state.currentTab === item.id;
                 const cls = isActive
-                  ? 'bg-gradient-to-r from-brand-700 to-brand-800 text-white font-bold shadow-md shadow-brand-900/20'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white font-medium';
+                  ? 'bg-brand-700 text-white font-bold shadow-md shadow-brand-900/20 dark:bg-gradient-to-r dark:from-[#06301a] dark:to-[#0a2e1b] dark:text-[#8be33a] dark:border dark:border-[#8be33a]/40 dark:shadow-[0_0_16px_rgba(139,227,58,0.25)]'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#06301a]/40 hover:text-brand-700 dark:hover:text-[#8be33a] font-medium';
                 return `
                   <button onclick="switchTab('${item.id}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all text-left ${cls} group btn-press">
                     <span class="flex items-center gap-3">
@@ -937,7 +985,11 @@
                       <span>${item.label}</span>
                     </span>
                     ${item.badge !== undefined ? `
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        isActive 
+                          ? 'bg-white/20 text-white dark:bg-[#8be33a] dark:text-[#0e1f14] dark:font-black' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      }">
                         ${item.badge}
                       </span>
                     ` : ''}
@@ -958,7 +1010,7 @@
                 <button onclick="openSyncModal()" class="text-[11px] text-brand-700 dark:text-brand-400 font-bold hover:underline">Cấu hình</button>
               </div>
               <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 truncate">Lần cuối: ${state.lastSyncTime}</p>
-              <button onclick="pushToGoogleSheet(true)" class="mt-2.5 w-full py-2 px-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 btn-press">
+              <button onclick="pushToGoogleSheet(true)" class="mt-2.5 w-full py-2 px-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 btn-press dark:bg-[#06301a] dark:hover:bg-[#094023] dark:text-[#8be33a] dark:border dark:border-[#8be33a]/30 dark:shadow-[0_0_12px_rgba(139,227,58,0.2)]">
                 <span class="material-symbols-outlined text-[15px]">sync</span>
                 <span>Đồng bộ ngay</span>
               </button>
@@ -1027,7 +1079,11 @@
 
               <nav class="mt-4 space-y-1">
                 ${navs.map(n => `
-                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold ${state.currentTab === n.id ? 'bg-brand-700 text-white' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100'}">
+                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold ${
+                    state.currentTab === n.id 
+                      ? 'bg-brand-700 text-white font-bold shadow-sm dark:bg-[#06301a] dark:text-[#8be33a] dark:border dark:border-[#8be33a]/30' 
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }">
                     <span class="material-symbols-outlined text-[18px]">${n.icon}</span>
                     <span>${n.label}</span>
                   </button>
@@ -1492,7 +1548,7 @@
             labels: Object.keys(sportCounts),
             datasets: [{
               data: Object.values(sportCounts),
-              backgroundColor: ['#059669', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'],
+              backgroundColor: ['#8be33a', '#10b981', '#06b6d4', '#f59e0b', '#f97316', '#a855f7', '#ec4899'],
               borderWidth: 0
             }]
           },
@@ -1708,9 +1764,9 @@
             return `
               <div class="p-5 rounded-3xl glass-card border ${i === 0 ? 'border-brand-500/80 dark:border-brand-400 ring-2 ring-brand-500/20' : 'border-slate-200/90 dark:border-slate-800'} shadow-mobbin card-lift flex flex-col justify-between relative overflow-hidden">
                 ${i === 0 ? `
-                  <div class="absolute top-0 right-0 bg-gradient-to-l from-brand-700 to-emerald-600 text-white text-[10px] font-bold px-3 py-0.5 rounded-bl-xl shadow-sm flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[12px]">schedule</span>
-                    <span>#1 Mới nhất</span>
+                  <div class="absolute top-0 right-0 bg-gradient-to-l from-[#06301a] to-[#092817] text-[#8be33a] border-l border-b border-[#8be33a]/40 shadow-[0_0_12px_rgba(139,227,58,0.3)] text-[10px] font-extrabold px-3 py-0.5 rounded-bl-xl flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#8be33a] animate-ping"></span>
+                    <span>#1 MỚI NHẤT</span>
                   </div>
                 ` : ''}
                 <div>

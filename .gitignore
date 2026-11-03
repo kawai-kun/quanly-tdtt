@@ -2,7 +2,7 @@
 .DS_Store
 Thumbs.db
 *.tmp
-*.bak
+*.bak*
 *~
 
 # Temporary check files
