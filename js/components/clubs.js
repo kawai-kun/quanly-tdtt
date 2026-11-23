@@ -1,0 +1,196 @@
+// ==============================================================================
+// COMPONENT: QUẢN LÝ CÂU LẠC BỘ (CLUBS) - FULL CRUD
+// ==============================================================================
+
+import { state, saveAll } from '../state.js';
+import { showToast } from '../utils/toast.js';
+import { getSportBadge } from '../utils/sportBadges.js';
+
+       10. TAB 3: QUẢN LÝ CÂU LẠC BỘ (CLUBS) - FULL CRUD
+       ============================================================================== */
+export function renderClubs() {
+      return `
+        <div class="space-y-6 tab-pane-animate">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Quản Lý Câu Lạc Bộ Thể Thao
+              </h1>
+              <p class="text-xs text-slate-500 mt-1">
+                Các câu lạc bộ, hội viên trực thuộc Trung tâm Dịch vụ tổng hợp quản lý (${state.clubs.length} CLB)
+              </p>
+            </div>
+            <button onclick="openClubModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press">
+              <span class="material-symbols-outlined text-[18px]">group_add</span>
+              <span>Thêm CLB mới</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            ${state.clubs.map(c => {
+              const badge = getSportBadge(c.sport);
+              return `
+                <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[26px]">${badge.icon}</span>
+                      </div>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${c.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                        ${c.status === 'active' ? 'Đang hoạt động' : 'Tạm dừng'}
+                      </span>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-3.5">${c.name}</h3>
+                    <p class="text-xs text-brand-700 dark:text-brand-400 font-semibold mt-0.5">Môn: ${c.sport}</p>
+
+                    <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                      <div class="flex justify-between"><span class="text-slate-400">Chủ nhiệm:</span><b>${c.leader}</b></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Số ĐT:</span><span>${c.phone || 'Đang cập nhật'}</span></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Hội viên:</span><b class="text-brand-700">${c.membersCount} người</b></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Địa bàn:</span><span class="truncate max-w-[150px]">${c.location}</span></div>
+                    </div>
+                  </div>
+                  <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                    <span>Thành lập: ${c.establishedYear || 2024}</span>
+                    <div class="flex items-center gap-1">
+                      <button onclick="openClubModal('${c.id}')" title="Sửa CLB" class="p-1 rounded text-slate-400 hover:text-brand-700 btn-press">
+                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                      </button>
+                      <button onclick="confirmDeleteClub('${c.id}')" title="Xóa CLB" class="p-1 rounded text-slate-400 hover:text-rose-600 btn-press">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+export function openClubModal(clubId = null) {
+      const club = clubId ? state.clubs.find(c => c.id === clubId) : null;
+      const modal = document.createElement('div');
+      modal.id = 'modalContainer';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">${club ? 'Chỉnh Sửa Câu Lạc Bộ' : 'Thêm Câu Lạc Bộ Mới'}</h3>
+              <p class="text-[11px] text-slate-400">Thông tin hội viên và ban chủ nhiệm CLB</p>
+            </div>
+            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+          </div>
+
+          <form onsubmit="handleSaveClub(event)" class="mt-4 space-y-3.5 text-xs">
+            <input type="hidden" id="club_id" value="${club ? club.id : ''}" />
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Mã CLB</label>
+                <input id="club_code" type="text" value="${club ? club.code : 'CLB-' + String(state.clubs.length + 1).padStart(2, '0')}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold mb-1">Tên CLB <span class="text-rose-500">*</span></label>
+                <input id="club_name" type="text" required value="${club ? club.name : ''}" placeholder="Ví dụ: CLB Cầu lông Tân Khai..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Môn thể thao</label>
+                <input id="club_sport" type="text" required value="${club ? club.sport : 'Bóng đá'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Chủ nhiệm CLB <span class="text-rose-500">*</span></label>
+                <input id="club_leader" type="text" required value="${club ? club.leader : ''}" placeholder="Họ và tên chủ nhiệm" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Số điện thoại</label>
+                <input id="club_phone" type="text" value="${club ? club.phone : ''}" placeholder="09xx..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Số hội viên</label>
+                <input id="club_members" type="number" min="1" value="${club ? club.membersCount : 25}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Năm thành lập</label>
+                <input id="club_year" type="number" value="${club ? (club.establishedYear || 2024) : 2024}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block font-bold mb-1">Địa bàn sinh hoạt</label>
+                <input id="club_loc" type="text" value="${club ? club.location : 'Khu phố 1, Phường Tân Khai'}" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block font-bold mb-1">Trạng thái</label>
+                <select id="club_status" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <option value="active" ${!club || club.status === 'active' ? 'selected' : ''}>Hoạt động</option>
+                  <option value="paused" ${club && club.status === 'paused' ? 'selected' : ''}>Tạm dừng</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu CLB</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('club_name')?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+      });
+      document.getElementById('club_leader')?.addEventListener('blur', function() {
+        this.value = normalizeTitle(this.value);
+      });
+    }
+
+export function handleSaveClub(e) {
+      e.preventDefault();
+      const id = document.getElementById('club_id').value;
+      const item = {
+        id: id || 'club-' + Date.now(),
+        code: document.getElementById('club_code').value.trim() || 'CLB-0' + (state.clubs.length + 1),
+        name: normalizeTitle(document.getElementById('club_name').value),
+        sport: normalizeTitle(document.getElementById('club_sport').value),
+        leader: normalizeTitle(document.getElementById('club_leader').value),
+        phone: document.getElementById('club_phone').value.trim(),
+        membersCount: parseInt(document.getElementById('club_members').value) || 0,
+        establishedYear: parseInt(document.getElementById('club_year').value) || 2024,
+        location: normalizeTitle(document.getElementById('club_loc').value),
+        status: document.getElementById('club_status').value
+      };
+
+      if (id) {
+        const idx = state.clubs.findIndex(c => c.id === id);
+        if (idx !== -1) state.clubs[idx] = item;
+      } else {
+        state.clubs.unshift(item);
+      }
+      saveAll();
+      closeModal();
+      showToast('Đã lưu CLB', `Câu lạc bộ "${item.name}" đã được cập nhật.`);
+      renderApp();
+    }
+
+export function confirmDeleteClub(id) {
+      const c = state.clubs.find(item => item.id === id);
+      if (confirm(`Bạn có chắc chắn muốn xóa "${c ? c.name : 'CLB này'}"?`)) {
+        state.clubs = state.clubs.filter(item => item.id !== id);
+        saveAll();
+        showToast('Đã xóa CLB', 'Câu lạc bộ đã được xóa khỏi hệ thống.');
+        renderApp();
+      }
+    }
+
+    /* ==============================================================================
