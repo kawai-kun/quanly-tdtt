@@ -251,12 +251,14 @@ export function renderApp() {
   else if (state.currentTab === 'bao-cao') contentHTML = renderReports();
 
   app.innerHTML = `
-    ${renderSidebar()}
-    <div class="lg:pl-[270px] flex-1 flex flex-col min-h-screen">
-      ${renderHeader()}
-      <main class="flex-1 p-3.5 sm:p-5 lg:p-7 pb-28 lg:pb-8 max-w-[1720px] w-full mx-auto">
-        ${contentHTML}
-      </main>
+    <div class="min-h-screen flex w-full bg-slate-50 dark:bg-slate-950">
+      ${renderSidebar()}
+      <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+        ${renderHeader()}
+        <main class="flex-1 p-3.5 sm:p-5 lg:p-7 pb-28 lg:pb-8 max-w-[1720px] w-full mx-auto">
+          ${contentHTML}
+        </main>
+      </div>
     </div>
     ${renderBottomNav()}
     ${renderMobileDrawer()}
@@ -316,20 +318,19 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Tự động làm mới dữ liệu tức thì khi người dùng chuyển tab hoặc quay lại cửa sổ web
-window.addEventListener('focus', () => {
-  pullFromGoogleSheet(true);
-});
+// Định kỳ kiểm tra ngầm mỗi 60 giây để cập nhật giải đấu mới thêm từ Telegram mà không gây lag hay giật màn hình
+let lastSyncTimestamp = Date.now();
 
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
+  if (document.visibilityState === 'visible' && Date.now() - lastSyncTimestamp > 60000) {
+    lastSyncTimestamp = Date.now();
     pullFromGoogleSheet(true);
   }
 });
 
-// Định kỳ kiểm tra ngầm mỗi 10 giây để cập nhật tức thì giải đấu mới thêm từ Telegram mà không cần tải lại trang
 setInterval(() => {
   if (document.visibilityState === 'visible') {
+    lastSyncTimestamp = Date.now();
     pullFromGoogleSheet(true);
   }
-}, 10000);
+}, 60000);

@@ -31,10 +31,10 @@ import { state } from '../state.js';
       ];
 
       return `
-        <aside class="hidden lg:flex fixed left-0 top-0 bottom-0 w-[270px] glass-card border-r border-slate-200/80 dark:border-slate-800/80 flex-col justify-between p-4 z-50">
+        <aside class="hidden lg:flex flex-col justify-between w-[260px] shrink-0 sticky top-0 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 z-40 select-none overflow-y-auto">
           <div>
             <!-- Official Brand Header: Dedicated to Logo + HỆ THỐNG QUẢN LÝ TDTT (Góc bên trái) -->
-            <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/60 dark:border-slate-800/60 pb-5 mb-4">
+            <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/80 dark:border-slate-800/80 pb-5 mb-4">
               <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group">
                 <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105" alt="Huy hiệu UBND Phường Tân Khai" />
               </div>

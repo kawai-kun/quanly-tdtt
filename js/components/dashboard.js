@@ -341,12 +341,6 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
                 <span>Chỉ tiêu: <b class="font-mono">${kpi.targetClubs || 5}</b> CLB</span>
               </div>
             </div>
-              </div>
-              <div class="flex justify-between items-center text-[11px] text-slate-500">
-                <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${clubCount}</b> CLB</span>
-                <span>Chỉ tiêu: <b class="font-mono">${kpi.targetClubs || 5}</b> CLB</span>
-              </div>
-            </div>
 
           </div>
         </div>

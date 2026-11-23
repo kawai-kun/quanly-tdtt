@@ -110,6 +110,7 @@ export async function pullFromGoogleSheet(silent = false) {
     const res = await resp.json();
     if ((res.status === 'success' || res.success) && res.data) {
       const oldLen = (state.activities || []).length;
+      const oldChecksum = JSON.stringify((state.activities || []).map(a => a.id + (a.status || '') + (a.reportStatus || '') + (a.participants || '')));
       const remoteActs = (res.data.activities && Array.isArray(res.data.activities)) ? res.data.activities : [];
       
       // Hợp nhất thông minh dữ liệu cục bộ và dữ liệu Google Drive
@@ -139,17 +140,24 @@ export async function pullFromGoogleSheet(silent = false) {
         pushToGoogleSheet(false);
       }
 
+      const newChecksum = JSON.stringify((state.activities || []).map(a => a.id + (a.status || '') + (a.reportStatus || '') + (a.participants || '')));
+      const hasActualChanges = (mergedActs.length !== oldLen) || (oldChecksum !== newChecksum);
+
       if (!silent) {
         showToast('Nạp dữ liệu thành công', `Đã đồng bộ và hợp nhất ${state.activities.length} giải đấu từ Google Drive.`);
         if (window.closeModal) window.closeModal();
-      } else if (state.activities.length > oldLen) {
+      } else if (hasActualChanges && state.activities.length > oldLen) {
         showToast('Cập nhật mới từ Telegram', `Đã nhận thêm giải đấu: ${state.activities[0]?.title || ''}.`);
       }
       
-      if (window.updateTournamentsOnly && state.currentTab === 'quan-ly-giai-dau') {
-        window.updateTournamentsOnly();
-      } else if (window.renderApp) {
-        window.renderApp();
+      // CHỐNG CHỚP TẮT GIẬT MÀN HÌNH:
+      // Nếu là chạy ngầm (silent = true) và dữ liệu không hề thay đổi, TUYỆT ĐỐI không render lại DOM!
+      if (!silent || hasActualChanges) {
+        if (window.updateTournamentsOnly && state.currentTab === 'quan-ly-giai-dau') {
+          window.updateTournamentsOnly(false);
+        } else if (window.renderApp) {
+          window.renderApp();
+        }
       }
     } else {
       if (!silent) {

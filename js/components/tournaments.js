@@ -154,10 +154,10 @@ import { animateStagger } from '../utils/animations.js';
 
     export function handleTournamentSearchInput(val) {
       state.tournamentsFilter.search = val;
-      updateTournamentsOnly();
+      updateTournamentsOnly(false);
     }
 
-    export function updateTournamentsOnly() {
+    export function updateTournamentsOnly(shouldAnimate = false) {
       const container = document.getElementById('tournaments_data_container');
       const counterEl = document.getElementById('tournaments_counts_display');
       const acts = getFilteredTournamentsList();
@@ -166,7 +166,9 @@ import { animateStagger } from '../utils/animations.js';
         container.innerHTML = state.tournamentsFilter.viewMode === 'cards' 
           ? renderTournamentsGrid(acts) 
           : renderTournamentsTable(acts);
-        initTournamentsAnimations();
+        if (shouldAnimate) {
+          initTournamentsAnimations();
+        }
       }
       if (counterEl) {
         counterEl.innerHTML = getTournamentsCountsHtml(acts);
@@ -187,12 +189,12 @@ import { animateStagger } from '../utils/animations.js';
 
     export function setTournamentsFilter(key, val) {
       state.tournamentsFilter[key] = val;
-      updateTournamentsOnly();
+      updateTournamentsOnly(false);
     }
 
     export function toggleTournamentsView(mode) {
       state.tournamentsFilter.viewMode = mode;
-      updateTournamentsOnly();
+      updateTournamentsOnly(true);
     }
 
     export function renderTournamentsGrid(acts) {
