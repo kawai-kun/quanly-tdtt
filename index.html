@@ -1010,10 +1010,16 @@
                 <button onclick="openSyncModal()" class="text-[11px] text-brand-700 dark:text-brand-400 font-bold hover:underline">Cấu hình</button>
               </div>
               <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 truncate">Lần cuối: ${state.lastSyncTime}</p>
-              <button onclick="pushToGoogleSheet(true)" class="mt-2.5 w-full py-2 px-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 btn-press dark:bg-[#06301a] dark:hover:bg-[#094023] dark:text-[#8be33a] dark:border dark:border-[#8be33a]/30 dark:shadow-[0_0_12px_rgba(139,227,58,0.2)]">
-                <span class="material-symbols-outlined text-[15px]">sync</span>
-                <span>Đồng bộ ngay</span>
-              </button>
+              <div class="mt-2.5 grid grid-cols-2 gap-1.5">
+                <button onclick="pullFromGoogleSheet(false)" class="py-2 px-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm transition-all flex items-center justify-center gap-1 btn-press" title="Lấy dữ liệu mới nhất từ Google Drive về máy (bao gồm giải đấu vừa thêm qua Telegram)">
+                  <span class="material-symbols-outlined text-[15px]">cloud_download</span>
+                  <span>Tải về</span>
+                </button>
+                <button onclick="pushToGoogleSheet(true)" class="py-2 px-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] rounded-xl border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-1 btn-press" title="Lưu dữ liệu hiện tại lên Google Drive">
+                  <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
+                  <span>Lưu lên</span>
+                </button>
+              </div>
             </div>
           </div>
         </aside>
@@ -5076,41 +5082,60 @@
       }
     }
 
-    async function pullFromGoogleSheet() {
+    async function pullFromGoogleSheet(silent = false) {
       if (!state.apiUrl) {
-        openSyncModal();
+        if (!silent) openSyncModal();
         return;
       }
 
-      state.syncStatus = 'syncing';
-      renderSyncPill();
+      if (!silent) {
+        state.syncStatus = 'syncing';
+        renderSyncPill();
+      }
 
       try {
         const url = state.apiUrl + (state.apiUrl.includes('?') ? '&' : '?') + 'action=load_all';
         const resp = await fetch(url);
         const res = await resp.json();
         if ((res.status === 'success' || res.success) && res.data) {
-          if (res.data.activities) state.activities = res.data.activities;
-          if (res.data.clubs) state.clubs = res.data.clubs;
-          if (res.data.schedules) state.schedules = res.data.schedules;
-          if (res.data.facilities) state.facilities = res.data.facilities;
-          if (res.data.budget) state.budgetItems = res.data.budget;
-          if (res.data.reports) state.savedReports = res.data.reports;
+          const oldLen = (state.activities || []).length;
+          if (res.data.activities && Array.isArray(res.data.activities)) state.activities = res.data.activities;
+          if (res.data.clubs && Array.isArray(res.data.clubs)) state.clubs = res.data.clubs;
+          if (res.data.schedules && Array.isArray(res.data.schedules)) state.schedules = res.data.schedules;
+          if (res.data.facilities && Array.isArray(res.data.facilities)) state.facilities = res.data.facilities;
+          if (res.data.budget && Array.isArray(res.data.budget)) state.budgetItems = res.data.budget;
+          if (res.data.reports && Array.isArray(res.data.reports)) state.savedReports = res.data.reports;
 
           state.syncStatus = 'success';
           state.lastSyncTime = new Date().toLocaleTimeString('vi-VN');
           lsSet('tk_last_sync', state.lastSyncTime);
-          saveAll();
-          showToast('Nạp dữ liệu thành công', 'Đã đồng bộ cơ sở dữ liệu mới nhất từ Google Sheet.');
-          closeModal();
+
+          // Cập nhật localStorage
+          lsSet('tk_activities', state.activities);
+          lsSet('tk_clubs', state.clubs);
+          lsSet('tk_schedules', state.schedules);
+          lsSet('tk_facilities', state.facilities);
+          lsSet('tk_budget', state.budgetItems);
+          lsSet('tk_saved_reports', state.savedReports);
+
+          if (!silent) {
+            showToast('Nạp dữ liệu thành công', `Đã đồng bộ ${state.activities.length} giải đấu từ Google Drive.`);
+            closeModal();
+          } else if (state.activities.length > oldLen) {
+            showToast('Cập nhật mới từ Telegram', `Đã nhận giải đấu mới: ${state.activities[0]?.title || ''} (Mã ${state.activities[0]?.code || ''} - #1).`);
+          }
           renderApp();
         } else {
-          state.syncStatus = 'error';
-          showToast('Lỗi nạp', res.message || res.error || 'Không có dữ liệu trên Sheet', 'error');
+          if (!silent) {
+            state.syncStatus = 'error';
+            showToast('Lỗi nạp', res.message || res.error || 'Không có dữ liệu trên Sheet', 'error');
+          }
         }
       } catch (err) {
-        state.syncStatus = 'error';
-        showToast('Lỗi kết nối', 'Không thể tải dữ liệu từ Google Drive.', 'error');
+        if (!silent) {
+          state.syncStatus = 'error';
+          showToast('Lỗi kết nối', 'Không thể tải dữ liệu từ Google Drive.', 'error');
+        }
       } finally {
         renderSyncPill();
       }
@@ -5349,7 +5374,24 @@
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
       renderApp();
+
+      // Tự động kiểm tra và đồng bộ dữ liệu mới nhất từ Google Drive ngay khi tải trang
+      setTimeout(() => {
+        if (state.apiUrl) pullFromGoogleSheet(true);
+      }, 600);
     });
+
+    // Tự động làm mới dữ liệu khi người dùng chuyển tab hoặc quay lại cửa sổ web
+    window.addEventListener('focus', () => {
+      if (state.apiUrl) pullFromGoogleSheet(true);
+    });
+
+    // Định kỳ kiểm tra ngầm mỗi 30 giây để cập nhật tức thì giải đấu mới thêm từ Telegram
+    setInterval(() => {
+      if (document.visibilityState === 'visible' && state.apiUrl) {
+        pullFromGoogleSheet(true);
+      }
+    }, 30000);
   </script>
 </body>
 </html>
