@@ -388,6 +388,10 @@
       if (!Array.isArray(localActs)) localActs = [];
       if (!Array.isArray(remoteActs)) remoteActs = [];
 
+      // Loại bỏ giải test Cờ Vây nếu có từ bất kỳ nguồn nào
+      localActs = localActs.filter(a => !(a.title || '').toLowerCase().includes('cờ vây'));
+      remoteActs = remoteActs.filter(a => !(a.title || '').toLowerCase().includes('cờ vây'));
+
       const merged = [...remoteActs];
       const seen = new Set();
 
@@ -485,7 +489,6 @@
       { id: 'act-25', code: 'T-19', date: '29/08/2026', title: 'Tham gia giải Kéo co Đại hội TDTT TP Đồng Nai', sport: 'Kéo co', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 24, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 0, bronzeMedals: 2, totalMedals: 3, budgetWard: 14000000, budgetPrize: 5000000, budgetTotal: 19000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Hạng Nhì toàn đoàn' },
       { id: 'act-26', code: 'T-11', date: '30/08/2026', title: 'Chương trình đi bộ Cùng Việt Nam tiến bước', sport: 'Đi bộ', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 200, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 8500000, budgetPrize: 0, budgetTotal: 8500000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: '' },
       { id: 'act-27', code: 'T-21', date: '04/09/2026', title: 'Tham gia giải Điền kinh Đại hội TDTT TP Đồng Nai', sport: 'Điền kinh', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 2, bronzeMedals: 2, totalMedals: 4, budgetWard: 12000000, budgetPrize: 4000000, budgetTotal: 16000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 9, achievementNote: 'Giải Ba đồng đội' },
-      { id: 'act-1795402546321', code: 'T-28', date: '15/10/2026', title: 'Cờ Vây', sport: 'Cờ vây', location: 'Trung tâm DVTH Phường Tân Khai', category: 'Cấp phường', participants: 30, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 1, bronzeMedals: 2, totalMedals: 4, budgetWard: 10500000, budgetPrize: 4500000, budgetTotal: 15000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 10, achievementNote: '', isReported: false },
       { id: 'act-28-danvu', code: 'T-28', date: '27/11/2026', title: 'Tham dự Giải Dân vũ thể thao thành phố Đồng Nai năm 2026', sport: 'Thể thao phong trào', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 60, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 1, bronzeMedals: 0, totalMedals: 1, budgetWard: 14000000, budgetPrize: 6000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 11, achievementNote: '', isReported: false },
       { id: 'act-29-bongda', code: 'T-29', date: '22/11/2026', title: 'Tổ chức giải Bóng đá Văn hóa - Đoàn kết lần thứ I năm 2026', sport: 'Bóng đá', location: 'Sân vận động trung tâm', category: 'Cấp phường', participants: 80, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 14000000, budgetPrize: 6000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 11, achievementNote: '', isReported: false },
       { id: 'act-30-nguoicaotuoi', code: 'T-30', date: '24/10/2026', title: 'Tham dự Hội thi Văn nghệ - Thể thao Người cao tuổi thành phố Đồng Nai năm 2026', sport: 'Thể thao phong trào', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 30, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 1, bronzeMedals: 0, totalMedals: 1, budgetWard: 14000000, budgetPrize: 6000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 10, achievementNote: '03 Giải Khuyến khích, xếp hạng thứ 15 toàn đoàn', isReported: false }
@@ -658,6 +661,14 @@
               changed = true;
             }
           });
+        }
+        // Xóa giải test Cờ Vây nếu còn lưu trong localStorage (theo yêu cầu người dùng)
+        if (Array.isArray(state.activities)) {
+          const beforeLen = state.activities.length;
+          state.activities = state.activities.filter(a => !(a.title || '').toLowerCase().includes('cờ vây'));
+          if (state.activities.length !== beforeLen) {
+            changed = true;
+          }
         }
         // 2. Phục hồi các hoạt động bị lỗi font / ký tự hỏi chấm từ INITIAL_ACTIVITIES
         if (Array.isArray(state.activities)) {
@@ -1710,10 +1721,16 @@
               </p>
             </div>
 
-            <button onclick="openActivityModal()" class="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press shrink-0">
-              <span class="material-symbols-outlined text-[19px]">add_circle</span>
-              <span>Thêm giải đấu mới</span>
-            </button>
+            <div class="flex items-center gap-2.5">
+              <button onclick="pullFromGoogleSheet(false)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer btn-press shrink-0" title="Bấm để đồng bộ tức thì các giải đấu mới nhất vừa thêm từ Telegram hoặc Google Sheet">
+                <span class="material-symbols-outlined text-[19px]">sync</span>
+                <span>Đồng bộ Telegram</span>
+              </button>
+              <button onclick="openActivityModal()" class="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press shrink-0">
+                <span class="material-symbols-outlined text-[19px]">add_circle</span>
+                <span>Thêm giải đấu mới</span>
+              </button>
+            </div>
           </div>
 
           <!-- Filter Toolbar (Đồng bộ chiều cao h-10, thẳng hàng chuẩn xác) -->
@@ -1936,20 +1953,33 @@
 
       return `
         <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin w-full">
-          <table class="w-full text-left text-sm border-collapse min-w-[1360px]">
+          <table class="w-full text-left text-sm border-collapse" style="table-layout: fixed; min-width: 1180px;">
+            <colgroup>
+              <col style="width: 52px;">
+              <col style="width: 72px;">
+              <col style="width: auto; min-width: 250px;">
+              <col style="width: 125px;">
+              <col style="width: 110px;">
+              <col style="width: 100px;">
+              <col style="width: 105px;">
+              <col style="width: 75px;">
+              <col style="width: 125px;">
+              <col style="width: 140px;">
+              <col style="width: 88px;">
+            </colgroup>
             <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700/80 uppercase text-[12px] tracking-wider select-none">
               <tr>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-16 text-center">STT</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-24 text-center">Mã</th>
-                <th class="py-4 px-4 align-middle min-w-[340px]">Tên giải thi đấu</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-36 text-center">Trạng thái BC</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-32 text-center">Bộ môn</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-28 text-center">Cấp độ</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-32 text-center">Ngày tổ chức</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-24 text-center">VĐV</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-36 text-center">Huy chương (V-B-Đ)</th>
-                <th class="py-4 px-4 align-middle whitespace-nowrap w-44 text-right">Tổng kinh phí</th>
-                <th class="py-4 px-3 align-middle whitespace-nowrap w-24 text-center">Thao tác</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">STT</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Mã</th>
+                <th class="py-3.5 px-4 align-middle text-left">Tên giải thi đấu</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Trạng thái BC</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Bộ môn</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Cấp độ</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Ngày tổ chức</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">VĐV</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Huy chương (V-B-Đ)</th>
+                <th class="py-3.5 px-3 align-middle whitespace-nowrap text-right">Tổng kinh phí</th>
+                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-20 bg-slate-100 dark:bg-slate-800 shadow-[-3px_0_6px_rgba(0,0,0,0.06)] dark:shadow-[-3px_0_6px_rgba(0,0,0,0.3)]">Thao tác</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-200">
@@ -1959,10 +1989,10 @@
                 const isTop = i === 0;
                 return `
                   <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group ${isTop ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-l-4 border-l-emerald-600 dark:border-l-emerald-400 font-medium' : ''}">
-                    <!-- STT -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-mono">
+                    <!-- 1. STT (52px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono">
                       ${isTop ? `
-                        <span class="px-2.5 py-1 rounded-full bg-emerald-700 text-white font-extrabold text-[11px] inline-flex items-center gap-1 shadow-sm">
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[10.5px] inline-flex items-center gap-0.5 shadow-sm">
                           <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                           #1 Mới
                         </span>
@@ -1971,85 +2001,85 @@
                       `}
                     </td>
 
-                    <!-- Mã giải -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
-                      <span class="font-mono font-extrabold text-sm px-2.5 py-1 rounded-lg ${isTop ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-slate-100 dark:bg-slate-800 text-brand-700 dark:text-brand-400 border border-slate-200 dark:border-slate-700'}">
+                    <!-- 2. Mã giải (72px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
+                      <span class="font-mono font-extrabold text-sm px-2 py-0.5 rounded-lg ${isTop ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-slate-100 dark:bg-slate-800 text-brand-700 dark:text-brand-400 border border-slate-200 dark:border-slate-700'}">
                         ${a.code}
                       </span>
                     </td>
 
-                    <!-- Tên giải đấu -->
-                    <td class="py-4 px-4 align-middle min-w-[340px]">
-                      <div onclick="openActivityModal('${a.id}')" class="font-bold text-[15px] text-slate-900 dark:text-white leading-snug hover:text-brand-700 dark:hover:text-brand-400 cursor-pointer transition-colors" title="Bấm để xem và sửa chi tiết">
+                    <!-- 3. Tên giải đấu (Tự động co giãn theo màn hình) -->
+                    <td class="py-3.5 px-4 align-middle">
+                      <div onclick="openActivityModal('${a.id}')" class="font-bold text-[14.5px] text-slate-900 dark:text-white leading-snug hover:text-brand-700 dark:hover:text-brand-400 cursor-pointer transition-colors" title="Bấm để xem và sửa chi tiết">
                         ${a.title}
                       </div>
                       ${a.achievementNote ? `
-                        <div class="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-800/80 text-xs font-semibold text-amber-800 dark:text-amber-300">
-                          <span class="material-symbols-outlined text-[14px] text-amber-600">military_tech</span>
+                        <div class="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+                          <span class="material-symbols-outlined text-[13px] text-amber-600">military_tech</span>
                           <span>${a.achievementNote}</span>
                         </div>
                       ` : ''}
                     </td>
 
-                    <!-- Trạng thái BC -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
+                    <!-- 4. Trạng thái BC (125px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
                       ${rep.isReported ? `
-                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1.5 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để chuyển sang Chưa báo cáo">
-                          <span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để chuyển sang Chưa báo cáo">
+                          <span class="material-symbols-outlined text-[13px] text-emerald-600">check_circle</span>
                           <span>Đã BC (${rep.reportCode})</span>
                         </button>
                       ` : `
-                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1.5 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để đánh dấu Đã báo cáo">
-                          <span class="material-symbols-outlined text-[14px] text-amber-600">pending</span>
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để đánh dấu Đã báo cáo">
+                          <span class="material-symbols-outlined text-[13px] text-amber-600">pending</span>
                           <span>Chưa BC</span>
                         </button>
                       `}
                     </td>
 
-                    <!-- Bộ môn -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
-                      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold ${badge.bg} ${badge.text} border ${badge.border}">
-                        <span class="material-symbols-outlined text-[15px]">${badge.icon}</span>
-                        <span>${a.sport || 'Bóng đá'}</span>
+                    <!-- 5. Bộ môn (110px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
+                      <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-semibold ${badge.bg} ${badge.text} border ${badge.border}">
+                        <span class="material-symbols-outlined text-[14px]">${badge.icon}</span>
+                        <span class="truncate max-w-[80px]">${a.sport || 'Bóng đá'}</span>
                       </span>
                     </td>
 
-                    <!-- Cấp độ -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
-                      <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <!-- 6. Cấp độ (100px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
+                      <span class="px-2 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                         ${a.category || 'Cấp phường'}
                       </span>
                     </td>
 
-                    <!-- Ngày tổ chức -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-mono font-bold text-sm text-brand-700 dark:text-brand-400">
+                    <!-- 7. Ngày tổ chức (105px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono font-bold text-sm text-brand-700 dark:text-brand-400">
                       ${a.date}
                     </td>
 
-                    <!-- VĐV -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-bold text-sm text-slate-800 dark:text-slate-200 font-mono">
-                      ${a.participants} <span class="text-xs text-slate-500 font-sans">${a.participantsUnit || 'VĐV'}</span>
+                    <!-- 8. VĐV (75px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-bold text-sm text-slate-800 dark:text-slate-200 font-mono">
+                      ${a.participants} <span class="text-[11px] text-slate-500 font-sans">${a.participantsUnit || 'VĐV'}</span>
                     </td>
 
-                    <!-- Huy chương -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-mono text-sm font-bold">
+                    <!-- 9. Huy chương (125px) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono text-sm font-bold">
                       <span class="text-amber-600 font-extrabold">${a.goldMedals || 0}V</span> - 
                       <span class="text-slate-500 font-extrabold">${a.silverMedals || 0}B</span> - 
                       <span class="text-orange-600 font-extrabold">${a.bronzeMedals || 0}Đ</span>
                     </td>
 
-                    <!-- Tổng kinh phí (Nổi bật, font mono số to rõ, không bao giờ bị cắt) -->
-                    <td class="py-4 px-4 align-middle whitespace-nowrap text-right font-mono font-black text-[15px] sm:text-base text-emerald-700 dark:text-emerald-400">
+                    <!-- 10. Tổng kinh phí (140px, số to rõ, căn phải) -->
+                    <td class="py-3.5 px-3 align-middle whitespace-nowrap text-right font-mono font-black text-[14.5px] sm:text-base text-emerald-700 dark:text-emerald-400">
                       ${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ
                     </td>
 
-                    <!-- Thao tác -->
-                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center space-x-1">
-                      <button onclick="openActivityModal('${a.id}')" title="Sửa thông tin" class="p-2 rounded-xl text-slate-500 hover:text-brand-700 hover:bg-brand-50 dark:hover:bg-slate-800 btn-press transition-colors">
-                        <span class="material-symbols-outlined text-[19px]">edit</span>
+                    <!-- 11. Thao tác (88px, CỐ ĐỊNH PINNED RIGHT-0, KHÔNG BAO GIỜ BỊ CHE KHUẤT) -->
+                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/90 shadow-[-3px_0_6px_rgba(0,0,0,0.06)] dark:shadow-[-3px_0_6px_rgba(0,0,0,0.3)] space-x-1">
+                      <button onclick="openActivityModal('${a.id}')" title="Sửa thông tin" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 dark:hover:bg-slate-700 btn-press transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">edit</span>
                       </button>
-                      <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa giải đấu" class="p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 btn-press transition-colors">
-                        <span class="material-symbols-outlined text-[19px]">delete</span>
+                      <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa giải đấu" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 btn-press transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
                       </button>
                     </td>
                   </tr>
@@ -5515,17 +5545,22 @@
       }, 600);
     });
 
-    // Tự động làm mới dữ liệu khi người dùng chuyển tab hoặc quay lại cửa sổ web
+    // Tự động làm mới dữ liệu tức thì khi người dùng chuyển tab hoặc quay lại cửa sổ web
     window.addEventListener('focus', () => {
-      if (state.apiUrl) pullFromGoogleSheet(true);
+      pullFromGoogleSheet(true);
     });
-
-    // Định kỳ kiểm tra ngầm mỗi 30 giây để cập nhật tức thì giải đấu mới thêm từ Telegram
-    setInterval(() => {
-      if (document.visibilityState === 'visible' && state.apiUrl) {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
         pullFromGoogleSheet(true);
       }
-    }, 30000);
+    });
+
+    // Định kỳ kiểm tra ngầm mỗi 10 giây để cập nhật tức thì giải đấu mới thêm từ Telegram mà không cần tải lại trang
+    setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        pullFromGoogleSheet(true);
+      }
+    }, 10000);
   </script>
 </body>
 </html>
