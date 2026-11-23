@@ -1,3 +1,4 @@
+import { normalizeTitle } from '../utils/formatters.js';
 // ==============================================================================
 // COMPONENT: QUẢN LÝ CÂU LẠC BỘ (CLUBS) - FULL CRUD
 // ==============================================================================
@@ -6,9 +7,7 @@ import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
 import { getSportBadge } from '../utils/sportBadges.js';
 
-       10. TAB 3: QUẢN LÝ CÂU LẠC BỘ (CLUBS) - FULL CRUD
-       ============================================================================== */
-export function renderClubs() {
+    export function renderClubs() {
       return `
         <div class="space-y-6 tab-pane-animate">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -69,7 +68,7 @@ export function renderClubs() {
       `;
     }
 
-export function openClubModal(clubId = null) {
+    export function openClubModal(clubId = null) {
       const club = clubId ? state.clubs.find(c => c.id === clubId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
@@ -81,7 +80,7 @@ export function openClubModal(clubId = null) {
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${club ? 'Chỉnh Sửa Câu Lạc Bộ' : 'Thêm Câu Lạc Bộ Mới'}</h3>
               <p class="text-[11px] text-slate-400">Thông tin hội viên và ban chủ nhiệm CLB</p>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
           </div>
 
           <form onsubmit="handleSaveClub(event)" class="mt-4 space-y-3.5 text-xs">
@@ -139,7 +138,7 @@ export function openClubModal(clubId = null) {
             </div>
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu CLB</button>
             </div>
           </form>
@@ -155,7 +154,7 @@ export function openClubModal(clubId = null) {
       });
     }
 
-export function handleSaveClub(e) {
+    export function handleSaveClub(e) {
       e.preventDefault();
       const id = document.getElementById('club_id').value;
       const item = {
@@ -178,19 +177,19 @@ export function handleSaveClub(e) {
         state.clubs.unshift(item);
       }
       saveAll();
-      closeModal();
+      window.closeModal();
       showToast('Đã lưu CLB', `Câu lạc bộ "${item.name}" đã được cập nhật.`);
-      renderApp();
+      window.renderApp();
     }
 
-export function confirmDeleteClub(id) {
+    export function confirmDeleteClub(id) {
       const c = state.clubs.find(item => item.id === id);
       if (confirm(`Bạn có chắc chắn muốn xóa "${c ? c.name : 'CLB này'}"?`)) {
         state.clubs = state.clubs.filter(item => item.id !== id);
         saveAll();
         showToast('Đã xóa CLB', 'Câu lạc bộ đã được xóa khỏi hệ thống.');
-        renderApp();
+        window.renderApp();
       }
     }
 
-    /* ==============================================================================
+

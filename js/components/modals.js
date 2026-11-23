@@ -2,17 +2,12 @@
 // COMPONENT: CÁC MODAL DIALOGS (ACTIVITY MODAL, SYNC MODAL, CLOSE MODAL)
 // ==============================================================================
 
-import { state, saveAll } from '../state.js';
+import { state, saveAll, getActivityReportStatus } from '../state.js';
 import { SPREADSHEET_ID } from '../data/constants.js';
 import { normalizeTitle, normalizeCode, normalizeDate, extractYearFromDate, extractQuarterFromDate, autoDetectSport, sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 
-export function closeModal() {
-  const m = document.getElementById('modalContainer');
-  if (m) m.remove();
-}
-
-export function openActivityModal(actId = null) {
+    export function openActivityModal(actId = null) {
       const act = actId ? state.activities.find(a => a.id === actId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
@@ -24,7 +19,7 @@ export function openActivityModal(actId = null) {
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${act ? 'Chỉnh Sửa Giải Đấu' : 'Thêm Giải Đấu Mới'}</h3>
               <p class="text-[11px] text-slate-400">Hệ thống tự động chuẩn hóa chữ hoa/thường, bộ môn và mã giải</p>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
           </div>
 
           <form onsubmit="handleSaveActivity(event)" class="mt-4 space-y-3.5">
@@ -121,7 +116,7 @@ export function openActivityModal(actId = null) {
             </div>
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu giải đấu</button>
             </div>
           </form>
@@ -148,7 +143,7 @@ export function openActivityModal(actId = null) {
         this.value = normalizeCode(this.value, state.activities.length);
       });
 
-export function updateMedalsCalc() {
+      function updateMedalsCalc() {
         const total = (parseInt(gInput.value) || 0) + (parseInt(sInput.value) || 0) + (parseInt(bInput.value) || 0);
         if (totalBadge) totalBadge.textContent = `Tổng: ${total} HC`;
       }
@@ -157,7 +152,7 @@ export function updateMedalsCalc() {
       bInput?.addEventListener('input', updateMedalsCalc);
     }
 
-export function handleSaveActivity(e) {
+    export function handleSaveActivity(e) {
       e.preventDefault();
       const id = document.getElementById('act_id').value;
       const g = parseInt(document.getElementById('act_gold').value) || 0;
@@ -225,22 +220,21 @@ export function handleSaveActivity(e) {
       }
       state.activities = sortActivitiesByLatest(state.activities);
       saveAll();
-      closeModal();
+      window.closeModal();
       showToast('Đã lưu thành công', `Giải đấu "${item.title}" đã được chuẩn hóa và lưu trữ.`);
-      renderApp();
+      window.renderApp();
     }
 
-export function confirmDeleteActivity(id) {
+    export function confirmDeleteActivity(id) {
       if (confirm('Bạn có chắc muốn xóa giải đấu này?')) {
         state.activities = state.activities.filter(a => a.id !== id);
         saveAll();
         showToast('Đã xóa', 'Giải đấu đã được xóa khỏi hệ thống.');
-        renderApp();
+        window.renderApp();
       }
     }
 
-    /* ==============================================================================
-export function openSyncModal() {
+    export function openSyncModal() {
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
@@ -256,7 +250,7 @@ export function openSyncModal() {
                 <p class="text-[11px] text-slate-400">Kết nối cơ sở dữ liệu trên Google Drive của bạn</p>
               </div>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
           </div>
 
           <div class="mt-4 space-y-4 text-xs">
@@ -302,5 +296,10 @@ export function openSyncModal() {
         </div>
       `;
       document.body.appendChild(modal);
+    }
+
+    export function closeModal() {
+      const m = document.getElementById('modalContainer');
+      if (m) m.remove();
     }
 

@@ -4,7 +4,7 @@
 // ==============================================================================
 
 import { state } from '../state.js';
-import { parseDateVN, sortActivitiesByLatest } from '../utils/formatters.js';
+import { parseDateVN, sortActivitiesByLatest, formatDateVN } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 
 export     function getReportMonths(opts = {}) {

@@ -15,6 +15,7 @@ import {
 import { DEFAULT_API_URL } from './data/constants.js';
 import { sortActivitiesByLatest } from './utils/formatters.js';
 import { mergeActivitiesSmartly, pushToGoogleSheet } from './services/googleSync.js';
+import { showToast } from './utils/toast.js';
 
 export function lsGet(k, def) {
   try {
@@ -54,13 +55,13 @@ export const state = {
   autoSync: lsGet('tk_auto_sync', true),
 
   // Reports Management State (Tháng, Quý, 6T, 9T, Năm - Nhà nước & Chi bộ)
-  reportMode: lsGet('tk_rep_mode', 'state'), // 'state' (Nhà nước) | 'party' (Chi bộ)
-  reportPeriod: lsGet('tk_rep_period', 'month'), // 'month' | 'quarter' | 'half' | 'nine' | 'year'
+  reportMode: lsGet('tk_rep_mode', 'state'),
+  reportPeriod: lsGet('tk_rep_period', 'month'),
   reportMonth: lsGet('tk_rep_month', new Date().getMonth() + 1),
   reportQuarter: lsGet('tk_rep_quarter', Math.floor(new Date().getMonth() / 3) + 1),
   reportHalf: lsGet('tk_rep_half', new Date().getMonth() < 6 ? 1 : 2),
   reportYear: lsGet('tk_rep_year', new Date().getFullYear()),
-  reportRecipient: lsGet('tk_rep_recipient', 'vp_trungtam'), // 'vp_trungtam' (Văn phòng Trung tâm) | 'phong_vanhoa' (Phòng Văn hóa)
+  reportRecipient: lsGet('tk_rep_recipient', 'vp_trungtam'),
   reportSubTab: 'document',
   activeReportId: 'rep-09',
 
@@ -77,7 +78,7 @@ export const state = {
   tournamentsFilter: {
     category: 'all',
     sport: 'all',
-    reportStatus: 'all', // 'all' | 'unreported' | 'reported'
+    reportStatus: 'all',
     search: '',
     viewMode: 'cards'
   },
@@ -184,3 +185,49 @@ export function healDataEncoding() {
 
 // Khởi chạy kiểm tra toàn vẹn dữ liệu
 healDataEncoding();
+
+
+// Báo cáo trạng thái giải đấu
+    export function getActivityReportStatus(act) {
+      if (!act) return { isReported: false };
+      if (act.isReported && act.reportedInReport) {
+        return { isReported: true, reportCode: act.reportedInReport };
+      }
+      if (act.isReported === false) {
+        return { isReported: false };
+      }
+      for (const r of (state.savedReports || [])) {
+        if (Array.isArray(r.reportedActIds) && r.reportedActIds.includes(act.id)) {
+          return { isReported: true, reportCode: r.code, reportTitle: r.title, reportDate: r.reportDate };
+        }
+      }
+      return { isReported: false };
+    }
+
+    export function toggleActivityReportStatus(actId, event) {
+      if (event) event.stopPropagation();
+      const act = state.activities.find(a => a.id === actId);
+      if (!act) return;
+      const status = getActivityReportStatus(act);
+      if (status.isReported) {
+        if (confirm(`Giải đấu "${act.title}" đang được đánh dấu "Đã báo cáo (${status.reportCode})".\n\nBạn có muốn chuyển trạng thái sang "Chưa lập báo cáo" không?`)) {
+          act.isReported = false;
+          delete act.reportedInReport;
+          (state.savedReports || []).forEach(r => {
+            if (Array.isArray(r.reportedActIds)) {
+              r.reportedActIds = r.reportedActIds.filter(id => id !== actId);
+            }
+          });
+          saveAll();
+          showToast('Đã chuyển trạng thái', `Giải "${act.title}" đã chuyển sang Chưa báo cáo.`);
+          window.renderApp();
+        }
+      } else {
+        act.isReported = true;
+        act.reportedInReport = 'Đã chốt BC';
+        saveAll();
+        showToast('Đã đánh dấu Đã báo cáo', `Giải "${act.title}" đã được đánh dấu Đã báo cáo.`);
+        window.renderApp();
+      }
+    }
+

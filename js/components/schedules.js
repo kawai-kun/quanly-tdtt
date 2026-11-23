@@ -1,3 +1,5 @@
+import { getSportBadge } from '../utils/sportBadges.js';
+import { normalizeTitle } from '../utils/formatters.js';
 // ==============================================================================
 // COMPONENT: LỊCH SINH HOẠT & TẬP LUYỆN (SCHEDULES) - FULL CRUD
 // ==============================================================================
@@ -5,9 +7,7 @@
 import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
 
-       11. TAB 4: LỊCH SINH HOẠT & TẬP LUYỆN (SCHEDULES) - FULL CRUD
-       ============================================================================== */
-export function renderSchedules() {
+    export function renderSchedules() {
       return `
         <div class="space-y-6 tab-pane-animate">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -57,7 +57,7 @@ export function renderSchedules() {
       `;
     }
 
-export function openScheduleModal(schedId = null) {
+    export function openScheduleModal(schedId = null) {
       const sched = schedId ? state.schedules.find(s => s.id === schedId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
@@ -69,7 +69,7 @@ export function openScheduleModal(schedId = null) {
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${sched ? 'Chỉnh Sửa Lịch Sinh Hoạt' : 'Thêm Lịch Sinh Hoạt Mới'}</h3>
               <p class="text-[11px] text-slate-400">Thời gian và địa điểm tập luyện thường xuyên</p>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
           </div>
 
           <form onsubmit="handleSaveSchedule(event)" class="mt-4 space-y-3.5 text-xs">
@@ -102,7 +102,7 @@ export function openScheduleModal(schedId = null) {
             </div>
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu lịch</button>
             </div>
           </form>
@@ -111,7 +111,7 @@ export function openScheduleModal(schedId = null) {
       document.body.appendChild(modal);
     }
 
-export function handleSaveSchedule(e) {
+    export function handleSaveSchedule(e) {
       e.preventDefault();
       const id = document.getElementById('sched_id').value;
       const item = {
@@ -130,18 +130,18 @@ export function handleSaveSchedule(e) {
         state.schedules.unshift(item);
       }
       saveAll();
-      closeModal();
+      window.closeModal();
       showToast('Đã lưu lịch tập', `Lịch sinh hoạt "${item.clubName}" đã được cập nhật.`);
-      renderApp();
+      window.renderApp();
     }
 
-export function confirmDeleteSchedule(id) {
+    export function confirmDeleteSchedule(id) {
       if (confirm('Bạn có chắc chắn muốn xóa lịch sinh hoạt này?')) {
         state.schedules = state.schedules.filter(s => s.id !== id);
         saveAll();
         showToast('Đã xóa', 'Lịch sinh hoạt đã được xóa.');
-        renderApp();
+        window.renderApp();
       }
     }
 
-    /* ==============================================================================
+

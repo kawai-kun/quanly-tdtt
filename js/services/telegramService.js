@@ -61,7 +61,7 @@ export function openTelegramConfigModal(tab = 'list') {
                 <p class="text-[11px] text-slate-500 dark:text-slate-400">Tự động tổng hợp số liệu KPI và đính kèm file báo cáo Word (.doc) gửi thẳng vào Telegram</p>
               </div>
             </div>
-            <button onclick="closeModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            <button onclick="window.closeModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-[20px]">close</span></button>
           </div>
 
           <!-- Navigation Tabs -->
@@ -552,7 +552,7 @@ export function openEditScheduleModal(schedId = null) {
               </h3>
               <p class="text-[11px] text-slate-400">Tự do chọn ngày gửi (1-31), giờ gửi và thể thức báo cáo gửi Telegram</p>
             </div>
-            <button onclick="closeModal(); openTelegramConfigModal('list');" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-[18px]">close</span></button>
+            <button onclick="window.closeModal(); openTelegramConfigModal('list');" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-[18px]">close</span></button>
           </div>
 
           <form onsubmit="handleSaveScheduleConfig(event)" class="mt-4 space-y-3.5 text-xs">
@@ -665,7 +665,7 @@ export function openEditScheduleModal(schedId = null) {
 
             <!-- Submit -->
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
-              <button type="button" onclick="closeModal(); openTelegramConfigModal('list');" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">
+              <button type="button" onclick="window.closeModal(); openTelegramConfigModal('list');" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">
                 Hủy
               </button>
               <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">
@@ -745,10 +745,10 @@ export function handleSaveScheduleConfig(e) {
       }
 
       saveAll();
-      closeModal();
+      window.closeModal();
       openTelegramConfigModal('list');
       showToast('Đã lưu cấu hình', `Cấu hình "${name}" đã được lưu vào danh sách.`);
-      renderApp();
+      window.renderApp();
     }
 
 export function toggleTelegramSchedule(schedId) {
@@ -757,9 +757,9 @@ export function toggleTelegramSchedule(schedId) {
         sched.enabled = !sched.enabled;
         saveAll();
         showToast(sched.enabled ? 'Đã bật cấu hình' : 'Đã tắt cấu hình', `Cấu hình "${sched.name}" đã ${sched.enabled ? 'được kích hoạt' : 'tạm dừng'}.`);
-        closeModal();
+        window.closeModal();
         openTelegramConfigModal('list');
-        renderApp();
+        window.renderApp();
       }
     }
 
@@ -770,9 +770,9 @@ export function deleteTelegramSchedule(schedId) {
         state.telegramSchedules = state.telegramSchedules.filter(s => s.id !== schedId);
         saveAll();
         showToast('Đã xóa cấu hình', `Cấu hình "${sched.name}" đã được xóa.`);
-        closeModal();
+        window.closeModal();
         openTelegramConfigModal('list');
-        renderApp();
+        window.renderApp();
       }
     }
 
@@ -780,9 +780,9 @@ export function restoreDefaultTelegramSchedules() {
       state.telegramSchedules = JSON.parse(JSON.stringify(INITIAL_TELEGRAM_SCHEDULES));
       saveAll();
       showToast('Đã khôi phục', 'Đã cài đặt lại 2 cấu hình mẫu (Nhà nước và Chi bộ).');
-      closeModal();
+      window.closeModal();
       openTelegramConfigModal('list');
-      renderApp();
+      window.renderApp();
     }
 
 export async function handleSaveTelegramSettings(e) {
@@ -937,7 +937,7 @@ export async function executeTelegramSchedule(schedId, isManual = false) {
 
       if (!botToken || !chatId) {
         if (confirm('Anh chưa lưu Telegram Bot Token và Chat ID. Anh có muốn mở tab Cài đặt ngay bây giờ không?')) {
-          closeModal();
+          window.closeModal();
           openTelegramConfigModal('settings');
         }
         return;
@@ -1072,9 +1072,9 @@ export async function executeTelegramSchedule(schedId, isManual = false) {
       } else {
         showToast('Đã gửi báo cáo Telegram', `Đã gửi báo cáo "${sched.name}" thành công.`);
       }
-      closeModal();
+      window.closeModal();
       openTelegramConfigModal('list');
-      renderApp();
+      window.renderApp();
     }
 
 export async function sendCurrentReportToTelegram() {

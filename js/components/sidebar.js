@@ -4,14 +4,22 @@
 
 import { state } from '../state.js';
 
-export     function switchTab(t) {
+    export function switchTab(t) {
       state.currentTab = t;
       state.mobileDrawerOpen = false;
-      renderApp();
+      window.renderApp();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function renderSidebar() {
+    export function toggleMobileDrawer() {
+      state.mobileDrawerOpen = !state.mobileDrawerOpen;
+      const drawer = document.getElementById('mobileDrawer');
+      if (drawer) {
+        if (state.mobileDrawerOpen) drawer.classList.remove('hidden');
+        else drawer.classList.add('hidden');
+      }
+    }
+    export function renderSidebar() {
       const navs = [
         { id: 'bang-dieu-khien', label: 'Bảng điều khiển', icon: 'dashboard' },
         { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu', icon: 'emoji_events', badge: state.activities.length },
@@ -92,7 +100,7 @@ export     function switchTab(t) {
       `;
     }
 
-    function renderBottomNav() {
+    export function renderBottomNav() {
       const items = [
         { id: 'bang-dieu-khien', label: 'Tổng quan', icon: 'dashboard' },
         { id: 'quan-ly-giai-dau', label: 'Giải đấu', icon: 'emoji_events' },
@@ -119,7 +127,7 @@ export     function switchTab(t) {
       `;
     }
 
-    function renderMobileDrawer() {
+    export function renderMobileDrawer() {
       const navs = [
         { id: 'bang-dieu-khien', label: 'Bảng điều khiển', icon: 'dashboard' },
         { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu', icon: 'emoji_events' },
@@ -177,4 +185,4 @@ export     function switchTab(t) {
         </div>
       `;
     }
-    /* ==============================================================================
+

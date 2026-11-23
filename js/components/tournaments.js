@@ -1,16 +1,13 @@
 // ==============================================================================
 // COMPONENT: QUẢN LÝ GIẢI ĐẤU (TOURNAMENTS)
 // Bảng hiển thị 11 cột cố định kích thước, Ghim cột Thao tác (Sticky right-0)
-// Lọc Realtime không giật lag, hỗ trợ Table View & Grid View
 // ==============================================================================
 
 import { state, getActivityReportStatus, toggleActivityReportStatus } from '../state.js';
 import { getSportBadge } from '../utils/sportBadges.js';
-import { getAvailableYears } from '../utils/formatters.js';
+import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '../utils/formatters.js';
 
-       9. TAB 2: QUẢN LÝ GIẢI ĐẤU (TOURNAMENTS) - FULL CRUD
-       ============================================================================== */
-export function getFilteredTournamentsList() {
+    export function getFilteredTournamentsList() {
       const f = state.tournamentsFilter;
       let acts = state.activities.filter(a => {
         const y = String(a.year || extractYearFromDate(a.date));
@@ -35,7 +32,7 @@ export function getFilteredTournamentsList() {
       return sortActivitiesByLatest(acts);
     }
 
-export function getTournamentsCountsHtml(acts) {
+    export function getTournamentsCountsHtml(acts) {
       const allYearActs = state.selectedYear === 'all'
         ? state.activities
         : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
@@ -52,7 +49,7 @@ export function getTournamentsCountsHtml(acts) {
       `;
     }
 
-export function renderTournaments() {
+    export function renderTournaments() {
       const f = state.tournamentsFilter;
       const availableYears = getAvailableYears();
       const sportList = Array.from(new Set(state.activities.map(a => a.sport || 'Bóng đá')));
@@ -153,12 +150,12 @@ export function renderTournaments() {
       `;
     }
 
-export function handleTournamentSearchInput(val) {
+    export function handleTournamentSearchInput(val) {
       state.tournamentsFilter.search = val;
       updateTournamentsOnly();
     }
 
-export function updateTournamentsOnly() {
+    export function updateTournamentsOnly() {
       const container = document.getElementById('tournaments_data_container');
       const counterEl = document.getElementById('tournaments_counts_display');
       const acts = getFilteredTournamentsList();
@@ -173,17 +170,17 @@ export function updateTournamentsOnly() {
       }
     }
 
-export function setTournamentsFilter(key, val) {
+    export function setTournamentsFilter(key, val) {
       state.tournamentsFilter[key] = val;
       updateTournamentsOnly();
     }
 
-export function toggleTournamentsView(mode) {
+    export function toggleTournamentsView(mode) {
       state.tournamentsFilter.viewMode = mode;
       updateTournamentsOnly();
     }
 
-export function renderTournamentsGrid(acts) {
+    export function renderTournamentsGrid(acts) {
       if (!acts.length) {
         return `
           <div class="p-12 text-center rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800">
@@ -290,7 +287,7 @@ export function renderTournamentsGrid(acts) {
       `;
     }
 
-export function renderTournamentsTable(acts) {
+    export function renderTournamentsTable(acts) {
       if (!acts.length) {
         return `
           <div class="p-12 text-center rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800">
@@ -440,4 +437,4 @@ export function renderTournamentsTable(acts) {
         </div>
       `;
     }
-    /* ==============================================================================
+

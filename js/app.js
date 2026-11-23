@@ -7,7 +7,6 @@
 // 1. STATE & CORE STORAGE
 import {
   state,
-  initTheme,
   saveAll,
   lsGet,
   lsSet,
@@ -17,7 +16,7 @@ import {
 } from './state.js';
 
 // 2. UTILS
-import { showToast, toggleDarkMode } from './utils/toast.js';
+import { showToast, toggleDarkMode, initTheme } from './utils/toast.js';
 import {
   formatVNCurrency,
   formatDateVN,
@@ -117,7 +116,6 @@ import {
 import {
   closeModal,
   openActivityModal,
-  updateMedalsCalc,
   handleSaveActivity,
   confirmDeleteActivity,
   openSyncModal
@@ -151,7 +149,6 @@ const globalBindings = {
   toggleTournamentsView,
   toggleActivityReportStatus,
   openActivityModal,
-  updateMedalsCalc,
   handleSaveActivity,
   confirmDeleteActivity,
 
@@ -271,7 +268,7 @@ export function renderApp() {
 // ==============================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
-  renderApp();
+  window.renderApp();
 
   // Tự động kiểm tra và đồng bộ dữ liệu mới nhất từ Google Drive ngay khi tải trang
   setTimeout(() => {
@@ -281,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Đóng modal khi bấm ESC
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') window.closeModal();
 });
 
 // Tự động làm mới dữ liệu tức thì khi người dùng chuyển tab hoặc quay lại cửa sổ web

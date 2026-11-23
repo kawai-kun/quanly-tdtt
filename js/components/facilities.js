@@ -1,3 +1,4 @@
+import { normalizeTitle } from '../utils/formatters.js';
 // ==============================================================================
 // COMPONENT: CƠ SỞ VẬT CHẤT & SÂN BÃI (FACILITIES) - FULL CRUD
 // ==============================================================================
@@ -5,9 +6,7 @@
 import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
 
-       12. TAB 5: CƠ SỞ VẬT CHẤT & SÂN BÃI (FACILITIES) - FULL CRUD
-       ============================================================================== */
-export function renderFacilities() {
+    export function renderFacilities() {
       return `
         <div class="space-y-6 tab-pane-animate">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -66,7 +65,7 @@ export function renderFacilities() {
       `;
     }
 
-export function openFacilityModal(facId = null) {
+    export function openFacilityModal(facId = null) {
       const fac = facId ? state.facilities.find(f => f.id === facId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
@@ -78,7 +77,7 @@ export function openFacilityModal(facId = null) {
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${fac ? 'Chỉnh Sửa Cơ Sở Vật Chất' : 'Thêm Cơ Sở Vật Chất Mới'}</h3>
               <p class="text-[11px] text-slate-400">Sân bãi và công trình thể thao công cộng</p>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
           </div>
 
           <form onsubmit="handleSaveFacility(event)" class="mt-4 space-y-3.5 text-xs">
@@ -136,7 +135,7 @@ export function openFacilityModal(facId = null) {
             </div>
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu cơ sở</button>
             </div>
           </form>
@@ -149,7 +148,7 @@ export function openFacilityModal(facId = null) {
       });
     }
 
-export function handleSaveFacility(e) {
+    export function handleSaveFacility(e) {
       e.preventDefault();
       const id = document.getElementById('fac_id').value;
       const item = {
@@ -171,17 +170,17 @@ export function handleSaveFacility(e) {
         state.facilities.unshift(item);
       }
       saveAll();
-      closeModal();
+      window.closeModal();
       showToast('Đã lưu cơ sở', `Cơ sở "${item.name}" đã được cập nhật.`);
-      renderApp();
+      window.renderApp();
     }
 
-export function confirmDeleteFacility(id) {
+    export function confirmDeleteFacility(id) {
       if (confirm('Bạn có chắc chắn muốn xóa cơ sở vật chất này?')) {
         state.facilities = state.facilities.filter(f => f.id !== id);
         saveAll();
         showToast('Đã xóa', 'Cơ sở vật chất đã được xóa khỏi danh sách.');
-        renderApp();
+        window.renderApp();
       }
     }
-    /* ==============================================================================
+

@@ -5,7 +5,7 @@
 import { state, lsSet } from '../state.js';
 import { showToast, toggleDarkMode } from '../utils/toast.js';
 
-export export function renderLogin() {
+    export function renderLogin() {
       return `
         <div class="min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
           <!-- Background Sports Atmosphere -->
@@ -76,7 +76,7 @@ export export function renderLogin() {
       `;
     }
 
-export function togglePassVisibility() {
+    export function togglePassVisibility() {
       const pass = document.getElementById('login_pass');
       const icon = document.getElementById('eyeIcon');
       if (pass && icon) {
@@ -90,7 +90,7 @@ export function togglePassVisibility() {
       }
     }
 
-export function handleLoginSubmit(e) {
+    export function handleLoginSubmit(e) {
       e.preventDefault();
       const u = document.getElementById('login_user').value.trim();
       const p = document.getElementById('login_pass').value;
@@ -99,17 +99,18 @@ export function handleLoginSubmit(e) {
         state.isAuthenticated = true;
         lsSet('tk_auth', true);
         showToast('Đăng nhập thành công', 'Chào mừng Cán bộ Trung tâm Dịch vụ tổng hợp Phường Tân Khai.');
-        renderApp();
+        window.renderApp();
       } else {
         showToast('Đăng nhập thất bại', 'Tài khoản hoặc mật khẩu không chính xác.', 'error');
       }
     }
 
-export function handleLogout() {
+    export function handleLogout() {
       if (confirm('Bạn có muốn đăng xuất khỏi hệ thống?')) {
         state.isAuthenticated = false;
         lsSet('tk_auth', false);
-        renderApp();
+        window.renderApp();
       }
     }
+
 

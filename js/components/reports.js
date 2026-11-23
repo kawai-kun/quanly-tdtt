@@ -1,14 +1,13 @@
 // ==============================================================================
 // COMPONENT: BÁO CÁO & SỔ LƯU TRỮ (REPORTS & REGISTRY)
-// Đầy đủ Tháng, Quý, 6 tháng, 9 tháng, Năm - Mẫu Nhà nước & Mẫu Chi bộ
 // ==============================================================================
 
 import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
 import { getReportRange, getReportData, getPeriodTitle, getPeriodSubtitle, exportDocxFile } from '../services/docExport.js';
-import { getAvailableYears } from '../utils/formatters.js';
+import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
 
-export function renderReports() {
+    export function renderReports() {
       const sub = state.reportSubTab || 'document';
       const availableYears = getAvailableYears();
 
@@ -59,18 +58,18 @@ export function renderReports() {
       `;
     }
 
-export function setReportSubTab(tab) {
+    export function setReportSubTab(tab) {
       state.reportSubTab = tab;
-      renderApp();
+      window.renderApp();
     }
 
-export function setReportFilter(key, val) {
+    export function setReportFilter(key, val) {
       state[key] = val;
       saveAll();
-      renderApp();
+      window.renderApp();
     }
 
-export function renderReportDocumentView(rep, nextCode, availableYears) {
+        export function renderReportDocumentView(rep, nextCode, availableYears) {
       const isParty = state.reportMode === 'party';
       const range = getReportRange();
       const list = getReportData();
@@ -427,11 +426,7 @@ export function renderReportDocumentView(rep, nextCode, availableYears) {
       `;
     }
 
-export function printReport() {
-      window.print();
-    }
-
-export function saveCurrentReportToRegistry() {
+    export function saveCurrentReportToRegistry() {
       const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
       const nextNum = maxRepNum + 1;
       const numStr = String(nextNum).padStart(2, '0');
@@ -462,10 +457,10 @@ export function saveCurrentReportToRegistry() {
       state.activeReportId = newRep.id;
       saveAll();
       showToast('Đã lưu vào Sổ', `Đã lưu báo cáo số ${newRep.code} vào Sổ lưu trữ.`);
-      renderApp();
+      window.renderApp();
     }
 
-export function renderReportRegistryView() {
+    export function renderReportRegistryView() {
       return `
         <div class="space-y-4">
           <div class="p-4 rounded-2xl glass-card border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
@@ -513,13 +508,13 @@ export function renderReportRegistryView() {
       `;
     }
 
-export function viewReport(repId) {
+    export function viewReport(repId) {
       state.activeReportId = repId;
       state.reportSubTab = 'document';
-      renderApp();
+      window.renderApp();
     }
 
-export function createNewReportPrompt() {
+    export function createNewReportPrompt() {
       const maxRepNum = state.savedReports.reduce((m, r) => Math.max(m, parseInt(r.reportNumber) || 0), 0);
       const nextNum = maxRepNum + 1;
       const numStr = String(nextNum).padStart(2, '0');
@@ -540,14 +535,14 @@ export function createNewReportPrompt() {
       state.activeReportId = newRep.id;
       saveAll();
       showToast('Đã tạo báo cáo mới', `Đã thêm báo cáo số ${newRep.code} vào Sổ.`);
-      renderApp();
+      window.renderApp();
     }
 
-export function saveCurrentReportAsNew() {
+    export function saveCurrentReportAsNew() {
       saveCurrentReportToRegistry();
     }
 
-export function editReportModal(repId) {
+    export function editReportModal(repId) {
       const rep = state.savedReports.find(r => r.id === repId);
       if (!rep) return;
 
@@ -558,7 +553,7 @@ export function editReportModal(repId) {
         <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white">Chỉnh Sửa Báo Cáo Trong Sổ</h3>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>
           </div>
           <form onsubmit="handleSaveEditReport(event, '${rep.id}')" class="mt-4 space-y-3.5 text-xs">
             <div>
@@ -574,7 +569,7 @@ export function editReportModal(repId) {
               <textarea id="edit_rep_title" rows="3" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${rep.title}</textarea>
             </div>
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Cập nhật</button>
             </div>
           </form>
@@ -588,7 +583,7 @@ export function editReportModal(repId) {
       });
     }
 
-export function handleSaveEditReport(e, repId) {
+    export function handleSaveEditReport(e, repId) {
       e.preventDefault();
       const rep = state.savedReports.find(r => r.id === repId);
       if (rep) {
@@ -596,13 +591,13 @@ export function handleSaveEditReport(e, repId) {
         rep.code = document.getElementById('edit_rep_code').value.trim();
         rep.title = document.getElementById('edit_rep_title').value.trim();
         saveAll();
-        closeModal();
+        window.closeModal();
         showToast('Đã cập nhật báo cáo', `Báo cáo số ${rep.code} đã được chỉnh sửa.`);
-        renderApp();
+        window.renderApp();
       }
     }
 
-export function deleteReport(repId) {
+    export function deleteReport(repId) {
       const rep = state.savedReports.find(r => r.id === repId);
       if (confirm(`Bạn có chắc chắn muốn xóa báo cáo "${rep ? rep.code : ''}" khỏi Sổ lưu trữ?`)) {
         state.savedReports = state.savedReports.filter(r => r.id !== repId);
@@ -611,10 +606,11 @@ export function deleteReport(repId) {
         }
         saveAll();
         showToast('Đã xóa báo cáo', 'Báo cáo đã được xóa khỏi sổ.');
-        renderApp();
+        window.renderApp();
       }
     }
 
-export function printReport() {
+    export function printReport() {
       window.print();
     }
+

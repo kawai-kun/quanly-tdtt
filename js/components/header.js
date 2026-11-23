@@ -2,14 +2,13 @@
 // COMPONENT: HEADER & CLOUD SYNC PILL
 // ==============================================================================
 
-import { state } from '../state.js';
-import { lsSet } from '../state.js';
+import { state, lsSet } from '../state.js';
 import { toggleDarkMode } from '../utils/toast.js';
 
-export     function setGlobalYear(year) {
+    export function setGlobalYear(year) {
       state.selectedYear = year;
       lsSet('tk_selected_year', year);
-      renderApp();
+      window.renderApp();
     }
 
     function toggleMobileDrawer() {
@@ -21,7 +20,7 @@ export     function setGlobalYear(year) {
       }
     }
 
-    function renderHeader() {
+    export function renderHeader() {
       const today = new Date();
       const dateOptions = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' };
       const dateStr = today.toLocaleDateString('vi-VN', dateOptions);
@@ -87,7 +86,7 @@ export     function setGlobalYear(year) {
       `;
     }
 
-    function renderSyncPillHTML() {
+    export function renderSyncPillHTML() {
       let icon = 'cloud_done';
       let text = 'Đã lưu Drive';
       let cls = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
@@ -114,9 +113,8 @@ export     function setGlobalYear(year) {
       `;
     }
 
-    function renderSyncPill() {
+    export function renderSyncPill() {
       const el = document.getElementById('syncPillBox');
       if (el) el.innerHTML = renderSyncPillHTML();
     }
 
-    function renderSidebar() {

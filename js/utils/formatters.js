@@ -8,6 +8,8 @@ export function formatCurrency(amount) {
   return n.toLocaleString('vi-VN') + ' đ';
 }
 
+export const formatVNCurrency = formatCurrency;
+
 export function formatCurrencyShort(amount) {
   const n = parseInt(amount) || 0;
   if (n >= 1000000000) return (n / 1000000000).toFixed(1) + ' tỷ đ';
@@ -109,4 +111,44 @@ export function sortActivitiesByLatest(arr) {
     if (tB !== tA) return tB - tA; // Giải mới nhất luôn ở vị trí số 1 (#1)
     return (b.code || '').localeCompare(a.code || '');
   });
+}
+
+export function autoDetectSport(title) {
+  if (!title) return 'Bóng đá';
+  const t = title.toLowerCase();
+  if (t.includes('bóng đá')) return 'Bóng đá';
+  if (t.includes('cầu lông')) return 'Cầu lông';
+  if (t.includes('pickleball')) return 'Pickleball';
+  if (t.includes('bóng chuyền')) return 'Bóng chuyền';
+  if (t.includes('taekwondo') || t.includes('boxing') || t.includes('kickboxing') || t.includes('wushu') || t.includes('võ')) return 'Võ thuật';
+  if (t.includes('dưỡng sinh')) return 'Dưỡng sinh';
+  if (t.includes('cờ vua')) return 'Cờ vua';
+  if (t.includes('cờ tướng') || t.includes('cờ')) return 'Cờ tướng';
+  if (t.includes('điền kinh') || t.includes('chạy') || t.includes('đi bộ')) return 'Điền kinh';
+  if (t.includes('kéo co')) return 'Kéo co';
+  if (t.includes('đẩy gậy')) return 'Đẩy gậy';
+  if (t.includes('bi sắt')) return 'Bi sắt';
+  if (t.includes('bơi')) return 'Bơi lội';
+  if (t.includes('billiards')) return 'Billiards';
+  return 'Thể thao phong trào';
+}
+
+export function getAvailableYears(customState) {
+  const current = customState || (typeof window !== 'undefined' ? window.state : null);
+  const yearsSet = new Set();
+  if (current?.activities) {
+    current.activities.forEach(a => {
+      const y = a.year || extractYearFromDate(a.date);
+      if (y) yearsSet.add(y);
+    });
+  }
+  if (current?.budgetItems) {
+    current.budgetItems.forEach(b => {
+      if (b.year) yearsSet.add(parseInt(b.year));
+    });
+  }
+  yearsSet.add(new Date().getFullYear());
+  yearsSet.add(2026);
+  yearsSet.add(2025);
+  return Array.from(yearsSet).sort((a, b) => b - a);
 }

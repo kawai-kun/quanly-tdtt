@@ -3,13 +3,11 @@
 // ==============================================================================
 
 import { state, saveAll } from '../state.js';
-import { formatVNCurrency, extractYearFromDate, extractQuarterFromDate, getAvailableYears } from '../utils/formatters.js';
+import { formatVNCurrency, extractYearFromDate, extractQuarterFromDate, getAvailableYears, sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { getSportBadge } from '../utils/sportBadges.js';
 
-       8. TAB 1: BẢNG ĐIỀU KHIỂN (DASHBOARD)
-       ============================================================================== */
-export function renderDashboard() {
+    export function renderDashboard() {
       const availableYears = getAvailableYears();
       const rawActs = state.selectedYear === 'all'
         ? state.activities
@@ -205,7 +203,7 @@ export function renderDashboard() {
       `;
     }
 
-export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants, totalMedals) {
+    export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants, totalMedals) {
       const kpi = state.kpiTargets || {
         targetActivities: 20,
         targetParticipants: 1500,
@@ -344,7 +342,7 @@ export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants
       `;
     }
 
-export function openKpiTargetsModal() {
+    export function openKpiTargetsModal() {
       const kpi = state.kpiTargets || {
         targetActivities: 20,
         targetParticipants: 1500,
@@ -363,7 +361,7 @@ export function openKpiTargetsModal() {
               <h3 class="text-base font-bold text-slate-900 dark:text-white">Thiết Lập Chỉ Tiêu Thi Đua Năm</h3>
               <p class="text-[11px] text-slate-400">Căn cứ theo Kế hoạch UBND phường và Trung tâm DVTH giao</p>
             </div>
-            <button onclick="closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
           </div>
 
           <form onsubmit="handleSaveKpiTargets(event)" class="mt-4 space-y-3 text-xs">
@@ -395,7 +393,7 @@ export function openKpiTargetsModal() {
             </div>
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
               <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu chỉ tiêu</button>
             </div>
           </form>
@@ -404,7 +402,7 @@ export function openKpiTargetsModal() {
       document.body.appendChild(modal);
     }
 
-export function handleSaveKpiTargets(e) {
+    export function handleSaveKpiTargets(e) {
       e.preventDefault();
       state.kpiTargets = {
         planTitle: document.getElementById('kpi_title').value.trim() || 'Kế hoạch phát triển TDTT Phường Tân Khai',
@@ -414,12 +412,12 @@ export function handleSaveKpiTargets(e) {
         targetClubs: parseInt(document.getElementById('kpi_clubs').value) || 5
       };
       saveAll();
-      closeModal();
+      window.closeModal();
       showToast('Đã lưu chỉ tiêu thi đua', 'Hệ thống đã cập nhật tỷ lệ hoàn thành kế hoạch năm.');
-      renderApp();
+      window.renderApp();
     }
 
-export function handleDashboardSearch(query) {
+    export function handleDashboardSearch(query) {
       if (!query.trim()) return;
       state.tournamentsFilter.search = query.trim();
       switchTab('quan-ly-giai-dau');
@@ -428,7 +426,7 @@ export function handleDashboardSearch(query) {
     let donutChartInstance = null;
     let barChartInstance = null;
 
-export function initDashboardCharts() {
+    export function initDashboardCharts() {
       const filteredActs = state.selectedYear === 'all'
         ? state.activities
         : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
@@ -502,4 +500,4 @@ export function initDashboardCharts() {
       }
     }
 
-    /* ==============================================================================
+
