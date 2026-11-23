@@ -303,31 +303,34 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
 
       return `
         <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin w-full">
-          <table class="w-full text-left text-sm border-collapse" style="table-layout: fixed; min-width: 1180px;">
+          <table class="w-full text-left text-sm border-collapse" style="table-layout: fixed; min-width: 1050px;">
             <colgroup>
-              <col style="width: 56px;">
-              <col style="width: 78px;">
-              <col style="width: auto; min-width: 260px;">
-              <col style="width: 135px;">
-              <col style="width: 125px;">
-              <col style="width: 110px;">
-              <col style="width: 115px;">
-              <col style="width: 80px;">
-              <col style="width: 140px;">
-              <col style="width: 90px;">
+              <col style="width: 5%;">
+              <col style="width: 6%;">
+              <col style="width: 28%;">
+              <col style="width: 13%;">
+              <col style="width: 14%;">
+              <col style="width: 10%;">
+              <col style="width: 9%;">
+              <col style="width: 6%;">
+              <col style="width: 9%;">
+              <col style="width: 7%;">
             </colgroup>
-            <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700/80 uppercase text-[12px] tracking-wider select-none">
+            <thead class="bg-slate-100/90 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700/80 uppercase text-[11.5px] tracking-wider select-none">
               <tr>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">STT</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Mã</th>
-                <th class="py-3.5 px-4 align-middle text-left">Tên giải thi đấu</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Trạng thái BC</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Bộ môn</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Cấp độ</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Ngày tổ chức</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">VĐV</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Huy chương (V-B-Đ)</th>
-                <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-20 bg-slate-100 dark:bg-slate-800 shadow-[-3px_0_6px_rgba(0,0,0,0.06)] dark:shadow-[-3px_0_6px_rgba(0,0,0,0.3)]">Thao tác</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">STT</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">Mã</th>
+                <th class="py-3 px-3 align-middle text-left">Tên giải thi đấu</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">Trạng thái BC</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">Bộ môn</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">Cấp độ</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">Ngày tổ chức</th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center">VĐV</th>
+                <th class="py-2.5 px-2 align-middle text-center whitespace-nowrap">
+                  <div>Huy chương</div>
+                  <div class="text-[9.5px] font-semibold text-slate-400 dark:text-slate-500 lowercase tracking-normal">(v - b - đ)</div>
+                </th>
+                <th class="py-3 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-20 bg-slate-100 dark:bg-slate-800 shadow-[-4px_0_8px_rgba(0,0,0,0.06)] dark:shadow-[-4px_0_8px_rgba(0,0,0,0.35)]">Thao tác</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-200">
@@ -337,93 +340,95 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
                 const isTop = i === 0;
                 return `
                   <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group ${isTop ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-l-4 border-l-emerald-600 dark:border-l-emerald-400 font-medium' : ''}">
-                    <!-- 1. STT (52px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono">
+                    <!-- 1. STT (5%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center font-mono">
                       ${isTop ? `
-                        <span class="px-2 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[10.5px] inline-flex items-center gap-0.5 shadow-sm">
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[10px] inline-flex items-center gap-0.5 shadow-sm">
                           <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                           #1 Mới
                         </span>
                       ` : `
-                        <span class="text-slate-400 dark:text-slate-500 font-bold text-sm">${i + 1}</span>
+                        <span class="text-slate-400 dark:text-slate-500 font-bold text-xs sm:text-sm">${i + 1}</span>
                       `}
                     </td>
 
-                    <!-- 2. Mã giải (72px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
-                      <span class="font-mono font-extrabold text-sm px-2 py-0.5 rounded-lg ${isTop ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-slate-100 dark:bg-slate-800 text-brand-700 dark:text-brand-400 border border-slate-200 dark:border-slate-700'}">
+                    <!-- 2. Mã giải (6%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center">
+                      <span class="font-mono font-extrabold text-xs px-2 py-0.5 rounded-lg ${isTop ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-slate-100 dark:bg-slate-800 text-brand-700 dark:text-brand-400 border border-slate-200 dark:border-slate-700'}">
                         ${a.code}
                       </span>
                     </td>
 
-                    <!-- 3. Tên giải đấu (Tự động co giãn theo màn hình) -->
-                    <td class="py-3.5 px-4 align-middle">
-                      <div onclick="openActivityModal('${a.id}')" class="font-bold text-[14.5px] text-slate-900 dark:text-white leading-snug hover:text-brand-700 dark:hover:text-brand-400 cursor-pointer transition-colors" title="Bấm để xem và sửa chi tiết">
+                    <!-- 3. Tên giải đấu (28% - Tự động xuống hàng, không để khoảng trống rỗng) -->
+                    <td class="py-3 px-3 align-middle">
+                      <div onclick="openActivityModal('${a.id}')" class="font-bold text-[13.5px] sm:text-[14px] text-slate-900 dark:text-white leading-snug whitespace-normal break-words hover:text-brand-700 dark:hover:text-brand-400 cursor-pointer transition-colors" title="Bấm để xem và sửa chi tiết">
                         ${a.title}
                       </div>
                       ${a.achievementNote ? `
-                        <div class="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
-                          <span class="material-symbols-outlined text-[13px] text-amber-600">military_tech</span>
-                          <span>${a.achievementNote}</span>
+                        <div class="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-800/80 text-[10.5px] font-semibold text-amber-800 dark:text-amber-300">
+                          <span class="material-symbols-outlined text-[13px] text-amber-600 shrink-0">military_tech</span>
+                          <span class="break-words">${a.achievementNote}</span>
                         </div>
                       ` : ''}
                     </td>
 
-                    <!-- 4. Trạng thái BC (125px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
+                    <!-- 4. Trạng thái BC (13%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center">
                       ${rep.isReported ? `
-                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để chuyển sang Chưa báo cáo">
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để chuyển sang Chưa báo cáo">
                           <span class="material-symbols-outlined text-[13px] text-emerald-600">check_circle</span>
                           <span>Đã BC (${rep.reportCode})</span>
                         </button>
                       ` : `
-                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để đánh dấu Đã báo cáo">
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để đánh dấu Đã báo cáo">
                           <span class="material-symbols-outlined text-[13px] text-amber-600">pending</span>
                           <span>Chưa BC</span>
                         </button>
                       `}
                     </td>
 
-                    <!-- 5. Bộ môn (110px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
-                      <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-semibold ${badge.bg} ${badge.text} border ${badge.border}">
-                        <span class="material-symbols-outlined text-[14px]">${badge.icon}</span>
-                        <span class="truncate max-w-[80px]">${a.sport || 'Bóng đá'}</span>
+                    <!-- 5. Bộ môn (14% - Hiển thị đầy đủ tên môn, không bị cắt dấu ...) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center">
+                      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold ${badge.bg} ${badge.text} border ${badge.border}">
+                        <span class="material-symbols-outlined text-[14px] shrink-0">${badge.icon}</span>
+                        <span>${a.sport || 'Bóng đá'}</span>
                       </span>
                     </td>
 
-                    <!-- 6. Cấp độ (100px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center">
-                      <span class="px-2 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <!-- 6. Cấp độ (10%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center">
+                      <span class="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                         ${a.category || 'Cấp phường'}
                       </span>
                     </td>
 
-                    <!-- 7. Ngày tổ chức (105px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono font-bold text-sm text-brand-700 dark:text-brand-400">
+                    <!-- 7. Ngày tổ chức (9%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center font-mono font-bold text-xs sm:text-sm text-brand-700 dark:text-brand-400">
                       ${a.date}
                     </td>
 
-                    <!-- 8. VĐV (75px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-bold text-sm text-slate-800 dark:text-slate-200 font-mono">
-                      ${a.participants} <span class="text-[11px] text-slate-500 font-sans">${a.participantsUnit || 'VĐV'}</span>
+                    <!-- 8. VĐV (6%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-mono">
+                      ${a.participants} <span class="text-[10px] text-slate-500 font-sans font-normal">${a.participantsUnit || 'VĐV'}</span>
                     </td>
 
-                    <!-- 9. Huy chương (140px) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono text-sm font-bold">
+                    <!-- 9. Huy chương (9%) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center font-mono text-xs sm:text-sm font-bold">
                       <span class="text-amber-600 font-extrabold">${a.goldMedals || 0}V</span> - 
                       <span class="text-slate-500 font-extrabold">${a.silverMedals || 0}B</span> - 
                       <span class="text-orange-600 font-extrabold">${a.bronzeMedals || 0}Đ</span>
                     </td>
 
-                    <!-- 10. Thao tác (90px, CỐ ĐỊNH PINNED RIGHT-0, KHÔNG BAO GIỜ BỊ CHE KHUẤT) -->
-                    <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/90 shadow-[-3px_0_6px_rgba(0,0,0,0.06)] dark:shadow-[-3px_0_6px_rgba(0,0,0,0.3)] space-x-1">
-                      <button onclick="openActivityModal('${a.id}')" title="Sửa thông tin" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 dark:hover:bg-slate-700 btn-press transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">edit</span>
-                      </button>
-                      <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa giải đấu" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 btn-press transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                      </button>
+                    <!-- 10. Thao tác (7% - Ghim cố định mép phải, không bao giờ bị che) -->
+                    <td class="py-3 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/90 shadow-[-4px_0_8px_rgba(0,0,0,0.06)] dark:shadow-[-4px_0_8px_rgba(0,0,0,0.35)]">
+                      <div class="flex items-center justify-center gap-1">
+                        <button onclick="openActivityModal('${a.id}')" title="Sửa thông tin" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 dark:hover:bg-slate-700 btn-press transition-colors">
+                          <span class="material-symbols-outlined text-[18px]">edit</span>
+                        </button>
+                        <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa giải đấu" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 btn-press transition-colors">
+                          <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 `;
