@@ -6,6 +6,7 @@ import { state, saveAll, getActivityReportStatus } from '../state.js';
 import { SPREADSHEET_ID } from '../data/constants.js';
 import { normalizeTitle, normalizeCode, normalizeDate, extractYearFromDate, extractQuarterFromDate, autoDetectSport, sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
+import { animateModalOpen, animateModalClose } from '../utils/animations.js';
 
     export function openActivityModal(actId = null) {
       const act = actId ? state.activities.find(a => a.id === actId) : null;
@@ -123,6 +124,7 @@ import { showToast } from '../utils/toast.js';
         </div>
       `;
       document.body.appendChild(modal);
+      animateModalOpen();
 
       const titleInput = document.getElementById('act_title');
       const sportInput = document.getElementById('act_sport');
@@ -296,10 +298,10 @@ import { showToast } from '../utils/toast.js';
         </div>
       `;
       document.body.appendChild(modal);
+      animateModalOpen();
     }
 
     export function closeModal() {
-      const m = document.getElementById('modalContainer');
-      if (m) m.remove();
+      animateModalClose();
     }
 

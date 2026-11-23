@@ -6,6 +6,7 @@
 import { state, getActivityReportStatus, toggleActivityReportStatus } from '../state.js';
 import { getSportBadge } from '../utils/sportBadges.js';
 import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '../utils/formatters.js';
+import { animateStagger } from '../utils/animations.js';
 
     export function getFilteredTournamentsList() {
       const f = state.tournamentsFilter;
@@ -164,9 +165,22 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
         container.innerHTML = state.tournamentsFilter.viewMode === 'cards' 
           ? renderTournamentsGrid(acts) 
           : renderTournamentsTable(acts);
+        initTournamentsAnimations();
       }
       if (counterEl) {
         counterEl.innerHTML = getTournamentsCountsHtml(acts);
+      }
+    }
+
+    export function initTournamentsAnimations() {
+      try {
+        if (state.tournamentsFilter.viewMode === 'cards') {
+          animateStagger('#tournaments_data_container .grid > div', { delayStep: 30, duration: 320 });
+        } else {
+          animateStagger('#tournaments_data_container table tbody tr', { delayStep: 20, duration: 280 });
+        }
+      } catch (err) {
+        console.warn('Tournaments animation error:', err);
       }
     }
 

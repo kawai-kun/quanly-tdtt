@@ -6,6 +6,7 @@ import { state, saveAll } from '../state.js';
 import { formatVNCurrency, extractYearFromDate, extractQuarterFromDate, getAvailableYears, sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { getSportBadge } from '../utils/sportBadges.js';
+import { animateCounter, animateProgressBar, animateStagger } from '../utils/animations.js';
 
     export function renderDashboard() {
       const availableYears = getAvailableYears();
@@ -69,7 +70,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                   <span class="material-symbols-outlined text-[22px]">emoji_events</span>
                 </div>
               </div>
-              <p class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalActs}</p>
+              <p id="stat_total_acts" class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalActs}</p>
               <div class="flex items-center gap-1.5 text-[11px] font-bold text-brand-700 dark:text-brand-400 mt-2">
                 <span class="material-symbols-outlined text-[15px]">trending_up</span>
                 <span>${state.selectedYear === 'all' ? 'Toàn bộ kỳ hoạt động' : 'Kỳ năm ' + state.selectedYear}</span>
@@ -83,7 +84,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                   <span class="material-symbols-outlined text-[22px]">groups</span>
                 </div>
               </div>
-              <p class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalParticipants.toLocaleString('vi-VN')}</p>
+              <p id="stat_total_parts" class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalParticipants.toLocaleString('vi-VN')}</p>
               <div class="flex items-center gap-1.5 text-[11px] font-bold text-sky-600 mt-2">
                 <span class="material-symbols-outlined text-[15px]">person_check</span>
                 <span>Hội viên & VĐV quần chúng</span>
@@ -97,7 +98,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                   <span class="material-symbols-outlined text-[22px]">military_tech</span>
                 </div>
               </div>
-              <p class="text-3xl font-display font-extrabold text-amber-600 mt-3">${totalMedals}</p>
+              <p id="stat_total_medals" class="text-3xl font-display font-extrabold text-amber-600 mt-3">${totalMedals}</p>
               <div class="flex items-center gap-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-400 mt-2">
                 <span class="material-symbols-outlined text-[15px]">workspace_premium</span>
                 <span>Vàng, Bạc & Đồng</span>
@@ -111,7 +112,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                   <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
                 </div>
               </div>
-              <p class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-3 truncate">${(totalBudget / 1000000).toFixed(1)} tr đ</p>
+              <p id="stat_total_budget" class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-3 truncate">${(totalBudget / 1000000).toFixed(1)} tr đ</p>
               <div class="flex items-center gap-1.5 text-[11px] font-bold text-purple-600 mt-2">
                 <span class="material-symbols-outlined text-[15px]">verified</span>
                 <span>100% Hồ sơ quyết toán</span>
@@ -155,7 +156,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
             </div>
 
             <div class="overflow-x-auto -webkit-overflow-scrolling-touch">
-              <table class="w-full text-left text-xs">
+              <table id="dashboard_recent_table" class="w-full text-left text-xs">
                 <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/80 dark:border-slate-800">
                   <tr>
                     <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
@@ -275,7 +276,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                 <span class="text-xs font-extrabold ${actPct >= 100 ? 'text-emerald-600' : 'text-slate-600'}">${actPct}%</span>
               </div>
               <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(actPct, 100)}%"></div>
+                <div id="bar_act_pct" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalActs}</b> giải</span>
@@ -293,7 +294,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                 <span class="text-xs font-extrabold ${partPct >= 100 ? 'text-sky-600' : 'text-slate-600'}">${partPct}%</span>
               </div>
               <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-gradient-to-r from-sky-500 to-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(partPct, 100)}%"></div>
+                <div id="bar_part_pct" class="bg-gradient-to-r from-sky-500 to-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalParticipants.toLocaleString('vi-VN')}</b></span>
@@ -311,7 +312,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                 <span class="text-xs font-extrabold ${medalPct >= 100 ? 'text-amber-600' : 'text-slate-600'}">${medalPct}%</span>
               </div>
               <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(medalPct, 100)}%"></div>
+                <div id="bar_medal_pct" class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalMedals}</b> HC</span>
@@ -329,7 +330,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                 <span class="text-xs font-extrabold ${clubPct >= 100 ? 'text-purple-600' : 'text-slate-600'}">${clubPct}%</span>
               </div>
               <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full transition-all duration-500" style="width: ${Math.min(clubPct, 100)}%"></div>
+                <div id="bar_club_pct" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${clubCount}</b> CLB</span>
@@ -497,6 +498,47 @@ import { getSportBadge } from '../utils/sportBadges.js';
             }
           }
         });
+      }
+
+      // 3. Kích hoạt hiệu ứng Anime.js cho KPI Cards & Progress Bars & Recent Table
+      try {
+        const totalActs = filteredActs.length;
+        const totalParticipants = filteredActs.reduce((acc, a) => acc + (parseInt(a.participants) || 0), 0);
+        const totalMedals = filteredActs.reduce((acc, a) => acc + (parseInt(a.totalMedals) || 0), 0);
+        const totalBudget = filteredActs.reduce((acc, a) => acc + (parseInt(a.budgetTotal) || 0), 0);
+
+        const kpi = state.kpiTargets || {
+          targetActivities: 20,
+          targetParticipants: 1500,
+          targetMedals: 30,
+          targetClubs: 5
+        };
+
+        const actPct = Math.round((totalActs / (kpi.targetActivities || 20)) * 100);
+        const partPct = Math.round((totalParticipants / (kpi.targetParticipants || 1500)) * 100);
+        const medalPct = Math.round((totalMedals / (kpi.targetMedals || 30)) * 100);
+        const clubCount = (state.clubs || []).length;
+        const clubPct = Math.round((clubCount / (kpi.targetClubs || 5)) * 100);
+
+        // Hiệu ứng nhảy số
+        animateCounter('#stat_total_acts', totalActs, { duration: 900 });
+        animateCounter('#stat_total_parts', totalParticipants, { duration: 1100 });
+        animateCounter('#stat_total_medals', totalMedals, { duration: 1000 });
+        animateCounter('#stat_total_budget', totalBudget / 1000000, {
+          duration: 1200,
+          formatter: (v) => v.toFixed(1) + ' tr đ'
+        });
+
+        // Hiệu ứng thanh tiến độ
+        animateProgressBar('#bar_act_pct', actPct, { delay: 100, duration: 800 });
+        animateProgressBar('#bar_part_pct', partPct, { delay: 200, duration: 800 });
+        animateProgressBar('#bar_medal_pct', medalPct, { delay: 300, duration: 800 });
+        animateProgressBar('#bar_club_pct', clubPct, { delay: 400, duration: 800 });
+
+        // Hiệu ứng lướt hàng bảng hoạt động gần đây
+        animateStagger('#dashboard_recent_table tbody tr', { delayStep: 35, duration: 320 });
+      } catch (err) {
+        console.warn('Dashboard animation error:', err);
       }
     }
 

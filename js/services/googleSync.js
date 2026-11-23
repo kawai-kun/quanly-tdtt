@@ -7,6 +7,7 @@ import { state, lsSet } from '../state.js';
 import { DEFAULT_API_URL } from '../data/constants.js';
 import { sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
+import { animateSpin } from '../utils/animations.js';
 
 export function mergeActivitiesSmartly(localActs, remoteActs) {
   if (!Array.isArray(localActs)) localActs = [];
@@ -94,6 +95,12 @@ export async function pullFromGoogleSheet(silent = false) {
 
   if (!silent) {
     state.syncStatus = 'syncing';
+    try {
+      const syncIcons = document.querySelectorAll('button .material-symbols-outlined');
+      syncIcons.forEach(icon => {
+        if (icon.textContent.trim() === 'sync') animateSpin(icon, 2);
+      });
+    } catch (e) {}
     if (window.renderSyncPill) window.renderSyncPill();
   }
 

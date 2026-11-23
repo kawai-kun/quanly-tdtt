@@ -17,6 +17,7 @@ import {
 
 // 2. UTILS
 import { showToast, toggleDarkMode, initTheme } from './utils/toast.js';
+import { anime, animateStagger } from './utils/animations.js';
 import {
   formatVNCurrency,
   formatDateVN,
@@ -89,7 +90,8 @@ import {
   setTournamentsFilter,
   toggleTournamentsView,
   renderTournamentsGrid,
-  renderTournamentsTable
+  renderTournamentsTable,
+  initTournamentsAnimations
 } from './components/tournaments.js';
 
 import { renderClubs, openClubModal, handleSaveClub, confirmDeleteClub } from './components/clubs.js';
@@ -218,7 +220,9 @@ const globalBindings = {
 
   // Modals & Notifications
   closeModal,
-  showToast
+  showToast,
+  anime,
+  initTournamentsAnimations
 };
 
 for (const [key, fn] of Object.entries(globalBindings)) {
@@ -260,6 +264,14 @@ export function renderApp() {
 
   if (state.currentTab === 'bang-dieu-khien') {
     setTimeout(initDashboardCharts, 50);
+  } else if (state.currentTab === 'quan-ly-giai-dau') {
+    setTimeout(initTournamentsAnimations, 50);
+  } else if (['quan-ly-clb', 'lich-sinh-hoat', 'co-so-vat-chat', 'kinh-phi'].includes(state.currentTab)) {
+    setTimeout(() => {
+      try {
+        animateStagger('main table tbody tr, main .grid > div', { delayStep: 25, duration: 280 });
+      } catch (e) {}
+    }, 50);
   }
 }
 
