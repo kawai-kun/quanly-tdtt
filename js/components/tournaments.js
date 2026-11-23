@@ -270,7 +270,10 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
-                  <span class="font-bold text-slate-600 dark:text-slate-300 text-[11px]">${((parseInt(a.budgetTotal) || 0) / 1000000).toFixed(1)} tr đ</span>
+                  <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px] text-brand-600">flag</span>
+                    <span>${a.category || 'Cấp phường'}</span>
+                  </span>
                   <div class="flex items-center gap-1">
                     <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press">
                       <span class="material-symbols-outlined text-[17px]">edit</span>
@@ -302,17 +305,16 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
         <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin w-full">
           <table class="w-full text-left text-sm border-collapse" style="table-layout: fixed; min-width: 1180px;">
             <colgroup>
-              <col style="width: 52px;">
-              <col style="width: 72px;">
-              <col style="width: auto; min-width: 250px;">
+              <col style="width: 56px;">
+              <col style="width: 78px;">
+              <col style="width: auto; min-width: 260px;">
+              <col style="width: 135px;">
               <col style="width: 125px;">
               <col style="width: 110px;">
-              <col style="width: 100px;">
-              <col style="width: 105px;">
-              <col style="width: 75px;">
-              <col style="width: 125px;">
+              <col style="width: 115px;">
+              <col style="width: 80px;">
               <col style="width: 140px;">
-              <col style="width: 88px;">
+              <col style="width: 90px;">
             </colgroup>
             <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700/80 uppercase text-[12px] tracking-wider select-none">
               <tr>
@@ -325,7 +327,6 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
                 <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Ngày tổ chức</th>
                 <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">VĐV</th>
                 <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center">Huy chương (V-B-Đ)</th>
-                <th class="py-3.5 px-3 align-middle whitespace-nowrap text-right">Tổng kinh phí</th>
                 <th class="py-3.5 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-20 bg-slate-100 dark:bg-slate-800 shadow-[-3px_0_6px_rgba(0,0,0,0.06)] dark:shadow-[-3px_0_6px_rgba(0,0,0,0.3)]">Thao tác</th>
               </tr>
             </thead>
@@ -408,19 +409,14 @@ import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate } from '
                       ${a.participants} <span class="text-[11px] text-slate-500 font-sans">${a.participantsUnit || 'VĐV'}</span>
                     </td>
 
-                    <!-- 9. Huy chương (125px) -->
+                    <!-- 9. Huy chương (140px) -->
                     <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center font-mono text-sm font-bold">
                       <span class="text-amber-600 font-extrabold">${a.goldMedals || 0}V</span> - 
                       <span class="text-slate-500 font-extrabold">${a.silverMedals || 0}B</span> - 
                       <span class="text-orange-600 font-extrabold">${a.bronzeMedals || 0}Đ</span>
                     </td>
 
-                    <!-- 10. Tổng kinh phí (140px, số to rõ, căn phải) -->
-                    <td class="py-3.5 px-3 align-middle whitespace-nowrap text-right font-mono font-black text-[14.5px] sm:text-base text-emerald-700 dark:text-emerald-400">
-                      ${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ
-                    </td>
-
-                    <!-- 11. Thao tác (88px, CỐ ĐỊNH PINNED RIGHT-0, KHÔNG BAO GIỜ BỊ CHE KHUẤT) -->
+                    <!-- 10. Thao tác (90px, CỐ ĐỊNH PINNED RIGHT-0, KHÔNG BAO GIỜ BỊ CHE KHUẤT) -->
                     <td class="py-3.5 px-2 align-middle whitespace-nowrap text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/90 shadow-[-3px_0_6px_rgba(0,0,0,0.06)] dark:shadow-[-3px_0_6px_rgba(0,0,0,0.3)] space-x-1">
                       <button onclick="openActivityModal('${a.id}')" title="Sửa thông tin" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 dark:hover:bg-slate-700 btn-press transition-colors">
                         <span class="material-symbols-outlined text-[18px]">edit</span>
