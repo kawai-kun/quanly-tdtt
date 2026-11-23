@@ -292,6 +292,9 @@
       if (s.includes('điền kinh') || s.includes('chạy') || s.includes('đi bộ')) {
         return { label: 'Điền kinh', icon: 'directions_run', bg: 'bg-lime-50 dark:bg-[#06301a]', text: 'text-lime-800 dark:text-[#8be33a]', border: 'border-lime-200 dark:border-[#8be33a]/40' };
       }
+      if (s.includes('cờ vây')) {
+        return { label: 'Cờ vây', icon: 'grid_on', bg: 'bg-emerald-50 dark:bg-[#06301a]', text: 'text-emerald-800 dark:text-[#8be33a]', border: 'border-emerald-200 dark:border-[#8be33a]/30' };
+      }
       if (s.includes('cờ tướng') || s.includes('cờ')) {
         return { label: 'Cờ tướng / Cờ vua', icon: 'casino', bg: 'bg-amber-50 dark:bg-[#092817]', text: 'text-amber-800 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-700/50' };
       }
@@ -381,6 +384,34 @@
       });
     }
 
+    function mergeActivitiesSmartly(localActs, remoteActs) {
+      if (!Array.isArray(localActs)) localActs = [];
+      if (!Array.isArray(remoteActs)) remoteActs = [];
+
+      const merged = [...remoteActs];
+      const seen = new Set();
+
+      remoteActs.forEach(a => {
+        if (a.id) seen.add(String(a.id));
+        const cleanTitle = (a.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const key = cleanTitle + '_' + (a.date || '').trim();
+        seen.add(key);
+      });
+
+      localActs.forEach(l => {
+        const cleanTitle = (l.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const key = cleanTitle + '_' + (l.date || '').trim();
+        const idStr = l.id ? String(l.id) : null;
+        if (!seen.has(key) && (!idStr || !seen.has(idStr))) {
+          merged.push(l);
+          seen.add(key);
+          if (idStr) seen.add(idStr);
+        }
+      });
+
+      return sortActivitiesByLatest(merged);
+    }
+
     function extractYearFromDate(dateStr) {
       if (!dateStr) return new Date().getFullYear();
       const match = dateStr.match(/\b(20\d\d)\b/);
@@ -409,6 +440,8 @@
       if (t.includes('bóng chuyền')) return 'Bóng chuyền';
       if (t.includes('taekwondo') || t.includes('boxing') || t.includes('kickboxing') || t.includes('wushu') || t.includes('võ')) return 'Võ thuật';
       if (t.includes('dưỡng sinh')) return 'Dưỡng sinh';
+      if (t.includes('cờ vây')) return 'Cờ vây';
+      if (t.includes('cờ vua')) return 'Cờ vua';
       if (t.includes('cờ tướng') || t.includes('cờ')) return 'Cờ tướng';
       if (t.includes('điền kinh') || t.includes('chạy') || t.includes('đi bộ')) return 'Điền kinh';
       if (t.includes('kéo co')) return 'Kéo co';
@@ -451,7 +484,11 @@
       { id: 'act-24', code: 'T-23', date: '28/08/2026', title: 'Tham gia diễu hành biểu dương lực lượng tại Lễ Khai mạc ĐH TDTT', sport: 'Hành chính', location: 'TP Đồng Nai', category: 'Hành chính', participants: 20, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 9000000, budgetPrize: 0, budgetTotal: 9000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Khối diễu hành xuất sắc' },
       { id: 'act-25', code: 'T-19', date: '29/08/2026', title: 'Tham gia giải Kéo co Đại hội TDTT TP Đồng Nai', sport: 'Kéo co', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 24, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 0, bronzeMedals: 2, totalMedals: 3, budgetWard: 14000000, budgetPrize: 5000000, budgetTotal: 19000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: 'Hạng Nhì toàn đoàn' },
       { id: 'act-26', code: 'T-11', date: '30/08/2026', title: 'Chương trình đi bộ Cùng Việt Nam tiến bước', sport: 'Đi bộ', location: 'Trung tâm Dịch vụ tổng hợp', category: 'Cấp phường', participants: 200, participantsUnit: 'Người', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 8500000, budgetPrize: 0, budgetTotal: 8500000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 8, achievementNote: '' },
-      { id: 'act-27', code: 'T-21', date: '04/09/2026', title: 'Tham gia giải Điền kinh Đại hội TDTT TP Đồng Nai', sport: 'Điền kinh', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 2, bronzeMedals: 2, totalMedals: 4, budgetWard: 12000000, budgetPrize: 4000000, budgetTotal: 16000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 9, achievementNote: 'Giải Ba đồng đội' }
+      { id: 'act-27', code: 'T-21', date: '04/09/2026', title: 'Tham gia giải Điền kinh Đại hội TDTT TP Đồng Nai', sport: 'Điền kinh', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 10, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 2, bronzeMedals: 2, totalMedals: 4, budgetWard: 12000000, budgetPrize: 4000000, budgetTotal: 16000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 'q3', month: 9, achievementNote: 'Giải Ba đồng đội' },
+      { id: 'act-1795402546321', code: 'T-28', date: '15/10/2026', title: 'Cờ Vây', sport: 'Cờ vây', location: 'Trung tâm DVTH Phường Tân Khai', category: 'Cấp phường', participants: 30, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 1, silverMedals: 1, bronzeMedals: 2, totalMedals: 4, budgetWard: 10500000, budgetPrize: 4500000, budgetTotal: 15000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 10, achievementNote: '', isReported: false },
+      { id: 'act-28-danvu', code: 'T-28', date: '27/11/2026', title: 'Tham dự Giải Dân vũ thể thao thành phố Đồng Nai năm 2026', sport: 'Thể thao phong trào', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 60, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 1, bronzeMedals: 0, totalMedals: 1, budgetWard: 14000000, budgetPrize: 6000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 11, achievementNote: '', isReported: false },
+      { id: 'act-29-bongda', code: 'T-29', date: '22/11/2026', title: 'Tổ chức giải Bóng đá Văn hóa - Đoàn kết lần thứ I năm 2026', sport: 'Bóng đá', location: 'Sân vận động trung tâm', category: 'Cấp phường', participants: 80, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 0, bronzeMedals: 0, totalMedals: 0, budgetWard: 14000000, budgetPrize: 6000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 11, achievementNote: '', isReported: false },
+      { id: 'act-30-nguoicaotuoi', code: 'T-30', date: '24/10/2026', title: 'Tham dự Hội thi Văn nghệ - Thể thao Người cao tuổi thành phố Đồng Nai năm 2026', sport: 'Thể thao phong trào', location: 'TP Đồng Nai', category: 'Cấp thành phố', participants: 30, participantsUnit: 'VĐV', status: 'Đã hoàn thành', goldMedals: 0, silverMedals: 1, bronzeMedals: 0, totalMedals: 1, budgetWard: 14000000, budgetPrize: 6000000, budgetTotal: 20000000, budgetStatus: 'Đã quyết toán', year: 2026, quarter: 4, month: 10, achievementNote: '03 Giải Khuyến khích, xếp hạng thứ 15 toàn đoàn', isReported: false }
     ];
 
     const INITIAL_CLUBS = [
@@ -544,17 +581,19 @@
       try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
     }
 
+    const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbyC4Wt2w_6PXcX2W0_ISqXyVhpPpHEEwjFPI6nqgokrvYZKpzLKu1sx8MekFXwrlQ8/exec';
+
     const state = {
       isAuthenticated: lsGet('tk_auth', false),
       currentTab: 'bang-dieu-khien',
       darkMode: lsGet('tk_dark', false),
-      apiUrl: lsGet('tk_api_url', ''),
+      apiUrl: lsGet('tk_api_url', '') || DEFAULT_API_URL,
 
       // Multi-Year Architecture
       selectedYear: lsGet('tk_selected_year', 'all'),
 
-      // Data Collections - Tự động sắp xếp giải mới nhất ở vị trí số 1
-      activities: sortActivitiesByLatest(lsGet('tk_activities', INITIAL_ACTIVITIES)),
+      // Data Collections - Tự động hợp nhất bảo toàn đủ 31 giải và xếp giải mới nhất ở vị trí #1
+      activities: sortActivitiesByLatest(mergeActivitiesSmartly(lsGet('tk_activities', []), INITIAL_ACTIVITIES)),
       clubs: lsGet('tk_clubs', INITIAL_CLUBS),
       schedules: lsGet('tk_schedules', INITIAL_SCHEDULES),
       facilities: lsGet('tk_facilities', INITIAL_FACILITIES),
@@ -623,9 +662,9 @@
         // 2. Phục hồi các hoạt động bị lỗi font / ký tự hỏi chấm từ INITIAL_ACTIVITIES
         if (Array.isArray(state.activities)) {
           state.activities.forEach(a => {
-            const init = INITIAL_ACTIVITIES.find(ia => ia.id === a.id || ia.code === a.code);
+            const init = INITIAL_ACTIVITIES.find(ia => ia.id === a.id);
             if (init) {
-              if (/\?\s*ch|gi\?i|\?i\?n|lA'ng|Tr\?n|/.test(a.title || '') || /\?\s*ch|gi\?i|\?i\?n|lA'ng|Tr\?n|/.test(a.achievementNote || '')) {
+              if (/\?\s*ch|gi\?i|\?i\?n|lA'ng|Tr\?n/.test(a.title || '') || /\?\s*ch|gi\?i|\?i\?n|lA'ng|Tr\?n/.test(a.achievementNote || '')) {
                 a.title = init.title;
                 a.sport = init.sport;
                 a.location = init.location;
@@ -638,8 +677,8 @@
         // 3. Phục hồi các CLB nếu có chuỗi lỗi
         if (Array.isArray(state.clubs)) {
           state.clubs.forEach(c => {
-            const initC = INITIAL_CLUBS.find(ic => ic.id === c.id || ic.code === c.code);
-            if (initC && (/\?|/.test(c.name || '') || /\?|/.test(c.sport || ''))) {
+            const initC = INITIAL_CLUBS.find(ic => ic.id === c.id);
+            if (initC && (/\?/.test(c.name || '') || /\?/.test(c.sport || ''))) {
               c.name = initC.name;
               c.sport = initC.sport;
               c.location = initC.location;
@@ -684,7 +723,6 @@
         console.warn('Auto-healer note:', err);
       }
     }
-    healDataEncoding();
 
     /* ==============================================================================
        QUẢN LÝ TRẠNG THÁI BÁO CÁO GIẢI ĐẤU (ĐÃ BÁO CÁO / CHƯA BÁO CÁO)
@@ -750,7 +788,7 @@
     /* ==============================================================================
        5. PERSISTENCE & AUTO-SYNC ENGINE
        ============================================================================== */
-    let syncTimer = null;
+    var syncTimer = null;
     function queueAutoSync() {
       if (!state.autoSync || !state.apiUrl) return;
       if (syncTimer) clearTimeout(syncTimer);
@@ -778,6 +816,7 @@
       lsSet('tk_kpi_targets', state.kpiTargets);
       queueAutoSync();
     }
+    healDataEncoding();
 
     /* ==============================================================================
        6. TOAST NOTIFICATIONS & THEME
@@ -1610,19 +1649,8 @@
     /* ==============================================================================
        9. TAB 2: QUẢN LÝ GIẢI ĐẤU (TOURNAMENTS) - FULL CRUD
        ============================================================================== */
-    function renderTournaments() {
+    function getFilteredTournamentsList() {
       const f = state.tournamentsFilter;
-      const availableYears = getAvailableYears();
-
-      // Danh sách hoạt động theo năm để tính tổng số lượng
-      const allYearActs = state.selectedYear === 'all'
-        ? state.activities
-        : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
-      
-      const unreportedCount = allYearActs.filter(a => !getActivityReportStatus(a).isReported).length;
-      const reportedCount = allYearActs.filter(a => getActivityReportStatus(a).isReported).length;
-
-      // Lọc danh sách giải đấu
       let acts = state.activities.filter(a => {
         const y = String(a.year || extractYearFromDate(a.date));
         if (state.selectedYear !== 'all' && y !== String(state.selectedYear)) return false;
@@ -1634,7 +1662,7 @@
           if (f.reportStatus === 'unreported' && repStatus.isReported) return false;
         }
         if (f.search) {
-          const q = f.search.toLowerCase();
+          const q = f.search.toLowerCase().trim();
           const matchTitle = (a.title || '').toLowerCase().includes(q);
           const matchCode = (a.code || '').toLowerCase().includes(q);
           const matchSport = (a.sport || '').toLowerCase().includes(q);
@@ -1643,33 +1671,47 @@
         }
         return true;
       });
+      return sortActivitiesByLatest(acts);
+    }
 
-      // Tự động sắp xếp: Giải mới nhất luôn ở vị trí số 1 (#1)
-      acts = sortActivitiesByLatest(acts);
+    function getTournamentsCountsHtml(acts) {
+      const allYearActs = state.selectedYear === 'all'
+        ? state.activities
+        : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
+      const unreportedCount = allYearActs.filter(a => !getActivityReportStatus(a).isReported).length;
+      const reportedCount = allYearActs.filter(a => getActivityReportStatus(a).isReported).length;
+      const total = acts ? acts.length : allYearActs.length;
 
-      // Danh sách bộ môn độc nhất
+      return `
+        <span>Tổng số: <b class="text-slate-800 dark:text-slate-100">${total}</b> hoạt động</span>
+        <span>•</span>
+        <span class="text-emerald-700 dark:text-emerald-400 font-bold">✓ Đã báo cáo: ${reportedCount}</span>
+        <span>•</span>
+        <span class="text-amber-700 dark:text-amber-400 font-bold">⏳ Chưa báo cáo: ${unreportedCount}</span>
+      `;
+    }
+
+    function renderTournaments() {
+      const f = state.tournamentsFilter;
+      const availableYears = getAvailableYears();
       const sportList = Array.from(new Set(state.activities.map(a => a.sport || 'Bóng đá')));
+      const acts = getFilteredTournamentsList();
 
       return `
         <div class="space-y-6 tab-pane-animate">
-          
           <!-- Header & Action Button -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Quản Lý Giải Thi Đấu & Sự Kiện
               </h1>
-              <p class="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                <span>Tổng số: <b>${acts.length}</b> hoạt động</span>
-                <span>•</span>
-                <span class="text-emerald-700 dark:text-emerald-400 font-bold">✓ Đã báo cáo: ${reportedCount}</span>
-                <span>•</span>
-                <span class="text-amber-700 dark:text-amber-400 font-bold">⏳ Chưa báo cáo: ${unreportedCount}</span>
+              <p id="tournaments_counts_display" class="text-xs sm:text-sm text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                ${getTournamentsCountsHtml(acts)}
               </p>
             </div>
 
-            <button onclick="openActivityModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press">
-              <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            <button onclick="openActivityModal()" class="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press shrink-0">
+              <span class="material-symbols-outlined text-[19px]">add_circle</span>
               <span>Thêm giải đấu mới</span>
             </button>
           </div>
@@ -1678,14 +1720,14 @@
           <div class="p-3.5 sm:p-4 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin flex flex-wrap items-center justify-between gap-3">
             
             <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[280px]">
-              <!-- Search Input -->
-              <div class="relative flex-1 min-w-[180px] h-10">
+              <!-- Search Input (Đánh tới đâu lọc tới đó, giữ focus không bị click lại) -->
+              <div class="relative flex-1 min-w-[220px] h-10">
                 <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-2.5 pointer-events-none">search</span>
-                <input type="text" value="${f.search}" oninput="setTournamentsFilter('search', this.value)" placeholder="Tìm tên giải, mã giải, địa điểm..." class="w-full h-full pl-9 pr-3 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400" />
+                <input id="tournament_search_input" type="text" value="${f.search || ''}" oninput="handleTournamentSearchInput(this.value)" placeholder="Tìm tên giải, mã giải, địa điểm..." class="w-full h-full pl-9 pr-3 text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 transition-colors" />
               </div>
 
               <!-- Year Filter -->
-              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 shrink-0">
                 <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">date_range</span>
                 <select onchange="setGlobalYear(this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
                   <option value="all" ${state.selectedYear === 'all' ? 'selected' : ''}>Tất cả năm</option>
@@ -1694,7 +1736,7 @@
               </div>
 
               <!-- Sport Filter -->
-              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 shrink-0">
                 <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">sports</span>
                 <select onchange="setTournamentsFilter('sport', this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
                   <option value="all">Tất cả môn</option>
@@ -1703,7 +1745,7 @@
               </div>
 
               <!-- Category Filter -->
-              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 shrink-0">
                 <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">military_tech</span>
                 <select onchange="setTournamentsFilter('category', this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
                   <option value="all">Tất cả cấp độ</option>
@@ -1713,13 +1755,13 @@
                 </select>
               </div>
 
-              <!-- Report Status Filter (Chức năng 3) -->
-              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">
+              <!-- Report Status Filter -->
+              <div class="h-10 flex items-center gap-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 shrink-0">
                 <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">fact_check</span>
                 <select onchange="setTournamentsFilter('reportStatus', this.value)" class="bg-transparent font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
                   <option value="all" ${f.reportStatus === 'all' ? 'selected' : ''}>Tất cả trạng thái BC</option>
-                  <option value="unreported" ${f.reportStatus === 'unreported' ? 'selected' : ''}>⏳ Chưa báo cáo (${unreportedCount})</option>
-                  <option value="reported" ${f.reportStatus === 'reported' ? 'selected' : ''}>✓ Đã lập báo cáo (${reportedCount})</option>
+                  <option value="unreported" ${f.reportStatus === 'unreported' ? 'selected' : ''}>⏳ Chưa báo cáo</option>
+                  <option value="reported" ${f.reportStatus === 'reported' ? 'selected' : ''}>✓ Đã lập báo cáo</option>
                 </select>
               </div>
             </div>
@@ -1735,20 +1777,43 @@
             </div>
           </div>
 
-          <!-- Cards View or Table View -->
-          ${f.viewMode === 'cards' ? renderTournamentsGrid(acts) : renderTournamentsTable(acts)}
+          <!-- Live Dynamic Container (Chỉ cập nhật container này khi tìm kiếm) -->
+          <div id="tournaments_data_container">
+            ${f.viewMode === 'cards' ? renderTournamentsGrid(acts) : renderTournamentsTable(acts)}
+          </div>
 
         </div>
       `;
     }
 
+    function handleTournamentSearchInput(val) {
+      state.tournamentsFilter.search = val;
+      updateTournamentsOnly();
+    }
+
+    function updateTournamentsOnly() {
+      const container = document.getElementById('tournaments_data_container');
+      const counterEl = document.getElementById('tournaments_counts_display');
+      const acts = getFilteredTournamentsList();
+
+      if (container) {
+        container.innerHTML = state.tournamentsFilter.viewMode === 'cards' 
+          ? renderTournamentsGrid(acts) 
+          : renderTournamentsTable(acts);
+      }
+      if (counterEl) {
+        counterEl.innerHTML = getTournamentsCountsHtml(acts);
+      }
+    }
+
     function setTournamentsFilter(key, val) {
       state.tournamentsFilter[key] = val;
-      renderApp();
+      updateTournamentsOnly();
     }
+
     function toggleTournamentsView(mode) {
       state.tournamentsFilter.viewMode = mode;
-      renderApp();
+      updateTournamentsOnly();
     }
 
     function renderTournamentsGrid(acts) {
@@ -1859,74 +1924,133 @@
     }
 
     function renderTournamentsTable(acts) {
+      if (!acts.length) {
+        return `
+          <div class="p-12 text-center rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800">
+            <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">search_off</span>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Không tìm thấy giải đấu phù hợp</p>
+            <p class="text-xs text-slate-400 mt-1">Hãy thử tìm từ khóa khác hoặc chuyển sang "Tất cả môn" / "Tất cả năm".</p>
+          </div>
+        `;
+      }
+
       return `
-        <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
+        <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin w-full">
+          <table class="w-full text-left text-sm border-collapse min-w-[1360px]">
+            <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700/80 uppercase text-[12px] tracking-wider select-none">
               <tr>
-                <th class="p-3.5 align-middle whitespace-nowrap w-14 text-center">STT</th>
-                <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
-                <th class="p-3.5 align-middle min-w-[240px]">Tên giải đấu</th>
-                <th class="p-3.5 align-middle whitespace-nowrap text-center">Trạng thái BC</th>
-                <th class="p-3.5 align-middle whitespace-nowrap">Bộ môn</th>
-                <th class="p-3.5 align-middle whitespace-nowrap">Cấp độ</th>
-                <th class="p-3.5 align-middle whitespace-nowrap">Ngày tổ chức</th>
-                <th class="p-3.5 align-middle whitespace-nowrap text-center">VĐV</th>
-                <th class="p-3.5 align-middle whitespace-nowrap text-center">Huy chương (V-B-Đ)</th>
-                <th class="p-3.5 align-middle whitespace-nowrap text-right">Tổng kinh phí</th>
-                <th class="p-3.5 align-middle whitespace-nowrap text-right w-24">Thao tác</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-16 text-center">STT</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-24 text-center">Mã</th>
+                <th class="py-4 px-4 align-middle min-w-[340px]">Tên giải thi đấu</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-36 text-center">Trạng thái BC</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-32 text-center">Bộ môn</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-28 text-center">Cấp độ</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-32 text-center">Ngày tổ chức</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-24 text-center">VĐV</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-36 text-center">Huy chương (V-B-Đ)</th>
+                <th class="py-4 px-4 align-middle whitespace-nowrap w-44 text-right">Tổng kinh phí</th>
+                <th class="py-4 px-3 align-middle whitespace-nowrap w-24 text-center">Thao tác</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-200">
               ${acts.map((a, i) => {
                 const rep = getActivityReportStatus(a);
+                const badge = getSportBadge(a.sport);
+                const isTop = i === 0;
                 return `
-                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors ${i === 0 ? 'bg-brand-50/30 dark:bg-brand-950/30 font-medium' : ''}">
-                    <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
-                      ${i === 0 ? `
-                        <span class="px-2 py-0.5 rounded-full bg-brand-700 text-white font-bold text-[10px] inline-flex items-center gap-0.5 shadow-sm">
+                  <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group ${isTop ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-l-4 border-l-emerald-600 dark:border-l-emerald-400 font-medium' : ''}">
+                    <!-- STT -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-mono">
+                      ${isTop ? `
+                        <span class="px-2.5 py-1 rounded-full bg-emerald-700 text-white font-extrabold text-[11px] inline-flex items-center gap-1 shadow-sm">
+                          <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                           #1 Mới
                         </span>
                       ` : `
-                        <span class="text-slate-400 font-bold">${i + 1}</span>
+                        <span class="text-slate-400 dark:text-slate-500 font-bold text-sm">${i + 1}</span>
                       `}
                     </td>
-                    <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${a.code}</td>
-                    <td class="p-3.5 align-middle min-w-[240px] max-w-sm">
-                      <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${a.title}</div>
+
+                    <!-- Mã giải -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
+                      <span class="font-mono font-extrabold text-sm px-2.5 py-1 rounded-lg ${isTop ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-slate-100 dark:bg-slate-800 text-brand-700 dark:text-brand-400 border border-slate-200 dark:border-slate-700'}">
+                        ${a.code}
+                      </span>
+                    </td>
+
+                    <!-- Tên giải đấu -->
+                    <td class="py-4 px-4 align-middle min-w-[340px]">
+                      <div onclick="openActivityModal('${a.id}')" class="font-bold text-[15px] text-slate-900 dark:text-white leading-snug hover:text-brand-700 dark:hover:text-brand-400 cursor-pointer transition-colors" title="Bấm để xem và sửa chi tiết">
+                        ${a.title}
+                      </div>
                       ${a.achievementNote ? `
-                        <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
-                          <span class="material-symbols-outlined text-[13px] text-amber-600">military_tech</span>
+                        <div class="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-800/80 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                          <span class="material-symbols-outlined text-[14px] text-amber-600">military_tech</span>
                           <span>${a.achievementNote}</span>
                         </div>
                       ` : ''}
                     </td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-center">
+
+                    <!-- Trạng thái BC -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
                       ${rep.isReported ? `
-                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press" title="Bấm để đổi trạng thái">
-                          <span class="material-symbols-outlined text-[12px] text-emerald-600">check_circle</span>
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 inline-flex items-center gap-1.5 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để chuyển sang Chưa báo cáo">
+                          <span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
                           <span>Đã BC (${rep.reportCode})</span>
                         </button>
                       ` : `
-                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1 hover:opacity-85 transition-all btn-press" title="Bấm để đổi trạng thái">
-                          <span class="material-symbols-outlined text-[12px] text-amber-600">pending</span>
+                        <button type="button" onclick="toggleActivityReportStatus('${a.id}', event)" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 inline-flex items-center gap-1.5 hover:opacity-85 transition-all btn-press shadow-sm" title="Bấm để đánh dấu Đã báo cáo">
+                          <span class="material-symbols-outlined text-[14px] text-amber-600">pending</span>
                           <span>Chưa BC</span>
                         </button>
                       `}
                     </td>
-                    <td class="p-3.5 align-middle whitespace-nowrap"><span class="font-semibold text-slate-600 dark:text-slate-300">${a.sport}</span></td>
-                    <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${a.category}</span></td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-brand-700 dark:text-brand-400 font-bold font-mono">${a.date}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-300">${a.participants}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-center font-mono">
-                      <span class="text-amber-600 font-bold">${a.goldMedals || 0}V</span> - 
-                      <span class="text-slate-500 font-bold">${a.silverMedals || 0}B</span> - 
-                      <span class="text-orange-600 font-bold">${a.bronzeMedals || 0}Đ</span>
+
+                    <!-- Bộ môn -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
+                      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold ${badge.bg} ${badge.text} border ${badge.border}">
+                        <span class="material-symbols-outlined text-[15px]">${badge.icon}</span>
+                        <span>${a.sport || 'Bóng đá'}</span>
+                      </span>
                     </td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-right font-bold text-slate-800 dark:text-slate-200">${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
-                      <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
-                      <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+
+                    <!-- Cấp độ -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center">
+                      <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        ${a.category || 'Cấp phường'}
+                      </span>
+                    </td>
+
+                    <!-- Ngày tổ chức -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-mono font-bold text-sm text-brand-700 dark:text-brand-400">
+                      ${a.date}
+                    </td>
+
+                    <!-- VĐV -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-bold text-sm text-slate-800 dark:text-slate-200 font-mono">
+                      ${a.participants} <span class="text-xs text-slate-500 font-sans">${a.participantsUnit || 'VĐV'}</span>
+                    </td>
+
+                    <!-- Huy chương -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center font-mono text-sm font-bold">
+                      <span class="text-amber-600 font-extrabold">${a.goldMedals || 0}V</span> - 
+                      <span class="text-slate-500 font-extrabold">${a.silverMedals || 0}B</span> - 
+                      <span class="text-orange-600 font-extrabold">${a.bronzeMedals || 0}Đ</span>
+                    </td>
+
+                    <!-- Tổng kinh phí (Nổi bật, font mono số to rõ, không bao giờ bị cắt) -->
+                    <td class="py-4 px-4 align-middle whitespace-nowrap text-right font-mono font-black text-[15px] sm:text-base text-emerald-700 dark:text-emerald-400">
+                      ${(parseInt(a.budgetTotal) || 0).toLocaleString('vi-VN')} đ
+                    </td>
+
+                    <!-- Thao tác -->
+                    <td class="py-4 px-3 align-middle whitespace-nowrap text-center space-x-1">
+                      <button onclick="openActivityModal('${a.id}')" title="Sửa thông tin" class="p-2 rounded-xl text-slate-500 hover:text-brand-700 hover:bg-brand-50 dark:hover:bg-slate-800 btn-press transition-colors">
+                        <span class="material-symbols-outlined text-[19px]">edit</span>
+                      </button>
+                      <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa giải đấu" class="p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 btn-press transition-colors">
+                        <span class="material-symbols-outlined text-[19px]">delete</span>
+                      </button>
                     </td>
                   </tr>
                 `;
@@ -5038,8 +5162,8 @@
 
     async function pushToGoogleSheet(isManual = false) {
       if (!state.apiUrl) {
-        if (isManual) openSyncModal();
-        return;
+        state.apiUrl = DEFAULT_API_URL;
+        lsSet('tk_api_url', DEFAULT_API_URL);
       }
 
       state.syncStatus = 'syncing';
@@ -5084,8 +5208,8 @@
 
     async function pullFromGoogleSheet(silent = false) {
       if (!state.apiUrl) {
-        if (!silent) openSyncModal();
-        return;
+        state.apiUrl = DEFAULT_API_URL;
+        lsSet('tk_api_url', DEFAULT_API_URL);
       }
 
       if (!silent) {
@@ -5099,7 +5223,12 @@
         const res = await resp.json();
         if ((res.status === 'success' || res.success) && res.data) {
           const oldLen = (state.activities || []).length;
-          if (res.data.activities && Array.isArray(res.data.activities)) state.activities = res.data.activities;
+          const remoteActs = (res.data.activities && Array.isArray(res.data.activities)) ? res.data.activities : [];
+          
+          // Hợp nhất thông minh dữ liệu cục bộ và dữ liệu Google Drive (giữ đủ cả giải thêm trên web lẫn Telegram)
+          const mergedActs = mergeActivitiesSmartly(state.activities, remoteActs);
+          state.activities = mergedActs;
+
           if (res.data.clubs && Array.isArray(res.data.clubs)) state.clubs = res.data.clubs;
           if (res.data.schedules && Array.isArray(res.data.schedules)) state.schedules = res.data.schedules;
           if (res.data.facilities && Array.isArray(res.data.facilities)) state.facilities = res.data.facilities;
@@ -5118,11 +5247,16 @@
           lsSet('tk_budget', state.budgetItems);
           lsSet('tk_saved_reports', state.savedReports);
 
+          // Nếu có giải cục bộ chưa có trên Sheet, tự động đồng bộ ngược lên Drive
+          if (mergedActs.length > remoteActs.length) {
+            pushToGoogleSheet(false);
+          }
+
           if (!silent) {
-            showToast('Nạp dữ liệu thành công', `Đã đồng bộ ${state.activities.length} giải đấu từ Google Drive.`);
+            showToast('Nạp dữ liệu thành công', `Đã đồng bộ và hợp nhất ${state.activities.length} giải đấu từ Google Drive.`);
             closeModal();
           } else if (state.activities.length > oldLen) {
-            showToast('Cập nhật mới từ Telegram', `Đã nhận giải đấu mới: ${state.activities[0]?.title || ''} (Mã ${state.activities[0]?.code || ''} - #1).`);
+            showToast('Cập nhật mới từ Telegram', `Đã nhận thêm giải đấu (#1: ${state.activities[0]?.title || ''}).`);
           }
           renderApp();
         } else {
@@ -5358,7 +5492,7 @@
         ${renderSidebar()}
         <div class="lg:pl-[270px] flex-1 flex flex-col min-h-screen">
           ${renderHeader()}
-          <main class="flex-1 p-3.5 sm:p-6 pb-28 lg:pb-8 max-w-7xl w-full mx-auto">
+          <main class="flex-1 p-3.5 sm:p-5 lg:p-7 pb-28 lg:pb-8 max-w-[1720px] w-full mx-auto">
             ${contentHTML}
           </main>
         </div>
