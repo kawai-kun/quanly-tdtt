@@ -26,37 +26,37 @@ import { toggleDarkMode } from '../utils/toast.js';
       const dateStr = today.toLocaleDateString('vi-VN', dateOptions);
 
       return `
-        <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 dark:border-slate-800/80 px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4 shadow-mobbin-sm">
+        <header class="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4 shadow-sm">
           
           <!-- Left Side: Mobile Menu Button & Brand Indicator -->
           <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-            <button onclick="toggleMobileDrawer()" class="p-2 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden btn-press" title="Mở danh mục">
+            <button onclick="toggleMobileDrawer()" class="p-2 -ml-1 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden btn-press" title="Mở danh mục">
               <span class="material-symbols-outlined text-[22px]">menu</span>
             </button>
             
             <!-- Mobile Brand: Logo + HỆ THỐNG QUẢN LÝ TDTT -->
             <div class="flex lg:hidden items-center gap-2">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center p-0.5 bg-white/95 dark:bg-slate-800/95 shadow-sm border border-slate-200/80 dark:border-slate-700 shrink-0 overflow-hidden">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center p-0.5 bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 shrink-0 overflow-hidden">
                 <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Logo Phường Tân Khai" />
               </div>
               <div class="hidden xs:flex flex-col text-left">
-                <span class="text-[11px] font-black uppercase text-brand-700 dark:text-brand-400 leading-tight">QUẢN LÝ TDTT</span>
+                <span class="text-[11px] font-extrabold uppercase text-emerald-700 dark:text-emerald-400 leading-tight">QUẢN LÝ TDTT</span>
               </div>
             </div>
 
             <!-- Desktop Left Indicator: Date Badge -->
-            <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100/70 dark:bg-slate-800/70 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-              <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">calendar_today</span>
+            <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+              <span class="material-symbols-outlined text-[16px] text-emerald-700 dark:text-emerald-400">calendar_today</span>
               <span class="capitalize">${dateStr}</span>
             </div>
           </div>
 
-          <!-- CENTER: Institutional Title (UBND PHƯỜNG TÂN KHAI & TRUNG TÂM DỊCH VỤ TỔNG HỢP - LỚN & ĐẬM) -->
+          <!-- CENTER: Institutional Title (UBND PHƯỜNG TÂN KHAI & TRUNG TÂM DỊCH VỤ TỔNG HỢP) -->
           <div class="flex-1 flex flex-col items-center justify-center text-center px-1 sm:px-2 min-w-0">
             <span class="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 truncate leading-tight">
               ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI
             </span>
-            <h1 class="text-xs sm:text-base md:text-lg lg:text-xl font-display font-black uppercase tracking-tight text-brand-700 dark:text-brand-400 truncate leading-tight mt-0.5 sm:mt-1">
+            <h1 class="text-xs sm:text-base md:text-lg lg:text-xl font-bold uppercase tracking-tight text-emerald-700 dark:text-emerald-400 truncate leading-tight mt-0.5 sm:mt-1">
               TRUNG TÂM DỊCH VỤ TỔNG HỢP
             </h1>
           </div>
@@ -65,17 +65,17 @@ import { toggleDarkMode } from '../utils/toast.js';
           <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <div id="syncPillBox">${renderSyncPillHTML()}</div>
 
-            <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all btn-press">
+            <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all btn-press">
               <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
             </button>
 
             <div class="flex items-center gap-2 pl-1.5 sm:pl-2 border-l border-slate-200 dark:border-slate-800">
-              <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-700 to-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+              <div class="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
                 TK
               </div>
               <div class="hidden xl:flex flex-col text-left">
-                <span class="text-xs font-bold leading-tight text-slate-800 dark:text-slate-100">Trần Quốc Được</span>
-                <span class="text-[10px] text-slate-400 font-medium">Trung tâm DV Tổng hợp</span>
+                <span class="text-xs font-bold leading-tight text-slate-900 dark:text-slate-100">Trần Quốc Được</span>
+                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Trung tâm DV Tổng hợp</span>
               </div>
               <button onclick="handleLogout()" title="Đăng xuất" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 ml-0.5 btn-press">
                 <span class="material-symbols-outlined text-[18px]">logout</span>
@@ -106,7 +106,7 @@ import { toggleDarkMode } from '../utils/toast.js';
       }
 
       return `
-        <button onclick="openSyncModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold shadow-sm transition-all hover:opacity-90 ${cls}">
+        <button onclick="openSyncModal()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold shadow-sm transition-all hover:opacity-90 ${cls}">
           <span class="material-symbols-outlined text-[15px] ${state.syncStatus === 'syncing' ? 'animate-spin' : ''}">${icon}</span>
           <span class="hidden sm:inline">${text}</span>
         </button>

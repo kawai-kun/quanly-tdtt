@@ -14,7 +14,7 @@ import { showToast, toggleDarkMode } from '../utils/toast.js';
           <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
           <!-- Login Container Card -->
-          <div class="w-full max-w-md relative z-10 glass-card rounded-3xl shadow-2xl border border-white/10 p-8 sm:p-10 text-center modal-animate">
+          <div class="w-full max-w-md relative z-10 glass-card rounded-xl shadow-2xl border border-white/10 p-8 sm:p-10 text-center modal-animate">
             
             <!-- Pristine Official Circular Emblem -->
             <div class="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-5 rounded-full p-1 bg-white/95 dark:bg-slate-800/95 shadow-xl ring-4 ring-brand-700/10 dark:ring-white/10 flex items-center justify-center overflow-hidden transition-all duration-300 hover:scale-105 group">
@@ -61,7 +61,7 @@ import { showToast, toggleDarkMode } from '../utils/toast.js';
               </div>
 
               <div class="pt-2">
-                <button type="submit" class="w-full py-3 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center justify-center gap-2 cursor-pointer btn-press">
+                <button type="submit" class="w-full py-3 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer btn-press">
                   <span>Đăng nhập hệ thống</span>
                   <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </button>

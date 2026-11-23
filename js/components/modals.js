@@ -14,7 +14,7 @@ import { animateModalOpen, animateModalClose } from '../utils/animations.js';
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[90vh] overflow-y-auto modal-animate text-left">
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[90vh] overflow-y-auto modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${act ? 'Chỉnh Sửa Giải Đấu' : 'Thêm Giải Đấu Mới'}</h3>
@@ -118,7 +118,7 @@ import { animateModalOpen, animateModalClose } from '../utils/animations.js';
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
-              <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu giải đấu</button>
+              <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Lưu giải đấu</button>
             </div>
           </form>
         </div>
@@ -241,7 +241,7 @@ import { animateModalOpen, animateModalClose } from '../utils/animations.js';
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-left max-h-[90vh] overflow-y-auto modal-animate">
+        <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-left max-h-[90vh] overflow-y-auto modal-animate">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold">

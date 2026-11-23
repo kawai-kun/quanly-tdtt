@@ -288,9 +288,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 600);
 });
 
-// Đóng modal khi bấm ESC
+// Phím tắt nhanh cho cán bộ (Enterprise Shortcuts)
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') window.closeModal();
+  if (e.key === 'Escape') {
+    window.closeModal();
+    return;
+  }
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') return;
+
+  // Phím '/' để nhảy nhanh vào ô tìm kiếm giải đấu
+  if (e.key === '/') {
+    const searchInput = document.getElementById('tournament_search_input');
+    if (searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+  }
+
+  // Phím 'N' hoặc 'n' để mở form thêm giải đấu mới
+  if (e.key === 'n' || e.key === 'N') {
+    if (!document.getElementById('modalContainer')) {
+      e.preventDefault();
+      window.openActivityModal();
+    }
+  }
 });
 
 // Tự động làm mới dữ liệu tức thì khi người dùng chuyển tab hoặc quay lại cửa sổ web

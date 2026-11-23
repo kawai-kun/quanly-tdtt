@@ -40,11 +40,11 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
               <!-- Fast Search Input -->
               <div class="relative flex-1 sm:w-64">
                 <span class="material-symbols-outlined text-[17px] text-slate-400 absolute left-3 top-2.5">search</span>
-                <input type="text" oninput="handleDashboardSearch(this.value)" placeholder="Tìm kiếm giải đấu, CLB..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 focus:outline-none focus:border-brand-500 shadow-sm text-slate-800 dark:text-slate-100" />
+                <input type="text" oninput="handleDashboardSearch(this.value)" placeholder="Tìm kiếm giải đấu, CLB..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-brand-500 shadow-sm text-slate-800 dark:text-slate-100" />
               </div>
 
               <!-- Multi-Year Dropdown -->
-              <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 text-xs font-bold shadow-sm">
+              <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shadow-sm">
                 <span class="material-symbols-outlined text-[16px] text-brand-700 dark:text-brand-400">event</span>
                 <select onchange="setGlobalYear(this.value)" class="bg-transparent dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
                   <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" value="all" ${state.selectedYear === 'all' ? 'selected' : ''}>Tất cả các năm</option>
@@ -53,69 +53,69 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
               </div>
 
               <!-- Quick Export Excel Button -->
-              <button onclick="exportAllExcel()" class="px-3.5 py-2 glass-card border border-slate-200/90 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all btn-press">
+              <button onclick="exportAllExcel()" class="px-3.5 py-2 glass-card border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all btn-press">
                 <span class="material-symbols-outlined text-[16px]">file_download</span>
                 <span class="hidden sm:inline">Xuất Excel</span>
               </button>
             </div>
           </div>
 
-          <!-- 4 Stat Metric Cards (Mobbin Elevate) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- 4 Stat Metric Cards (Human-Crafted Executive Metrics) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+            <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng giải tổ chức</span>
-                <div class="w-10 h-10 rounded-2xl bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-400 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[22px]">emoji_events</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tổng giải tổ chức</span>
+                <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]">emoji_events</span>
                 </div>
               </div>
-              <p id="stat_total_acts" class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalActs}</p>
-              <div class="flex items-center gap-1.5 text-[11px] font-bold text-brand-700 dark:text-brand-400 mt-2">
-                <span class="material-symbols-outlined text-[15px]">trending_up</span>
+              <p id="stat_total_acts" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2.5 font-mono">${totalActs}</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400 mt-2">
+                <span class="material-symbols-outlined text-[14px]">calendar_today</span>
                 <span>${state.selectedYear === 'all' ? 'Toàn bộ kỳ hoạt động' : 'Kỳ năm ' + state.selectedYear}</span>
               </div>
             </div>
 
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+            <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Lượt VĐV tham gia</span>
-                <div class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[22px]">groups</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Lượt VĐV tham gia</span>
+                <div class="w-9 h-9 rounded-lg bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]">groups</span>
                 </div>
               </div>
-              <p id="stat_total_parts" class="text-3xl font-display font-extrabold text-slate-900 dark:text-white mt-3">${totalParticipants.toLocaleString('vi-VN')}</p>
-              <div class="flex items-center gap-1.5 text-[11px] font-bold text-sky-600 mt-2">
-                <span class="material-symbols-outlined text-[15px]">person_check</span>
+              <p id="stat_total_parts" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2.5 font-mono">${totalParticipants.toLocaleString('vi-VN')}</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-medium text-teal-700 dark:text-teal-400 mt-2">
+                <span class="material-symbols-outlined text-[14px]">person_check</span>
                 <span>Hội viên & VĐV quần chúng</span>
               </div>
             </div>
 
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+            <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Huy chương đạt được</span>
-                <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[22px]">military_tech</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Huy chương đạt được</span>
+                <div class="w-9 h-9 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]">military_tech</span>
                 </div>
               </div>
-              <p id="stat_total_medals" class="text-3xl font-display font-extrabold text-amber-600 mt-3">${totalMedals}</p>
-              <div class="flex items-center gap-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-400 mt-2">
-                <span class="material-symbols-outlined text-[15px]">workspace_premium</span>
+              <p id="stat_total_medals" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-2.5 font-mono">${totalMedals}</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-400 mt-2">
+                <span class="material-symbols-outlined text-[14px]">workspace_premium</span>
                 <span>Vàng, Bạc & Đồng</span>
               </div>
             </div>
 
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin card-lift">
+            <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng kinh phí giải ngân</span>
-                <div class="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tổng kinh phí giải ngân</span>
+                <div class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
                 </div>
               </div>
-              <p id="stat_total_budget" class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-3 truncate">${(totalBudget / 1000000).toFixed(1)} tr đ</p>
-              <div class="flex items-center gap-1.5 text-[11px] font-bold text-purple-600 mt-2">
-                <span class="material-symbols-outlined text-[15px]">verified</span>
-                <span>100% Hồ sơ quyết toán</span>
+              <p id="stat_total_budget" class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-2.5 truncate font-mono">${(totalBudget / 1000000).toFixed(1)} tr đ</p>
+              <div class="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400 mt-2">
+                <span class="material-symbols-outlined text-[14px]">verified</span>
+                <span>Hồ sơ quyết toán</span>
               </div>
             </div>
           </div>
@@ -124,48 +124,48 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
           ${renderKpiProgressCard(filteredActs, totalActs, totalParticipants, totalMedals)}
 
           <!-- Charts Row (Chart.js) -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div class="p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Cơ Cấu Bộ Môn Thể Thao</h3>
-              <p class="text-[11px] text-slate-400 mb-4">Phân bổ giải đấu theo môn thi đấu</p>
-              <div class="relative h-64 flex items-center justify-center">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5">Cơ Cấu Bộ Môn Thể Thao</h3>
+              <p class="text-[11px] text-slate-400 mb-3">Phân bổ giải đấu theo môn thi đấu</p>
+              <div class="relative h-60 flex items-center justify-center">
                 <canvas id="sportsDonutChart"></canvas>
               </div>
             </div>
 
-            <div class="lg:col-span-2 p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Tiến Độ Hoạt Động & Lượng VĐV Tham Gia</h3>
-              <p class="text-[11px] text-slate-400 mb-4">Số lượng người tham gia theo từng tháng</p>
-              <div class="relative h-64">
+            <div class="lg:col-span-2 p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5">Tiến Độ Hoạt Động & Lượng VĐV Tham Gia</h3>
+              <p class="text-[11px] text-slate-400 mb-3">Số lượng người tham gia theo từng tháng</p>
+              <div class="relative h-60">
                 <canvas id="timelineBarChart"></canvas>
               </div>
             </div>
           </div>
 
           <!-- Recent Activities Quick Table -->
-          <div class="p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin">
-            <div class="flex items-center justify-between mb-4">
+          <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Giải Đấu Mới Nhất</h3>
-                <p class="text-[11px] text-slate-400">Các hoạt động thể thao gần đây của Trung tâm</p>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Giải Đấu Gần Đây</h3>
+                <p class="text-[11px] text-slate-400">Các hoạt động thể thao mới nhất của Trung tâm</p>
               </div>
-              <button onclick="switchTab('quan-ly-giai-dau')" class="text-xs font-bold text-brand-700 dark:text-brand-400 hover:underline flex items-center gap-1">
-                <span>Xem tất cả</span>
+              <button onclick="switchTab('quan-ly-giai-dau')" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                <span>Xem toàn bộ 30 giải</span>
                 <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
               </button>
             </div>
 
-            <div class="overflow-x-auto -webkit-overflow-scrolling-touch">
+            <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-lg border border-slate-200 dark:border-slate-800">
               <table id="dashboard_recent_table" class="w-full text-left text-xs">
-                <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/80 dark:border-slate-800">
+                <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800 select-none">
                   <tr>
-                    <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
-                    <th class="p-3.5 align-middle min-w-[220px]">Tên giải đấu</th>
-                    <th class="p-3.5 align-middle whitespace-nowrap">Bộ môn</th>
-                    <th class="p-3.5 align-middle whitespace-nowrap">Ngày</th>
-                    <th class="p-3.5 align-middle whitespace-nowrap text-center">VĐV</th>
-                    <th class="p-3.5 align-middle whitespace-nowrap text-center">Huy chương</th>
-                    <th class="p-3.5 align-middle whitespace-nowrap text-right">Thao tác</th>
+                    <th class="p-3 align-middle whitespace-nowrap w-16">Mã</th>
+                    <th class="p-3 align-middle min-w-[220px]">Tên giải đấu</th>
+                    <th class="p-3 align-middle whitespace-nowrap">Bộ môn</th>
+                    <th class="p-3 align-middle whitespace-nowrap">Ngày</th>
+                    <th class="p-3 align-middle whitespace-nowrap text-center">VĐV</th>
+                    <th class="p-3 align-middle whitespace-nowrap text-center">Huy chương</th>
+                    <th class="p-3 align-middle whitespace-nowrap text-right">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -222,34 +222,38 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
       // Điểm đánh giá trung bình
       const avgPct = Math.round((actPct + partPct + medalPct + clubPct) / 4);
 
-      let badgeBg = 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
-      let badgeText = `⭐ XUẤT SẮC - VƯỢT CHỈ TIÊU (${avgPct}%)`;
+      let badgeBg = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+      let dotBg = 'bg-emerald-600';
+      let badgeText = `Vượt chỉ tiêu (${avgPct}%)`;
       let noteText = 'Phong trào TDTT Phường Tân Khai đã hoàn thành và vượt mức toàn bộ các chỉ tiêu kế hoạch năm được giao.';
 
       if (avgPct < 80) {
-        badgeBg = 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30';
-        badgeText = `⏳ TIẾP TỤC TRIỂN KHAI (${avgPct}%)`;
+        badgeBg = 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+        dotBg = 'bg-amber-500';
+        badgeText = `Đang triển khai (${avgPct}%)`;
         noteText = 'Đang tiếp tục tổ chức các giải đấu và hoạt động phong trào để hoàn thành chỉ tiêu năm.';
       } else if (avgPct < 100) {
-        badgeBg = 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30';
-        badgeText = `✓ ĐẠT KẾ HOẠCH NĂM (${avgPct}%)`;
+        badgeBg = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+        dotBg = 'bg-slate-500';
+        badgeText = `Đạt kế hoạch (${avgPct}%)`;
         noteText = 'Đã cơ bản đạt các chỉ tiêu đề ra, đang duy trì ổn định phong trào cơ sở.';
       }
 
       return `
-        <div class="p-5 sm:p-6 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800/90 shadow-mobbin space-y-4">
+        <div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3.5">
           <!-- Header Card -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/70 dark:border-slate-800/70">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2 flex-wrap">
-                <div class="w-8 h-8 rounded-xl bg-brand-700 text-white flex items-center justify-center shadow-sm">
-                  <span class="material-symbols-outlined text-[18px]">flag</span>
+                <div class="w-7 h-7 rounded-lg bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">flag</span>
                 </div>
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white">
                   Tiến Độ Thực Hiện Chỉ Tiêu Thi Đua Năm ${state.selectedYear === 'all' ? '2026' : state.selectedYear}
                 </h3>
-                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${badgeBg}">
-                  ${badgeText}
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold border ${badgeBg}">
+                  <span class="w-1.5 h-1.5 rounded-full ${dotBg}"></span>
+                  <span>${badgeText}</span>
                 </span>
               </div>
               <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
@@ -257,26 +261,26 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
               </p>
             </div>
 
-            <button onclick="openKpiTargetsModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all self-start sm:self-auto btn-press" title="Điều chỉnh các con số kế hoạch được giao">
-              <span class="material-symbols-outlined text-[16px]">tune</span>
+            <button onclick="openKpiTargetsModal()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all self-start sm:self-auto btn-press" title="Điều chỉnh các con số kế hoạch được giao">
+              <span class="material-symbols-outlined text-[15px]">tune</span>
               <span>Cài đặt chỉ tiêu</span>
             </button>
           </div>
 
           <!-- 4 Progress Bars Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
             
             <!-- 1. Chỉ tiêu Giải đấu -->
-            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+            <div class="p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] text-emerald-600">emoji_events</span>
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-emerald-600">emoji_events</span>
                   <span>Giải đấu tổ chức</span>
                 </span>
-                <span class="text-xs font-extrabold ${actPct >= 100 ? 'text-emerald-600' : 'text-slate-600'}">${actPct}%</span>
+                <span class="text-xs font-bold font-mono ${actPct >= 100 ? 'text-emerald-600' : 'text-slate-600'}">${actPct}%</span>
               </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div id="bar_act_pct" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="bar_act_pct" class="bg-emerald-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalActs}</b> giải</span>
@@ -285,16 +289,16 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
             </div>
 
             <!-- 2. Chỉ tiêu Lượt VĐV -->
-            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+            <div class="p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] text-sky-600">groups</span>
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-teal-600">groups</span>
                   <span>Lượt VĐV tham gia</span>
                 </span>
-                <span class="text-xs font-extrabold ${partPct >= 100 ? 'text-sky-600' : 'text-slate-600'}">${partPct}%</span>
+                <span class="text-xs font-bold font-mono ${partPct >= 100 ? 'text-teal-600' : 'text-slate-600'}">${partPct}%</span>
               </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div id="bar_part_pct" class="bg-gradient-to-r from-sky-500 to-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="bar_part_pct" class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalParticipants.toLocaleString('vi-VN')}</b></span>
@@ -303,16 +307,16 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
             </div>
 
             <!-- 3. Chỉ tiêu Huy chương -->
-            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+            <div class="p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] text-amber-500">military_tech</span>
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-amber-500">military_tech</span>
                   <span>Thành tích Huy chương</span>
                 </span>
-                <span class="text-xs font-extrabold ${medalPct >= 100 ? 'text-amber-600' : 'text-slate-600'}">${medalPct}%</span>
+                <span class="text-xs font-bold font-mono ${medalPct >= 100 ? 'text-amber-600' : 'text-slate-600'}">${medalPct}%</span>
               </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div id="bar_medal_pct" class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="bar_medal_pct" class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${totalMedals}</b> HC</span>
@@ -321,16 +325,22 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
             </div>
 
             <!-- 4. Duy trì CLB cơ sở -->
-            <div class="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+            <div class="p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] text-purple-600">diversity_3</span>
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-slate-600 dark:text-slate-400">diversity_3</span>
                   <span>CLB TDTT duy trì</span>
                 </span>
-                <span class="text-xs font-extrabold ${clubPct >= 100 ? 'text-purple-600' : 'text-slate-600'}">${clubPct}%</span>
+                <span class="text-xs font-bold font-mono ${clubPct >= 100 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-600'}">${clubPct}%</span>
               </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                <div id="bar_club_pct" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="bar_club_pct" class="bg-slate-600 dark:bg-slate-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500">
+                <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${clubCount}</b> CLB</span>
+                <span>Chỉ tiêu: <b class="font-mono">${kpi.targetClubs || 5}</b> CLB</span>
+              </div>
+            </div>
               </div>
               <div class="flex justify-between items-center text-[11px] text-slate-500">
                 <span>Thực tế: <b class="text-slate-900 dark:text-white font-mono">${clubCount}</b> CLB</span>
@@ -356,7 +366,7 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 modal-animate text-left">
+        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h3 class="text-base font-bold text-slate-900 dark:text-white">Thiết Lập Chỉ Tiêu Thi Đua Năm</h3>
@@ -395,7 +405,7 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
-              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu chỉ tiêu</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Lưu chỉ tiêu</button>
             </div>
           </form>
         </div>
@@ -448,7 +458,7 @@ import { animateCounter, animateProgressBar, animateStagger } from '../utils/ani
             labels: Object.keys(sportCounts),
             datasets: [{
               data: Object.values(sportCounts),
-              backgroundColor: ['#8be33a', '#10b981', '#06b6d4', '#f59e0b', '#f97316', '#a855f7', '#ec4899'],
+              backgroundColor: ['#059669', '#0d9488', '#0284c7', '#d97706', '#ea580c', '#7c3aed', '#db2777'],
               borderWidth: 0
             }]
           },

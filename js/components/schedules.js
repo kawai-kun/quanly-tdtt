@@ -19,7 +19,7 @@ import { showToast } from '../utils/toast.js';
                 Thời khóa biểu tập luyện thể thao định kỳ các câu lạc bộ (${state.schedules.length} lịch)
               </p>
             </div>
-            <button onclick="openScheduleModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-2 cursor-pointer btn-press">
+            <button onclick="openScheduleModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-2 cursor-pointer btn-press">
               <span class="material-symbols-outlined text-[18px]">more_time</span>
               <span>Thêm lịch mới</span>
             </button>
@@ -29,7 +29,7 @@ import { showToast } from '../utils/toast.js';
             ${state.schedules.map(s => {
               const badge = getSportBadge(s.sport || s.clubName);
               return `
-                <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex items-start gap-4">
+                <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift flex items-start gap-4">
                   <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined text-[24px]">${badge.icon}</span>
                   </div>
@@ -63,7 +63,7 @@ import { showToast } from '../utils/toast.js';
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${sched ? 'Chỉnh Sửa Lịch Sinh Hoạt' : 'Thêm Lịch Sinh Hoạt Mới'}</h3>
@@ -103,7 +103,7 @@ import { showToast } from '../utils/toast.js';
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
-              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu lịch</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Lưu lịch</button>
             </div>
           </form>
         </div>

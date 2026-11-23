@@ -1,104 +1,94 @@
-/* Design Tokens from DESIGN.md (Cổng thể thao thanh niên Đồng Nai) */
+/* ==============================================================================
+   HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO - PHƯỜNG TÂN KHAI
+   THIẾT KẾ CHÍNH QUY & HÀNH CHÍNH (HUMAN-CRAFTED ENTERPRISE UI)
+   Không hiệu ứng giả cầy, không màu dạ quang, tối ưu công thái học và mật độ thông tin
+   ============================================================================== */
+
 :root {
-  --color-text-primary: #0e1f14;
-  --color-text-secondary: #ffffff;
-  --color-text-tertiary: #6b7f72;
-  --color-text-inverse: #8be33a;
-  --color-surface-base: #f0f5f2;
-  --color-surface-raised: #ffffff;
-  --color-surface-card: #ffffff;
-  --color-surface-muted: rgba(6, 48, 26, 0.04);
-  --color-border-strong: #d6e0d8;
-  --font-family-primary: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
-}
-.dark {
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #d6e0d8;
-  --color-text-tertiary: #6b7f72;
-  --color-text-inverse: #8be33a;
-  --color-surface-base: #000000;
-  --color-surface-raised: #06301a;
-  --color-surface-card: #092817;
-  --color-surface-muted: rgba(255, 255, 255, 0.05);
-  --color-border-strong: rgba(139, 227, 58, 0.22);
+  --color-brand-primary: #047857;   /* Emerald 700 - Xanh ngọc lục bảo chính quy */
+  --color-brand-dark: #064e3b;      /* Emerald 900 */
+  --color-brand-light: #ecfdf5;     /* Emerald 50 */
+  --color-accent-gold: #b45309;     /* Vàng đồng thể thao */
+  
+  --color-text-primary: #0f172a;    /* Slate 900 - Đen chữ sắc nét */
+  --color-text-secondary: #475569;  /* Slate 600 - Chữ thứ cấp */
+  --color-text-muted: #94a3b8;      /* Slate 400 */
+  
+  --color-bg-base: #f8fafc;         /* Slate 50 - Nền công sở sạch sẽ */
+  --color-surface-card: #ffffff;    /* Trắng chuẩn */
+  --color-border: #e2e8f0;          /* Slate 200 - Viền mảnh 1px */
+  
+  --font-family-primary: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Custom Scrollbar with Neon Hint */
+.dark {
+  --color-brand-primary: #10b981;   /* Emerald 500 */
+  --color-brand-dark: #022c22;
+  --color-brand-light: rgba(16, 185, 129, 0.1);
+  --color-accent-gold: #f59e0b;
+  
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #64748b;
+  
+  --color-bg-base: #0b1120;         /* Slate 950 sâu */
+  --color-surface-card: #0f172a;    /* Slate 900 */
+  --color-border: #1e293b;          /* Slate 800 */
+}
+
+/* Scrollbar thanh lịch chuẩn Desktop */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-.dark ::-webkit-scrollbar-thumb { background: #164a2b; }
-::-webkit-scrollbar-thumb:hover { background: #8be33a; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-/* Athletic Ambient Mesh Background */
+/* Nền phẳng công sở, không vân lóa mắt */
 body {
-  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #f1f5f2;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(139, 227, 58, 0.06) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(6, 48, 26, 0.07) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(249, 115, 22, 0.03) 0px, transparent 50%);
-  background-attachment: fixed;
-}
-.dark body {
-  background-color: #000000;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(6, 48, 26, 0.75) 0px, transparent 55%),
-    radial-gradient(at 100% 0%, rgba(139, 227, 58, 0.12) 0px, transparent 45%),
-    radial-gradient(at 50% 100%, rgba(9, 40, 23, 0.6) 0px, transparent 50%);
-  background-attachment: fixed;
+  font-family: var(--font-family-primary);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
 }
 
-/* Athletic Glassmorphic Surface Cards */
-.glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #d6e0d8;
-}
-.dark .glass-card {
-  background: rgba(9, 40, 23, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(139, 227, 58, 0.18) !important;
+/* Thẻ chuẩn giao diện công sở (Admin Clean Card) */
+.glass-card, .admin-card {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
 }
 
-/* Strict Select & Form Elements */
-select {
-  background-color: #ffffff;
-  color: #0e1f14;
+/* Form Controls Chuẩn Mực */
+select, input, textarea {
+  border-color: var(--color-border);
 }
 select option {
   background-color: #ffffff !important;
-  color: #0e1f14 !important;
+  color: #0f172a !important;
   padding: 6px 10px;
 }
-.dark select {
-  background-color: #06301a !important;
-  color: #ffffff !important;
-}
 .dark select option {
-  background-color: #06301a !important;
-  color: #ffffff !important;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
   padding: 6px 10px;
 }
 .dark input, .dark textarea {
   color-scheme: dark;
 }
 
-/* Typography & Legibility */
+/* Độ mịn chữ & Accessibility */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-/* Accessibility Focus-Visible Ring (WCAG 2.2 AA) */
 *:focus-visible {
-  outline: 2px solid #8be33a !important;
-  outline-offset: 2px !important;
+  outline: 2px solid #047857 !important;
+  outline-offset: 1px !important;
 }
 
+/* Khổ giấy A4 văn bản chuẩn thể thức Nhà nước */
 .admin-doc-paper {
   font-family: 'Times New Roman', Times, 'Liberation Serif', serif !important;
   font-size: 14px;
@@ -109,7 +99,7 @@ select option {
   font-family: 'Times New Roman', Times, 'Liberation Serif', serif !important;
 }
 
-/* Print styling */
+/* Chế độ in ấn văn bản A4 */
 @media print {
   body { background: #fff !important; color: #000 !important; }
   .no-print, header, aside, #bottomNav, #syncPillBox, .quick-actions-bar, .modal-backdrop { display: none !important; }
@@ -117,45 +107,46 @@ select option {
   .print-container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; }
 }
 
-/* Smooth Athletic Animations */
+/* Hiệu ứng chuyển động tự nhiên */
 @keyframes tabEnter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.996);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 .tab-pane-animate {
-  animation: tabEnter 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Modal spring animation managed by Anime.js */
 .modal-animate {
   transform-origin: center center;
 }
 
-/* Card Hover Lift with Athletic Glow */
+/* Nâng thẻ nhẹ nhàng tự nhiên (Không đổ bóng dạ quang) */
 .card-lift {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 .card-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.35), 0 0 18px -2px rgba(139, 227, 58, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.08);
 }
 
-/* Button Press Micro-interaction */
+/* Nút bấm có độ nảy xúc giác cơ học */
 .btn-press {
-  transition: transform 0.12s ease-out, filter 0.15s ease-out, box-shadow 0.15s ease-out;
+  transition: transform 0.1s ease, filter 0.15s ease, background-color 0.15s ease;
 }
 .btn-press:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
-/* Neon Border Glow Utility */
-.neon-border {
-  border: 1px solid rgba(139, 227, 58, 0.35);
-  box-shadow: 0 0 14px -2px rgba(139, 227, 58, 0.3);
+/* Bảng dữ liệu có vạch chia cột thanh lịch */
+.admin-table th {
+  letter-spacing: 0.03em;
+}
+.admin-table tr {
+  transition: background-color 0.12s ease;
 }

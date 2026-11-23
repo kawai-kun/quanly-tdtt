@@ -35,33 +35,33 @@ import { state } from '../state.js';
           <div>
             <!-- Official Brand Header: Dedicated to Logo + HỆ THỐNG QUẢN LÝ TDTT (Góc bên trái) -->
             <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/60 dark:border-slate-800/60 pb-5 mb-4">
-              <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-full bg-white/95 dark:bg-slate-800/95 shadow-md border border-slate-200/80 dark:border-slate-700 overflow-hidden group">
-                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_8px_rgba(139,227,58,0.35)]" alt="Huy hiệu UBND Phường Tân Khai" />
+              <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group">
+                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105" alt="Huy hiệu UBND Phường Tân Khai" />
               </div>
               <div class="flex flex-col text-left min-w-0">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">PHƯỜNG TÂN KHAI</span>
-                <span class="text-sm font-black font-display uppercase tracking-tight text-brand-700 dark:text-brand-400 leading-tight">HỆ THỐNG QUẢN LÝ</span>
-                <span class="text-xs font-black text-slate-800 dark:text-slate-100 uppercase tracking-wide leading-tight mt-0.5">THỂ DỤC THỂ THAO</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">PHƯỜNG TÂN KHAI</span>
+                <span class="text-sm font-extrabold uppercase tracking-tight text-emerald-700 dark:text-emerald-400 leading-tight">HỆ THỐNG QUẢN LÝ</span>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide leading-tight mt-0.5">THỂ DỤC THỂ THAO</span>
               </div>
             </div>
 
-            <!-- Navigation Links with Animated Badges -->
+            <!-- Navigation Links -->
             <nav class="space-y-1">
               ${navs.map(item => {
                 const isActive = state.currentTab === item.id;
                 const cls = isActive
-                  ? 'bg-brand-700 text-white font-bold shadow-md shadow-brand-900/20 dark:bg-gradient-to-r dark:from-[#06301a] dark:to-[#0a2e1b] dark:text-[#8be33a] dark:border dark:border-[#8be33a]/40 dark:shadow-[0_0_16px_rgba(139,227,58,0.25)]'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#06301a]/40 hover:text-brand-700 dark:hover:text-[#8be33a] font-medium';
+                  ? 'bg-emerald-700 text-white font-semibold shadow-sm dark:bg-emerald-950 dark:text-emerald-300 dark:border dark:border-emerald-800'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium';
                 return `
-                  <button onclick="switchTab('${item.id}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all text-left ${cls} group btn-press">
+                  <button onclick="switchTab('${item.id}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all text-left ${cls} group btn-press">
                     <span class="flex items-center gap-3">
-                      <span class="material-symbols-outlined text-[19px] transition-transform group-hover:scale-110">${item.icon}</span>
+                      <span class="material-symbols-outlined text-[19px]">${item.icon}</span>
                       <span>${item.label}</span>
                     </span>
                     ${item.badge !== undefined ? `
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold ${
                         isActive 
-                          ? 'bg-white/20 text-white dark:bg-[#8be33a] dark:text-[#0e1f14] dark:font-black' 
+                          ? 'bg-white/20 text-white dark:bg-emerald-900 dark:text-emerald-200' 
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                       }">
                         ${item.badge}
@@ -159,9 +159,9 @@ import { state } from '../state.js';
 
               <nav class="mt-4 space-y-1">
                 ${navs.map(n => `
-                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold ${
+                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
                     state.currentTab === n.id 
-                      ? 'bg-brand-700 text-white font-bold shadow-sm dark:bg-[#06301a] dark:text-[#8be33a] dark:border dark:border-[#8be33a]/30' 
+                      ? 'bg-emerald-700 text-white font-semibold shadow-sm dark:bg-emerald-950 dark:text-emerald-300 dark:border dark:border-emerald-800' 
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }">
                     <span class="material-symbols-outlined text-[18px]">${n.icon}</span>

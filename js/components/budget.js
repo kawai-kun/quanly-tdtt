@@ -29,11 +29,11 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openBudgetModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-2 cursor-pointer btn-press">
+              <button onclick="openBudgetModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-2 cursor-pointer btn-press">
                 <span class="material-symbols-outlined text-[18px]">add_card</span>
                 <span>Thêm mục kinh phí</span>
               </button>
-              <button onclick="exportAllExcel()" class="px-3.5 py-2.5 glass-card border border-slate-200/90 dark:border-slate-800 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer btn-press">
+              <button onclick="exportAllExcel()" class="px-3.5 py-2.5 glass-card border border-slate-200 dark:border-slate-800 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer btn-press">
                 <span class="material-symbols-outlined text-[18px]">download</span>
                 <span class="hidden sm:inline">Xuất Excel</span>
               </button>
@@ -42,17 +42,17 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
 
           <!-- Summary Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift">
+            <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Dự toán ngân sách duyệt</span>
               <p class="text-2xl font-display font-extrabold text-brand-700 dark:text-brand-400 mt-2">${totalEstimated.toLocaleString('vi-VN')} đ</p>
               <p class="text-[11px] text-slate-400 mt-1">Bao gồm ngân sách phường & sự nghiệp</p>
             </div>
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift">
+            <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Đã thực chi quyết toán</span>
               <p class="text-2xl font-display font-extrabold text-amber-600 mt-2">${totalActual.toLocaleString('vi-VN')} đ</p>
               <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-1 font-semibold">Đã hoàn thành thủ tục hóa đơn, chứng từ</p>
             </div>
-            <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift">
+            <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
               <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng giải ngân thể thao toàn diện</span>
               <p class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-2">${totalAllDisbursed.toLocaleString('vi-VN')} đ</p>
               <p class="text-[11px] text-emerald-600 font-bold mt-1">Đạt 100% chỉ tiêu quyết toán năm</p>
@@ -60,9 +60,9 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
           </div>
 
           <!-- Interactive Budget Table -->
-          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin">
+          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm">
             <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
+              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200 dark:border-slate-800">
                 <tr>
                   <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
                   <th class="p-3.5 align-middle min-w-[220px]">Hạng mục kinh phí / Hoạt động</th>
@@ -112,7 +112,7 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${b ? 'Chỉnh Sửa Mục Kinh Phí' : 'Thêm Mục Kinh Phí Mới'}</h3>
@@ -183,7 +183,7 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
-              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu khoản chi</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Lưu khoản chi</button>
             </div>
           </form>
         </div>

@@ -104,7 +104,7 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
       return `
         <div class="space-y-4">
           <!-- Control Actions & Period Filters Bar (No-Print) -->
-          <div class="no-print p-4 sm:p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin space-y-4">
+          <div class="no-print p-4 sm:p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             
             <!-- Row 1: Thể thức (Nhà nước / Chi bộ) + Kỳ báo cáo (Tháng, Quý, 6T, 9T, Năm) -->
             <div class="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-slate-200/80 dark:border-slate-800">
@@ -229,7 +229,7 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
           </div>
 
           <!-- Official Administrative Document Container (Times New Roman, A4 Standard, Crisp Typography) -->
-          <div id="reportDocumentContent" class="print-container admin-doc-paper bg-white text-slate-900 p-8 sm:p-14 rounded-3xl shadow-xl border border-slate-200 leading-relaxed text-[14px] max-w-4xl mx-auto">
+          <div id="reportDocumentContent" class="print-container admin-doc-paper bg-white text-slate-900 p-8 sm:p-14 rounded-xl shadow-xl border border-slate-200 leading-relaxed text-[14px] max-w-4xl mx-auto">
             
             ${isParty ? `
               <!-- LETTERHEAD MẪU CHI BỘ -->
@@ -463,20 +463,20 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
     export function renderReportRegistryView() {
       return `
         <div class="space-y-4">
-          <div class="p-4 rounded-2xl glass-card border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+          <div class="p-4 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div>
               <h3 class="text-sm font-bold text-slate-900 dark:text-white">Sổ Lưu Trữ Quản Lý Báo Cáo Đã Xuất</h3>
               <p class="text-xs text-slate-400 mt-0.5">Quản lý số hiệu văn bản báo cáo, chỉnh sửa số hoặc xóa bỏ báo cáo sai lệch</p>
             </div>
-            <button onclick="createNewReportPrompt()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand flex items-center gap-1.5 cursor-pointer btn-press">
+            <button onclick="createNewReportPrompt()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer btn-press">
               <span class="material-symbols-outlined text-[16px]">add_circle</span>
               <span>Tạo báo cáo số mới</span>
             </button>
           </div>
 
-          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin">
+          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm">
             <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200/90 dark:border-slate-800">
+              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200 dark:border-slate-800">
                 <tr>
                   <th class="p-3.5 align-middle whitespace-nowrap w-32">Số báo cáo</th>
                   <th class="p-3.5 align-middle min-w-[240px]">Tiêu đề báo cáo</th>
@@ -550,7 +550,7 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white">Chỉnh Sửa Báo Cáo Trong Sổ</h3>
             <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400"><span class="material-symbols-outlined">close</span></button>

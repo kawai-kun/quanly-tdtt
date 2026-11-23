@@ -19,7 +19,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                 Các câu lạc bộ, hội viên trực thuộc Trung tâm Dịch vụ tổng hợp quản lý (${state.clubs.length} CLB)
               </p>
             </div>
-            <button onclick="openClubModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-glow-brand transition-all flex items-center gap-2 cursor-pointer btn-press">
+            <button onclick="openClubModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer btn-press">
               <span class="material-symbols-outlined text-[18px]">group_add</span>
               <span>Thêm CLB mới</span>
             </button>
@@ -29,7 +29,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
             ${state.clubs.map(c => {
               const badge = getSportBadge(c.sport);
               return `
-                <div class="p-5 rounded-3xl glass-card border border-slate-200/90 dark:border-slate-800 shadow-mobbin card-lift flex flex-col justify-between">
+                <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift flex flex-col justify-between">
                   <div>
                     <div class="flex items-center justify-between">
                       <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center">
@@ -74,7 +74,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
       modal.id = 'modalContainer';
       modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-left">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h3 class="text-base font-bold text-slate-900 dark:text-white">${club ? 'Chỉnh Sửa Câu Lạc Bộ' : 'Thêm Câu Lạc Bộ Mới'}</h3>
@@ -139,7 +139,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
-              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-glow-brand btn-press">Lưu CLB</button>
+              <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Lưu CLB</button>
             </div>
           </form>
         </div>
