@@ -16,7 +16,7 @@ import {
 } from './state.js';
 
 // 2. UTILS
-import { showToast, toggleDarkMode, initTheme } from './utils/toast.js';
+import { showToast, toggleDarkMode, initTheme, setColorTheme } from './utils/toast.js';
 import { anime, animateStagger } from './utils/animations.js';
 import {
   formatVNCurrency,
@@ -142,6 +142,7 @@ const globalBindings = {
   setGlobalYear,
   toggleMobileDrawer,
   toggleDarkMode,
+  setColorTheme,
   renderSyncPill,
   renderApp,
 

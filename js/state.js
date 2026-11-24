@@ -36,6 +36,7 @@ export const state = {
   isAuthenticated: lsGet('tk_auth', true),
   currentTab: 'bang-dieu-khien',
   darkMode: lsGet('tk_dark', false),
+  colorTheme: lsGet('tk_color_theme', 'sapphire'),
   apiUrl: lsGet('tk_api_url', '') || DEFAULT_API_URL,
 
   // Multi-Year Architecture

@@ -30,6 +30,26 @@ import { animateToastIn, animateToastOut } from './animations.js';
       }, 3500);
     }
 
+    export function setColorTheme(themeName) {
+      state.colorTheme = themeName;
+      lsSet('tk_color_theme', themeName);
+      applyColorTheme();
+      try {
+        const url = new URL(window.location);
+        url.searchParams.set('theme', themeName);
+        window.history.replaceState({}, '', url);
+      } catch (e) {}
+      window.renderApp();
+    }
+
+    export function applyColorTheme() {
+      const root = document.documentElement;
+      root.classList.remove('theme-sapphire', 'theme-crimson', 'theme-carbon', 'theme-titanium', 'theme-emerald');
+      if (state.colorTheme && state.colorTheme !== 'emerald') {
+        root.classList.add(`theme-${state.colorTheme}`);
+      }
+    }
+
     export function toggleDarkMode() {
       state.darkMode = !state.darkMode;
       lsSet('tk_dark', state.darkMode);
@@ -38,6 +58,17 @@ import { animateToastIn, animateToastOut } from './animations.js';
     }
 
     export function initTheme() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const qTheme = params.get('theme');
+        if (qTheme && ['sapphire', 'crimson', 'carbon', 'titanium', 'emerald'].includes(qTheme)) {
+          state.colorTheme = qTheme;
+          lsSet('tk_color_theme', qTheme);
+        }
+      } catch (e) {}
+
+      applyColorTheme();
+
       if (state.darkMode) {
         document.documentElement.classList.add('dark');
       } else {

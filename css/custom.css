@@ -327,3 +327,319 @@ select option {
   box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.45);
   border-color: #059669;
 }
+
+/* ==============================================================================
+   4 BỘ THEME MÀU ĐẲNG CẤP QUỐC TẾ (SAPPHIRE, CRIMSON, CARBON, TITANIUM)
+   ============================================================================== */
+
+/* ------------------------------------------------------------------------------
+   1. THEME 1: SAPPHIRE (XANH DƯƠNG THỂ THAO & IOC QUỐC TẾ)
+   ------------------------------------------------------------------------------ */
+.theme-sapphire .text-emerald-700,
+.theme-sapphire .text-emerald-600,
+.theme-sapphire .text-brand-700,
+.theme-sapphire .text-brand-600,
+.theme-sapphire.dark .text-emerald-400,
+.theme-sapphire .dark .text-emerald-400 {
+  color: #2563eb !important;
+}
+
+.theme-sapphire .bg-emerald-700,
+.theme-sapphire .bg-emerald-600,
+.theme-sapphire .bg-emerald-500,
+.theme-sapphire .bg-brand-700,
+.theme-sapphire .bg-brand-600 {
+  background-color: #2563eb !important;
+}
+
+.theme-sapphire .hover\:bg-emerald-800:hover,
+.theme-sapphire .hover\:bg-emerald-700:hover,
+.theme-sapphire .hover\:bg-brand-800:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.theme-sapphire .border-emerald-700,
+.theme-sapphire .border-emerald-600,
+.theme-sapphire .border-brand-700,
+.theme-sapphire .focus\:border-emerald-600:focus {
+  border-color: #2563eb !important;
+}
+
+.theme-sapphire .bg-emerald-50,
+.theme-sapphire .bg-brand-50 {
+  background-color: #eff6ff !important;
+}
+.theme-sapphire .dark .bg-emerald-950,
+.theme-sapphire.dark .bg-emerald-950,
+.theme-sapphire .dark .bg-emerald-950\/50,
+.theme-sapphire .dark .bg-emerald-950\/60 {
+  background-color: rgba(30, 58, 138, 0.35) !important;
+}
+
+.theme-sapphire .border-emerald-200,
+.theme-sapphire .border-brand-200 {
+  border-color: #bfdbfe !important;
+}
+
+.theme-sapphire .border-emerald-300,
+.theme-sapphire .border-brand-300 {
+  border-color: #93c5fd !important;
+}
+
+.theme-sapphire .text-emerald-800,
+.theme-sapphire .text-brand-800 {
+  color: #1e40af !important;
+}
+
+.theme-sapphire .dark .text-emerald-300,
+.theme-sapphire.dark .text-emerald-300 {
+  color: #93c5fd !important;
+}
+
+.theme-sapphire .bg-gradient-to-r.from-emerald-900 {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #172554 100%) !important;
+}
+
+.theme-sapphire .from-emerald-600.to-emerald-800 {
+  --tw-gradient-from: #2563eb !important;
+  --tw-gradient-to: #1e3a8a !important;
+}
+
+.theme-sapphire .bg-emerald-400,
+.theme-sapphire .bg-emerald-500 {
+  background-color: #3b82f6 !important;
+}
+
+/* ------------------------------------------------------------------------------
+   2. THEME 2: CRIMSON (ĐỎ ĐÔ THỂ THAO VIỆT NAM & HOÀNG GIA)
+   ------------------------------------------------------------------------------ */
+.theme-crimson .text-emerald-700,
+.theme-crimson .text-emerald-600,
+.theme-crimson .text-brand-700,
+.theme-crimson .text-brand-600,
+.theme-crimson.dark .text-emerald-400,
+.theme-crimson .dark .text-emerald-400 {
+  color: #dc2626 !important;
+}
+
+.theme-crimson .bg-emerald-700,
+.theme-crimson .bg-emerald-600,
+.theme-crimson .bg-emerald-500,
+.theme-crimson .bg-brand-700,
+.theme-crimson .bg-brand-600 {
+  background-color: #dc2626 !important;
+}
+
+.theme-crimson .hover\:bg-emerald-800:hover,
+.theme-crimson .hover\:bg-emerald-700:hover,
+.theme-crimson .hover\:bg-brand-800:hover {
+  background-color: #b91c1c !important;
+}
+
+.theme-crimson .border-emerald-700,
+.theme-crimson .border-emerald-600,
+.theme-crimson .border-brand-700,
+.theme-crimson .focus\:border-emerald-600:focus {
+  border-color: #dc2626 !important;
+}
+
+.theme-crimson .bg-emerald-50,
+.theme-crimson .bg-brand-50 {
+  background-color: #fff1f2 !important;
+}
+.theme-crimson .dark .bg-emerald-950,
+.theme-crimson.dark .bg-emerald-950,
+.theme-crimson .dark .bg-emerald-950\/50,
+.theme-crimson .dark .bg-emerald-950\/60 {
+  background-color: rgba(136, 19, 55, 0.35) !important;
+}
+
+.theme-crimson .border-emerald-200,
+.theme-crimson .border-brand-200 {
+  border-color: #fecdd3 !important;
+}
+
+.theme-crimson .border-emerald-300,
+.theme-crimson .border-brand-300 {
+  border-color: #fda4af !important;
+}
+
+.theme-crimson .text-emerald-800,
+.theme-crimson .text-brand-800 {
+  color: #9f1239 !important;
+}
+
+.theme-crimson .dark .text-emerald-300,
+.theme-crimson.dark .text-emerald-300 {
+  color: #fda4af !important;
+}
+
+.theme-crimson .bg-gradient-to-r.from-emerald-900 {
+  background: linear-gradient(135deg, #180509 0%, #881337 55%, #4c0519 100%) !important;
+}
+
+.theme-crimson .from-emerald-600.to-emerald-800 {
+  --tw-gradient-from: #dc2626 !important;
+  --tw-gradient-to: #881337 !important;
+}
+
+.theme-crimson .bg-emerald-400,
+.theme-crimson .bg-emerald-500 {
+  background-color: #ef4444 !important;
+}
+
+/* ------------------------------------------------------------------------------
+   3. THEME 3: CARBON (ĐEN CARBON & CAM NĂNG LƯỢNG ATHLETIC PRO - NIKE/STRAVA)
+   ------------------------------------------------------------------------------ */
+.theme-carbon .text-emerald-700,
+.theme-carbon .text-emerald-600,
+.theme-carbon .text-brand-700,
+.theme-carbon .text-brand-600,
+.theme-carbon.dark .text-emerald-400,
+.theme-carbon .dark .text-emerald-400 {
+  color: #ea580c !important;
+}
+
+.theme-carbon .bg-emerald-700,
+.theme-carbon .bg-emerald-600,
+.theme-carbon .bg-emerald-500,
+.theme-carbon .bg-brand-700,
+.theme-carbon .bg-brand-600 {
+  background-color: #ea580c !important;
+}
+
+.theme-carbon .hover\:bg-emerald-800:hover,
+.theme-carbon .hover\:bg-emerald-700:hover,
+.theme-carbon .hover\:bg-brand-800:hover {
+  background-color: #c2410c !important;
+}
+
+.theme-carbon .border-emerald-700,
+.theme-carbon .border-emerald-600,
+.theme-carbon .border-brand-700,
+.theme-carbon .focus\:border-emerald-600:focus {
+  border-color: #ea580c !important;
+}
+
+.theme-carbon .bg-emerald-50,
+.theme-carbon .bg-brand-50 {
+  background-color: #fff7ed !important;
+}
+.theme-carbon .dark .bg-emerald-950,
+.theme-carbon.dark .bg-emerald-950,
+.theme-carbon .dark .bg-emerald-950\/50,
+.theme-carbon .dark .bg-emerald-950\/60 {
+  background-color: rgba(124, 45, 18, 0.35) !important;
+}
+
+.theme-carbon .border-emerald-200,
+.theme-carbon .border-brand-200 {
+  border-color: #fed7aa !important;
+}
+
+.theme-carbon .border-emerald-300,
+.theme-carbon .border-brand-300 {
+  border-color: #fdba74 !important;
+}
+
+.theme-carbon .text-emerald-800,
+.theme-carbon .text-brand-800 {
+  color: #9a3412 !important;
+}
+
+.theme-carbon .dark .text-emerald-300,
+.theme-carbon.dark .text-emerald-300 {
+  color: #fdba74 !important;
+}
+
+.theme-carbon .bg-gradient-to-r.from-emerald-900 {
+  background: linear-gradient(135deg, #09090b 0%, #27272a 50%, #431407 100%) !important;
+}
+
+.theme-carbon .from-emerald-600.to-emerald-800 {
+  --tw-gradient-from: #ea580c !important;
+  --tw-gradient-to: #9a3412 !important;
+}
+
+.theme-carbon .bg-emerald-400,
+.theme-carbon .bg-emerald-500 {
+  background-color: #f97316 !important;
+}
+
+/* ------------------------------------------------------------------------------
+   4. THEME 4: TITANIUM (XÁM TITAN SIÊU TỐI GIẢN & THỂ THAO CÔNG NGHỆ)
+   ------------------------------------------------------------------------------ */
+.theme-titanium .text-emerald-700,
+.theme-titanium .text-emerald-600,
+.theme-titanium .text-brand-700,
+.theme-titanium .text-brand-600,
+.theme-titanium.dark .text-emerald-400,
+.theme-titanium .dark .text-emerald-400 {
+  color: #475569 !important;
+}
+
+.theme-titanium .bg-emerald-700,
+.theme-titanium .bg-emerald-600,
+.theme-titanium .bg-emerald-500,
+.theme-titanium .bg-brand-700,
+.theme-titanium .bg-brand-600 {
+  background-color: #334155 !important;
+}
+
+.theme-titanium .hover\:bg-emerald-800:hover,
+.theme-titanium .hover\:bg-emerald-700:hover,
+.theme-titanium .hover\:bg-brand-800:hover {
+  background-color: #1e293b !important;
+}
+
+.theme-titanium .border-emerald-700,
+.theme-titanium .border-emerald-600,
+.theme-titanium .border-brand-700,
+.theme-titanium .focus\:border-emerald-600:focus {
+  border-color: #475569 !important;
+}
+
+.theme-titanium .bg-emerald-50,
+.theme-titanium .bg-brand-50 {
+  background-color: #f8fafc !important;
+}
+.theme-titanium .dark .bg-emerald-950,
+.theme-titanium.dark .bg-emerald-950,
+.theme-titanium .dark .bg-emerald-950\/50,
+.theme-titanium .dark .bg-emerald-950\/60 {
+  background-color: rgba(30, 41, 59, 0.45) !important;
+}
+
+.theme-titanium .border-emerald-200,
+.theme-titanium .border-brand-200 {
+  border-color: #e2e8f0 !important;
+}
+
+.theme-titanium .border-emerald-300,
+.theme-titanium .border-brand-300 {
+  border-color: #cbd5e1 !important;
+}
+
+.theme-titanium .text-emerald-800,
+.theme-titanium .text-brand-800 {
+  color: #1e293b !important;
+}
+
+.theme-titanium .dark .text-emerald-300,
+.theme-titanium.dark .text-emerald-300 {
+  color: #cbd5e1 !important;
+}
+
+.theme-titanium .bg-gradient-to-r.from-emerald-900 {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%) !important;
+}
+
+.theme-titanium .from-emerald-600.to-emerald-800 {
+  --tw-gradient-from: #475569 !important;
+  --tw-gradient-to: #0f172a !important;
+}
+
+.theme-titanium .bg-emerald-400,
+.theme-titanium .bg-emerald-500 {
+  background-color: #64748b !important;
+}

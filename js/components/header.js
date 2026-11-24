@@ -82,6 +82,15 @@ export function renderHeader() {
           <!-- Cloud Sync Pill -->
           <div id="syncPillBox">${renderSyncPillHTML()}</div>
 
+          <!-- 4-Theme Quick Switcher -->
+          <div class="hidden sm:flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700" title="Chọn nhanh giao diện màu">
+            <button onclick="setColorTheme('sapphire')" class="w-5 h-5 rounded-full bg-blue-600 transition-all ${state.colorTheme === 'sapphire' ? 'ring-2 ring-offset-1 ring-blue-600 scale-110 shadow-xs' : 'opacity-65 hover:opacity-100'}" title="Giao diện 1: Xanh Sapphire Thể Thao (Olympic & IOC)"></button>
+            <button onclick="setColorTheme('crimson')" class="w-5 h-5 rounded-full bg-red-600 transition-all ${state.colorTheme === 'crimson' ? 'ring-2 ring-offset-1 ring-red-600 scale-110 shadow-xs' : 'opacity-65 hover:opacity-100'}" title="Giao diện 2: Đỏ Đô Thể Thao Việt Nam & Hoàng Gia"></button>
+            <button onclick="setColorTheme('carbon')" class="w-5 h-5 rounded-full bg-orange-500 transition-all ${state.colorTheme === 'carbon' ? 'ring-2 ring-offset-1 ring-orange-500 scale-110 shadow-xs' : 'opacity-65 hover:opacity-100'}" title="Giao diện 3: Đen Carbon & Cam Năng Lượng (Nike/Strava)"></button>
+            <button onclick="setColorTheme('titanium')" class="w-5 h-5 rounded-full bg-slate-600 transition-all ${state.colorTheme === 'titanium' ? 'ring-2 ring-offset-1 ring-slate-600 scale-110 shadow-xs' : 'opacity-65 hover:opacity-100'}" title="Giao diện 4: Xám Titan Siêu Tối Giản Đẳng Cấp"></button>
+            <button onclick="setColorTheme('emerald')" class="w-5 h-5 rounded-full bg-emerald-600 transition-all ${state.colorTheme === 'emerald' ? 'ring-2 ring-offset-1 ring-emerald-600 scale-110 shadow-xs' : 'opacity-65 hover:opacity-100'}" title="Giao diện 5: Xanh Ngọc Lục Bảo UBND Gốc"></button>
+          </div>
+
           <!-- Dark Mode Toggle -->
           <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all btn-press">
             <span class="material-symbols-outlined text-[19px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
