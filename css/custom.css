@@ -19,6 +19,59 @@
   --color-border: #e2e8f0;          /* Slate 200 - Viền mảnh 1px */
   
   --font-family-primary: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Theme Accent & Button Tokens (Linear / Vercel / Stripe Standard) */
+  --theme-btn-start: #2563eb;
+  --theme-btn-end: #1d4ed8;
+  --theme-btn-glow: rgba(37, 99, 235, 0.45);
+  --theme-accent: #2563eb;
+  --theme-ambient-1: rgba(37, 99, 235, 0.08);
+  --theme-ambient-2: rgba(245, 158, 11, 0.05);
+}
+
+.theme-sapphire {
+  --theme-btn-start: #2563eb;
+  --theme-btn-end: #1d4ed8;
+  --theme-btn-glow: rgba(37, 99, 235, 0.5);
+  --theme-accent: #2563eb;
+  --theme-ambient-1: rgba(37, 99, 235, 0.12);
+  --theme-ambient-2: rgba(245, 158, 11, 0.06);
+}
+
+.theme-crimson {
+  --theme-btn-start: #dc2626;
+  --theme-btn-end: #991b1b;
+  --theme-btn-glow: rgba(220, 38, 38, 0.5);
+  --theme-accent: #dc2626;
+  --theme-ambient-1: rgba(220, 38, 38, 0.12);
+  --theme-ambient-2: rgba(234, 179, 8, 0.08);
+}
+
+.theme-carbon {
+  --theme-btn-start: #ea580c;
+  --theme-btn-end: #c2410c;
+  --theme-btn-glow: rgba(234, 88, 12, 0.5);
+  --theme-accent: #ea580c;
+  --theme-ambient-1: rgba(234, 88, 12, 0.14);
+  --theme-ambient-2: rgba(124, 58, 237, 0.08);
+}
+
+.theme-titanium {
+  --theme-btn-start: #334155;
+  --theme-btn-end: #0f172a;
+  --theme-btn-glow: rgba(51, 65, 85, 0.5);
+  --theme-accent: #475569;
+  --theme-ambient-1: rgba(71, 85, 105, 0.12);
+  --theme-ambient-2: rgba(14, 165, 233, 0.06);
+}
+
+.theme-emerald {
+  --theme-btn-start: #059669;
+  --theme-btn-end: #047857;
+  --theme-btn-glow: rgba(5, 150, 105, 0.5);
+  --theme-accent: #059669;
+  --theme-ambient-1: rgba(5, 150, 105, 0.10);
+  --theme-ambient-2: rgba(16, 185, 129, 0.05);
 }
 
 .dark {
@@ -44,11 +97,120 @@
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-/* Nền phẳng công sở, không vân lóa mắt */
+/* Nền Ambient Lighting Đẳng Cấp Thế Giới (Linear / Stripe / Awwwards Top-Tier) */
 body {
   font-family: var(--font-family-primary);
-  background-color: var(--color-bg-base);
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 15% 0%, var(--theme-ambient-1, rgba(37, 99, 235, 0.08)) 0%, transparent 45%),
+    radial-gradient(circle at 85% 5%, var(--theme-ambient-2, rgba(245, 158, 11, 0.05)) 0%, transparent 45%);
+  background-attachment: fixed;
   color: var(--color-text-primary);
+}
+
+.dark body {
+  background-color: #080d1a !important;
+  background-image: 
+    radial-gradient(circle at 15% 0%, var(--theme-ambient-1, rgba(37, 99, 235, 0.16)) 0%, transparent 50%),
+    radial-gradient(circle at 85% 5%, var(--theme-ambient-2, rgba(245, 158, 11, 0.10)) 0%, transparent 50%),
+    radial-gradient(circle at 50% 60%, rgba(15, 23, 42, 0.6) 0%, transparent 100%);
+  background-attachment: fixed;
+}
+
+/* ==============================================================================
+   NÚT BẤM ĐỈNH CAO THẾ GIỚI (AWARD-WINNING BUTTONS & MICRO-INTERACTIONS)
+   ============================================================================== */
+
+/* Primary Top-Tier Button (Linear / Stripe Craft) */
+.btn-top-tier {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--theme-btn-start, #2563eb) 0%, var(--theme-btn-end, #1d4ed8) 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 4px 14px -2px var(--theme-btn-glow, rgba(37, 99, 235, 0.45));
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.btn-top-tier:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 24px -2px var(--theme-btn-glow, rgba(37, 99, 235, 0.6));
+  filter: brightness(1.08);
+}
+.btn-top-tier:active {
+  transform: translateY(0.5px) scale(0.98);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+/* Shimmer Light Wave Animation */
+.btn-top-tier::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -120%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.65s ease;
+  pointer-events: none;
+}
+.btn-top-tier:hover::before {
+  left: 120%;
+}
+
+/* Secondary Glass Tactile Button */
+.btn-glass-tactile {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.dark .btn-glass-tactile {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(51, 65, 85, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.btn-glass-tactile:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.08);
+}
+.dark .btn-glass-tactile:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: #475569;
+  box-shadow: 0 8px 20px -2px rgba(0, 0, 0, 0.45);
+}
+.btn-glass-tactile:active {
+  transform: translateY(0.5px) scale(0.98);
+}
+
+/* Luxury Card with Apple-Style Light Reflection */
+.luxury-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 8px 20px -4px rgba(0, 0, 0, 0.04);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dark .luxury-card {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+}
+.luxury-card:hover {
+  transform: translateY(-2.5px);
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 14px 32px -6px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(37, 99, 235, 0.15);
+}
+.dark .luxury-card:hover {
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(96, 165, 250, 0.2);
 }
 
 /* Thẻ chuẩn giao diện công sở (Admin Clean Card) */

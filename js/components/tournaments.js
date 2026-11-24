@@ -81,11 +81,11 @@ export function renderTournaments() {
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <button onclick="pullFromGoogleSheet(false)" class="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-sport font-bold text-xs tracking-wider rounded transition-colors flex items-center gap-1.5 btn-press">
+          <button onclick="pullFromGoogleSheet(false)" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5 shadow-2xs">
             <span class="material-symbols-outlined text-[16px]">sync</span>
             <span>ĐỒNG BỘ DRIVE</span>
           </button>
-          <button onclick="openActivityModal()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-sport font-bold text-xs tracking-wider rounded transition-colors flex items-center gap-1.5 btn-press">
+          <button onclick="openActivityModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[17px]">add</span>
             <span>THÊM GIẢI ĐẤU (N)</span>
           </button>
@@ -148,10 +148,10 @@ export function renderTournaments() {
         </div>
 
         <!-- Right: View Switcher (Phím cơ học dứt khoát) -->
-        <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-700 self-end lg:self-auto shrink-0">
+        <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-700 self-end lg:self-auto shrink-0 shadow-inner">
           <button 
             onclick="toggleTournamentsView('table')" 
-            class="h-7 px-3 rounded text-xs font-sport font-bold tracking-wider flex items-center gap-1 transition-all ${f.viewMode === 'table' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}" 
+            class="h-7 px-3 rounded-md text-xs font-sport font-bold tracking-wider flex items-center gap-1 transition-all ${f.viewMode === 'table' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}" 
             title="Sổ tay bảng số liệu 11 cột"
           >
             <span class="material-symbols-outlined text-[16px]">table_rows</span>
@@ -160,7 +160,7 @@ export function renderTournaments() {
 
           <button 
             onclick="toggleTournamentsView('kanban')" 
-            class="h-7 px-3 rounded text-xs font-sport font-bold tracking-wider flex items-center gap-1 transition-all ${f.viewMode === 'kanban' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}" 
+            class="h-7 px-3 rounded-md text-xs font-sport font-bold tracking-wider flex items-center gap-1 transition-all ${f.viewMode === 'kanban' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}" 
             title="Bảng Kanban tiến độ thi đấu"
           >
             <span class="material-symbols-outlined text-[16px]">view_kanban</span>
@@ -169,7 +169,7 @@ export function renderTournaments() {
 
           <button 
             onclick="toggleTournamentsView('cards')" 
-            class="h-7 px-3 rounded text-xs font-sport font-bold tracking-wider flex items-center gap-1 transition-all ${f.viewMode === 'cards' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}" 
+            class="h-7 px-3 rounded-md text-xs font-sport font-bold tracking-wider flex items-center gap-1 transition-all ${f.viewMode === 'cards' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}" 
             title="Thẻ thi đấu Match Pass"
           >
             <span class="material-symbols-outlined text-[16px]">grid_view</span>

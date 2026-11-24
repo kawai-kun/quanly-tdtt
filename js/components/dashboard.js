@@ -8,6 +8,7 @@ import { state, saveAll } from '../state.js';
 import { formatVNCurrency, extractYearFromDate, extractQuarterFromDate, getAvailableYears, sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { getSportBadge } from '../utils/sportBadges.js';
+import { animateCounter } from '../utils/animations.js';
 
 export function renderDashboard() {
   const availableYears = getAvailableYears();
@@ -55,11 +56,11 @@ export function renderDashboard() {
             </div>
 
             <!-- Add & Export Buttons -->
-            <button onclick="window.openActivityModal()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-sport font-bold text-xs rounded transition-colors flex items-center gap-1 btn-press">
+            <button onclick="window.openActivityModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs rounded-lg flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[16px]">add</span>
-              <span>THÊM GIẢI</span>
+              <span>THÊM GIẢI MỚI</span>
             </button>
-            <button onclick="exportAllExcel()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-sport font-bold text-xs rounded border border-slate-700 transition-colors flex items-center gap-1 btn-press">
+            <button onclick="exportAllExcel()" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-sport font-bold text-xs rounded-lg flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[16px]">file_download</span>
               <span>XUẤT EXCEL</span>
             </button>
@@ -561,4 +562,15 @@ export function initDashboardCharts() {
       }
     });
   }
+
+  // 3. Scoreboard Animated Numbers (Stadium LED Counter)
+  const totalActs = filteredActs.length;
+  const totalParticipants = filteredActs.reduce((acc, a) => acc + (parseInt(a.participants) || 0), 0);
+  const totalMedals = filteredActs.reduce((acc, a) => acc + (parseInt(a.totalMedals) || 0), 0);
+  const totalBudget = filteredActs.reduce((acc, a) => acc + (parseInt(a.budgetTotal) || 0), 0);
+
+  animateCounter('#stat_total_acts', totalActs, { duration: 800 });
+  animateCounter('#stat_total_parts', totalParticipants, { duration: 1000, formatter: (v) => Math.round(v).toLocaleString('vi-VN') });
+  animateCounter('#stat_total_medals', totalMedals, { duration: 900 });
+  animateCounter('#stat_total_budget', (totalBudget / 1000000), { duration: 1100, formatter: (v) => v.toFixed(1) });
 }

@@ -18,44 +18,49 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
       const totalAllDisbursed = totalActual + totalWardActs + totalPrizeActs;
 
       return `
-        <div class="space-y-6 tab-pane-animate">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-6 tab-pane-animate text-left">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Kinh Phí & Quyết Toán TDTT
-              </h1>
+              <div class="flex items-center gap-2.5">
+                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                  KINH PHÍ & QUYẾT TOÁN THỂ DỤC THỂ THAO
+                </h1>
+                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  ${items.length} HẠNG MỤC
+                </span>
+              </div>
               <p class="text-xs text-slate-500 mt-1">
-                Theo dõi nguồn kinh phí phân bổ, thanh quyết toán và hồ sơ chứng từ (${items.length} hạng mục)
+                Theo dõi phân bổ ngân sách nhà nước, thanh quyết toán và lưu trữ hồ sơ chứng từ theo luật NSNN
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openBudgetModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-2 cursor-pointer btn-press">
-                <span class="material-symbols-outlined text-[18px]">add_card</span>
-                <span>Thêm mục kinh phí</span>
+              <button onclick="openBudgetModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[17px]">add_card</span>
+                <span>THÊM MỤC KINH PHÍ</span>
               </button>
-              <button onclick="exportAllExcel()" class="px-3.5 py-2.5 glass-card border border-slate-200 dark:border-slate-800 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer btn-press">
-                <span class="material-symbols-outlined text-[18px]">download</span>
-                <span class="hidden sm:inline">Xuất Excel</span>
+              <button onclick="exportAllExcel()" class="btn-glass-tactile px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+                <span class="material-symbols-outlined text-[17px]">download</span>
+                <span class="hidden sm:inline">XUẤT EXCEL</span>
               </button>
             </div>
           </div>
 
-          <!-- Summary Cards -->
+          <!-- Summary Scoreboard Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
-              <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Dự toán ngân sách duyệt</span>
-              <p class="text-2xl font-display font-extrabold text-brand-700 dark:text-brand-400 mt-2">${totalEstimated.toLocaleString('vi-VN')} đ</p>
-              <p class="text-[11px] text-slate-400 mt-1">Bao gồm ngân sách phường & sự nghiệp</p>
+            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span class="font-sport font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dự toán ngân sách duyệt</span>
+              <p class="text-2xl font-sport font-black text-blue-600 dark:text-blue-400 mt-2 font-mono">${totalEstimated.toLocaleString('vi-VN')} đ</p>
+              <p class="text-[11px] text-slate-400 mt-1 font-medium">Bao gồm ngân sách phường & sự nghiệp</p>
             </div>
-            <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
-              <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Đã thực chi quyết toán</span>
-              <p class="text-2xl font-display font-extrabold text-amber-600 mt-2">${totalActual.toLocaleString('vi-VN')} đ</p>
-              <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-1 font-semibold">Đã hoàn thành thủ tục hóa đơn, chứng từ</p>
+            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span class="font-sport font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Đã thực chi quyết toán</span>
+              <p class="text-2xl font-sport font-black text-amber-600 mt-2 font-mono">${totalActual.toLocaleString('vi-VN')} đ</p>
+              <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-1 font-medium">Đã hoàn thành thủ tục hóa đơn, chứng từ</p>
             </div>
-            <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift">
-              <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Tổng giải ngân thể thao toàn diện</span>
-              <p class="text-2xl font-display font-extrabold text-slate-900 dark:text-white mt-2">${totalAllDisbursed.toLocaleString('vi-VN')} đ</p>
-              <p class="text-[11px] text-emerald-600 font-bold mt-1">Đạt 100% chỉ tiêu quyết toán năm</p>
+            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span class="font-sport font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tổng giải ngân thể thao toàn diện</span>
+              <p class="text-2xl font-sport font-black text-slate-900 dark:text-white mt-2 font-mono">${totalAllDisbursed.toLocaleString('vi-VN')} đ</p>
+              <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">Đạt 100% chỉ tiêu quyết toán năm</p>
             </div>
           </div>
 

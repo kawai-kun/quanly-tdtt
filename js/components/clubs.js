@@ -9,19 +9,24 @@ import { getSportBadge } from '../utils/sportBadges.js';
 
     export function renderClubs() {
       return `
-        <div class="space-y-6 tab-pane-animate">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-6 tab-pane-animate text-left">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Quản Lý Câu Lạc Bộ Thể Thao
-              </h1>
+              <div class="flex items-center gap-2.5">
+                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                  QUẢN LÝ CÂU LẠC BỘ THỂ THAO
+                </h1>
+                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  ${state.clubs.length} CLB TRỰC THUỘC
+                </span>
+              </div>
               <p class="text-xs text-slate-500 mt-1">
-                Các câu lạc bộ, hội viên trực thuộc Trung tâm Dịch vụ tổng hợp quản lý (${state.clubs.length} CLB)
+                Các câu lạc bộ, hội viên trực thuộc Trung tâm Dịch vụ tổng hợp UBND phường Tân Khai quản lý
               </p>
             </div>
-            <button onclick="openClubModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer btn-press">
-              <span class="material-symbols-outlined text-[18px]">group_add</span>
-              <span>Thêm CLB mới</span>
+            <button onclick="openClubModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[17px]">group_add</span>
+              <span>THÊM CLB MỚI</span>
             </button>
           </div>
 
@@ -29,34 +34,34 @@ import { getSportBadge } from '../utils/sportBadges.js';
             ${state.clubs.map(c => {
               const badge = getSportBadge(c.sport);
               return `
-                <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift flex flex-col justify-between">
+                <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
                   <div>
                     <div class="flex items-center justify-between">
-                      <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center">
+                      <div class="w-12 h-12 rounded-xl ${badge.bg} ${badge.text} flex items-center justify-center shadow-xs">
                         <span class="material-symbols-outlined text-[26px]">${badge.icon}</span>
                       </div>
-                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${c.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
-                        ${c.status === 'active' ? 'Đang hoạt động' : 'Tạm dừng'}
+                      <span class="px-2.5 py-0.5 rounded font-sport font-bold text-xs ${c.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
+                        ${c.status === 'active' ? 'HOẠT ĐỘNG' : 'TẠM DỪNG'}
                       </span>
                     </div>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-3.5">${c.name}</h3>
-                    <p class="text-xs text-brand-700 dark:text-brand-400 font-semibold mt-0.5">Môn: ${c.sport}</p>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-3.5 leading-snug">${c.name}</h3>
+                    <p class="text-xs text-blue-600 dark:text-blue-400 font-bold mt-0.5 font-sport uppercase tracking-wider">MÔN: ${c.sport}</p>
 
-                    <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
-                      <div class="flex justify-between"><span class="text-slate-400">Chủ nhiệm:</span><b>${c.leader}</b></div>
-                      <div class="flex justify-between"><span class="text-slate-400">Số ĐT:</span><span>${c.phone || 'Đang cập nhật'}</span></div>
-                      <div class="flex justify-between"><span class="text-slate-400">Hội viên:</span><b class="text-brand-700">${c.membersCount} người</b></div>
-                      <div class="flex justify-between"><span class="text-slate-400">Địa bàn:</span><span class="truncate max-w-[150px]">${c.location}</span></div>
+                    <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                      <div class="flex justify-between"><span class="text-slate-400">Chủ nhiệm:</span><b class="text-slate-800 dark:text-slate-200">${c.leader}</b></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Số ĐT:</span><span class="font-mono">${c.phone || 'Đang cập nhật'}</span></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Hội viên:</span><b class="text-blue-600 dark:text-blue-400 font-mono text-sm">${c.membersCount} người</b></div>
+                      <div class="flex justify-between"><span class="text-slate-400">Địa bàn:</span><span class="truncate max-w-[170px]">${c.location}</span></div>
                     </div>
                   </div>
                   <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400">
-                    <span>Thành lập: ${c.establishedYear || 2024}</span>
+                    <span class="font-mono text-[11px]">Năm TL: ${c.establishedYear || 2024}</span>
                     <div class="flex items-center gap-1">
-                      <button onclick="openClubModal('${c.id}')" title="Sửa CLB" class="p-1 rounded text-slate-400 hover:text-brand-700 btn-press">
-                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                      <button onclick="openClubModal('${c.id}')" title="Sửa CLB" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-blue-600 transition-colors btn-press">
+                        <span class="material-symbols-outlined text-[17px]">edit</span>
                       </button>
-                      <button onclick="confirmDeleteClub('${c.id}')" title="Xóa CLB" class="p-1 rounded text-slate-400 hover:text-rose-600 btn-press">
-                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                      <button onclick="confirmDeleteClub('${c.id}')" title="Xóa CLB" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press">
+                        <span class="material-symbols-outlined text-[17px]">delete</span>
                       </button>
                     </div>
                   </div>

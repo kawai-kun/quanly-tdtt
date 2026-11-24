@@ -112,13 +112,32 @@ export function renderHeader() {
             <kbd class="hidden sm:inline-block text-[10px] font-mono bg-white dark:bg-slate-900 px-1 py-0.5 rounded border border-slate-300 dark:border-slate-600 text-slate-500 font-bold">⌘K</kbd>
           </button>
 
-          <!-- 4-Theme Live Switcher Chips -->
-          <div class="hidden sm:flex items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700" title="Chuyển đổi bảng màu">
-            <button onclick="setColorTheme('sapphire')" class="w-4 h-4 rounded-full bg-blue-600 transition-transform ${state.colorTheme === 'sapphire' ? 'ring-2 ring-blue-600 scale-125' : 'opacity-60 hover:opacity-100'}" title="1. Xanh Sapphire Thể Thao (Olympic)"></button>
-            <button onclick="setColorTheme('crimson')" class="w-4 h-4 rounded-full bg-red-600 transition-transform ${state.colorTheme === 'crimson' ? 'ring-2 ring-red-600 scale-125' : 'opacity-60 hover:opacity-100'}" title="2. Đỏ Đô Thể Thao Việt Nam"></button>
-            <button onclick="setColorTheme('carbon')" class="w-4 h-4 rounded-full bg-orange-500 transition-transform ${state.colorTheme === 'carbon' ? 'ring-2 ring-orange-500 scale-125' : 'opacity-60 hover:opacity-100'}" title="3. Đen Carbon & Cam Năng Lượng"></button>
-            <button onclick="setColorTheme('titanium')" class="w-4 h-4 rounded-full bg-slate-500 transition-transform ${state.colorTheme === 'titanium' ? 'ring-2 ring-slate-500 scale-125' : 'opacity-60 hover:opacity-100'}" title="4. Xám Titan Tối Giản"></button>
-            <button onclick="setColorTheme('emerald')" class="w-4 h-4 rounded-full bg-emerald-600 transition-transform ${state.colorTheme === 'emerald' ? 'ring-2 ring-emerald-600 scale-125' : 'opacity-60 hover:opacity-100'}" title="5. Xanh Ngọc Lục Bảo"></button>
+          <!-- 4-Theme Live Switcher Segmented Control (Top-Tier Craft) -->
+          <div class="hidden xl:flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/90 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-sport font-bold tracking-wider shadow-inner" title="Bộ 4 Giao Diện Đẳng Cấp Quốc Tế">
+            <button onclick="setColorTheme('sapphire')" class="px-2 py-0.5 rounded transition-all flex items-center gap-1.5 ${(state.colorTheme === 'sapphire' || !state.colorTheme) ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-blue-600'}">
+              <span class="w-2 h-2 rounded-full ${(state.colorTheme === 'sapphire' || !state.colorTheme) ? 'bg-white' : 'bg-blue-600'}"></span>
+              <span>SAPPHIRE</span>
+            </button>
+            <button onclick="setColorTheme('crimson')" class="px-2 py-0.5 rounded transition-all flex items-center gap-1.5 ${state.colorTheme === 'crimson' ? 'bg-red-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-red-600'}">
+              <span class="w-2 h-2 rounded-full ${state.colorTheme === 'crimson' ? 'bg-white' : 'bg-red-600'}"></span>
+              <span>CRIMSON</span>
+            </button>
+            <button onclick="setColorTheme('carbon')" class="px-2 py-0.5 rounded transition-all flex items-center gap-1.5 ${state.colorTheme === 'carbon' ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-orange-500'}">
+              <span class="w-2 h-2 rounded-full ${state.colorTheme === 'carbon' ? 'bg-white' : 'bg-orange-500'}"></span>
+              <span>CARBON</span>
+            </button>
+            <button onclick="setColorTheme('titanium')" class="px-2 py-0.5 rounded transition-all flex items-center gap-1.5 ${state.colorTheme === 'titanium' ? 'bg-slate-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-200'}">
+              <span class="w-2 h-2 rounded-full ${state.colorTheme === 'titanium' ? 'bg-white' : 'bg-slate-400'}"></span>
+              <span>TITANIUM</span>
+            </button>
+          </div>
+
+          <!-- Compact Dot Switcher for Laptops & Tablets -->
+          <div class="flex xl:hidden items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700" title="Chuyển đổi giao diện">
+            <button onclick="setColorTheme('sapphire')" class="w-4 h-4 rounded-full bg-blue-600 transition-transform ${(state.colorTheme === 'sapphire' || !state.colorTheme) ? 'ring-2 ring-blue-600 scale-125' : 'opacity-60 hover:opacity-100'}" title="1. Sapphire Pro (Linear/Vercel)"></button>
+            <button onclick="setColorTheme('crimson')" class="w-4 h-4 rounded-full bg-red-600 transition-transform ${state.colorTheme === 'crimson' ? 'ring-2 ring-red-600 scale-125' : 'opacity-60 hover:opacity-100'}" title="2. Crimson Athletic (Nike/Olympic)"></button>
+            <button onclick="setColorTheme('carbon')" class="w-4 h-4 rounded-full bg-orange-500 transition-transform ${state.colorTheme === 'carbon' ? 'ring-2 ring-orange-500 scale-125' : 'opacity-60 hover:opacity-100'}" title="3. Carbon Studio (Raycast/Stripe)"></button>
+            <button onclick="setColorTheme('titanium')" class="w-4 h-4 rounded-full bg-slate-500 transition-transform ${state.colorTheme === 'titanium' ? 'ring-2 ring-slate-500 scale-125' : 'opacity-60 hover:opacity-100'}" title="4. Titanium Executive (Apple)"></button>
           </div>
 
           <!-- Cloud Sync Pill -->

@@ -24,30 +24,35 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
       return `
         <div class="space-y-6 tab-pane-animate">
           <!-- Header & Sub-Tab Switcher -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Báo Cáo & Sổ Lưu Trữ Báo Cáo
-              </h1>
-              <p class="text-xs text-slate-500 mt-1">Đơn vị lập: <b>Bộ phận Thể dục thể thao</b> • Trung tâm Dịch vụ tổng hợp Phường Tân Khai</p>
+              <div class="flex items-center gap-2.5">
+                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                  BÁO CÁO & SỔ LƯU TRỮ VĂN BẢN
+                </h1>
+                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  NGHỊ ĐỊNH 30/2020/NĐ-CP
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Đơn vị lập: <b>Bộ phận Thể dục thể thao</b> • Trung tâm Dịch vụ tổng hợp UBND Phường Tân Khai</p>
             </div>
 
             <!-- Sub Tabs & Telegram Config Button -->
             <div class="flex items-center gap-2 flex-wrap">
-              <button onclick="openTelegramConfigModal('list')" class="px-3.5 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeSchedCount > 0 ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'} btn-press" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
+              <button onclick="openTelegramConfigModal('list')" class="btn-glass-tactile px-3.5 py-2 rounded-lg text-xs font-sport font-bold tracking-wider flex items-center gap-1.5 ${activeSchedCount > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-400'}" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
                 <span class="material-symbols-outlined text-[16px] text-sky-500">schedule_send</span>
-                <span>Lịch gửi Telegram (${activeSchedCount}/${totalSchedCount})</span>
+                <span>LỊCH TELEGRAM (${activeSchedCount}/${totalSchedCount})</span>
                 ${activeSchedCount > 0 ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
               </button>
 
-              <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-                <button onclick="setReportSubTab('document')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
+              <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-inner">
+                <button onclick="setReportSubTab('document')" class="px-3.5 py-1.5 rounded-md text-xs font-sport font-bold tracking-wider transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
                   <span class="material-symbols-outlined text-[16px]">description</span>
-                  <span>Văn bản báo cáo</span>
+                  <span>VĂN BẢN BÁO CÁO</span>
                 </button>
-                <button onclick="setReportSubTab('registry')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-400 shadow-sm' : 'text-slate-500'}">
+                <button onclick="setReportSubTab('registry')" class="px-3.5 py-1.5 rounded-md text-xs font-sport font-bold tracking-wider transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
                   <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
-                  <span>Sổ lưu trữ (${state.savedReports.length})</span>
+                  <span>SỔ LƯU TRỮ (${state.savedReports.length})</span>
                 </button>
               </div>
             </div>
@@ -193,22 +198,22 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <button onclick="saveCurrentReportAsNew()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Lưu báo cáo vào Sổ lưu trữ">
+              <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="saveCurrentReportAsNew()" class="btn-glass-tactile px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400" title="Lưu báo cáo vào Sổ lưu trữ">
                   <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
-                  <span>Lưu vào Sổ</span>
+                  <span>LƯU SỔ</span>
                 </button>
-                <button onclick="exportDocxFile()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Xuất văn bản Word chuẩn thể thức Times New Roman, A4">
+                <button onclick="exportDocxFile()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5" title="Xuất văn bản Word chuẩn thể thức Times New Roman, A4">
                   <span class="material-symbols-outlined text-[16px]">article</span>
-                  <span>Xuất file Word</span>
+                  <span>XUẤT FILE WORD</span>
                 </button>
-                <button onclick="printReport()" class="px-3 py-2 glass-card border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="In trực tiếp hoặc Lưu file PDF">
+                <button onclick="printReport()" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5" title="In trực tiếp hoặc Lưu file PDF">
                   <span class="material-symbols-outlined text-[16px]">print</span>
-                  <span>In / PDF</span>
+                  <span>IN / PDF</span>
                 </button>
-                <button onclick="sendCurrentReportToTelegram()" class="px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 btn-press" title="Gửi nội dung báo cáo này đến Telegram của tôi">
+                <button onclick="sendCurrentReportToTelegram()" class="btn-glass-tactile px-3 py-1.5 text-sky-600 dark:text-sky-400 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5" title="Gửi nội dung báo cáo này đến Telegram">
                   <span class="material-symbols-outlined text-[16px]">send</span>
-                  <span>Telegram</span>
+                  <span>TELEGRAM</span>
                 </button>
               </div>
 
