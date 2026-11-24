@@ -165,8 +165,8 @@ export function renderDashboard() {
               return `
                 <div class="match-pass-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div class="flex items-start gap-3.5 min-w-0">
-                    <div class="w-11 h-11 rounded-lg ${badge.bg} ${badge.text} flex items-center justify-center font-sport font-black text-sm shrink-0">
-                      ${badge.label.substring(0, 2).toUpperCase()}
+                    <div class="w-11 h-11 rounded-lg ${badge.bg} ${badge.text} flex items-center justify-center shrink-0 border ${badge.border} shadow-2xs">
+                      <span class="material-symbols-outlined text-[22px]">${badge.icon}</span>
                     </div>
                     <div class="min-w-0">
                       <div class="flex items-center gap-2">

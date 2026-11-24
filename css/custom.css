@@ -359,22 +359,67 @@ select option {
   border-color: #1e293b;
 }
 
-/* Unibody Navigation Tabs */
+/* Unibody Tactile Dock Navigation Tabs */
+.studio-nav-dock {
+  background: rgba(241, 245, 249, 0.85);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  border-radius: 12px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.dark .studio-nav-dock {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(51, 65, 85, 0.7);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 .studio-nav-btn {
   position: relative;
-  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-family: var(--font-family-sport);
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.03em;
+  color: #475569;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
-.studio-nav-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 12%;
-  right: 12%;
-  height: 3px;
-  background: currentColor;
-  border-radius: 3px 3px 0 0;
+.dark .studio-nav-btn {
+  color: #94a3b8;
+}
+.studio-nav-btn:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.75);
+}
+.dark .studio-nav-btn:hover {
+  color: #f8fafc;
+  background: rgba(30, 41, 59, 0.7);
+}
+
+/* Active Tab: Solid High-Contrast Tactile Capsule */
+.studio-nav-btn.active {
+  background: linear-gradient(180deg, var(--theme-btn-start, #2563eb) 0%, var(--theme-btn-end, #1d4ed8) 100%) !important;
+  color: #ffffff !important;
+  font-weight: 900;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 4px 12px -2px var(--theme-btn-glow, rgba(37, 99, 235, 0.4));
+}
+.studio-nav-btn.active .material-symbols-outlined {
+  color: #ffffff !important;
+}
+.studio-nav-btn.active .studio-badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Match Pass Card - Thẻ thi đấu chuyên nghiệp */
@@ -398,18 +443,83 @@ select option {
   box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.45);
 }
 
-/* Referee Table - Bảng trọng tài liên đoàn sắc nét */
+/* Referee Table - Bảng trọng tài liên đoàn sắc nét có vạch chia cột & màu phân cách */
+.referee-table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.dark .referee-table {
+  border-color: #334155;
+}
+
+/* Vạch phân chia cột trên tiêu đề (Header Column Dividers) */
 .referee-table thead th {
   font-family: 'Barlow Condensed', sans-serif;
   letter-spacing: 0.05em;
   font-size: 13px;
   font-weight: 800;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 2px solid var(--theme-btn-start, #2563eb);
 }
-.referee-table tbody tr:nth-child(even) {
+.referee-table thead th:last-child {
+  border-right: none;
+}
+
+/* Vạch phân chia cột giữa các ô dữ liệu (Body Column Dividers) */
+.referee-table tbody td {
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.dark .referee-table tbody td {
+  border-right: 1px solid #1e293b;
+  border-bottom: 1px solid #1e293b;
+}
+.referee-table tbody td:last-child {
+  border-right: none;
+}
+
+/* Màu phân cách các cột (Column Group Shading) */
+/* Cột 1 & 2: STT & Mã giải */
+.referee-table td:nth-child(1),
+.referee-table td:nth-child(2) {
   background-color: rgba(248, 250, 252, 0.7);
 }
-.dark .referee-table tbody tr:nth-child(even) {
-  background-color: rgba(15, 23, 42, 0.5);
+.dark .referee-table td:nth-child(1),
+.dark .referee-table td:nth-child(2) {
+  background-color: rgba(15, 23, 42, 0.55);
+}
+
+/* Cột 8: Số lượng VĐV (Màu phân cách Xanh mát nhẹ) */
+.referee-table td:nth-child(8) {
+  background-color: rgba(239, 246, 255, 0.6);
+}
+.dark .referee-table td:nth-child(8) {
+  background-color: rgba(30, 58, 138, 0.15);
+}
+
+/* Cột 9: Huy chương Olympic (Màu phân cách Vàng ánh kim nhẹ) */
+.referee-table td:nth-child(9) {
+  background-color: rgba(254, 243, 199, 0.45);
+}
+.dark .referee-table td:nth-child(9) {
+  background-color: rgba(180, 83, 9, 0.15);
+}
+
+/* Row Hover & Striping */
+.referee-table tbody tr:nth-child(even) td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(8)):not(:nth-child(9)) {
+  background-color: rgba(248, 250, 252, 0.4);
+}
+.dark .referee-table tbody tr:nth-child(even) td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(8)):not(:nth-child(9)) {
+  background-color: rgba(15, 23, 42, 0.25);
+}
+.referee-table tbody tr:hover td {
+  background-color: rgba(224, 231, 255, 0.45) !important;
+}
+.dark .referee-table tbody tr:hover td {
+  background-color: rgba(30, 41, 59, 0.8) !important;
 }
 
 /* Bảng dữ liệu có vạch chia cột thanh lịch */

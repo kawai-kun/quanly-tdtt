@@ -468,41 +468,43 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
     export function renderReportRegistryView() {
       return `
         <div class="space-y-4">
-          <div class="p-4 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div class="p-4 rounded-xl luxury-card border border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Sổ Lưu Trữ Quản Lý Báo Cáo Đã Xuất</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Quản lý số hiệu văn bản báo cáo, chỉnh sửa số hoặc xóa bỏ báo cáo sai lệch</p>
+              <h3 class="text-sm font-sport font-black text-slate-900 dark:text-white uppercase tracking-wider">SỔ LƯU TRỮ VĂN BẢN BÁO CÁO</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Quản lý số hiệu công văn, lưu trữ hồ sơ và rà soát các văn bản báo cáo theo đúng thẩm quyền</p>
             </div>
-            <button onclick="createNewReportPrompt()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer btn-press">
-              <span class="material-symbols-outlined text-[16px]">add_circle</span>
-              <span>Tạo báo cáo số mới</span>
+            <button onclick="createNewReportPrompt()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[17px]">add_circle</span>
+              <span>TẠO BÁO CÁO SỐ MỚI</span>
             </button>
           </div>
 
-          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200 dark:border-slate-800">
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs bg-white dark:bg-slate-900">
+            <table class="referee-table w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-900 text-white font-sport font-black uppercase tracking-wider">
                 <tr>
-                  <th class="p-3.5 align-middle whitespace-nowrap w-32">Số báo cáo</th>
-                  <th class="p-3.5 align-middle min-w-[240px]">Tiêu đề báo cáo</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap">Ngày lập</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Năm</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap">Người lập</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-right w-40">Thao tác</th>
+                  <th class="p-3 text-center whitespace-nowrap w-36">SỐ HIỆU VĂN BẢN</th>
+                  <th class="p-3 min-w-[260px]">TIÊU ĐỀ BÁO CÁO</th>
+                  <th class="p-3 text-center whitespace-nowrap">NGÀY LẬP</th>
+                  <th class="p-3 text-center whitespace-nowrap">NĂM</th>
+                  <th class="p-3 text-center whitespace-nowrap">NGƯỜI LẬP BÁO CÁO</th>
+                  <th class="p-3 text-center whitespace-nowrap w-36">THAO TÁC</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody class="text-slate-800 dark:text-slate-200">
                 ${state.savedReports.map(r => `
-                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700 dark:text-brand-400">${r.code}</td>
-                    <td class="p-3.5 align-middle min-w-[240px] max-w-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">${r.title}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-slate-500 font-mono">${r.reportDate}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800">${r.year || '2026'}</span></td>
-                    <td class="p-3.5 align-middle whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">${r.author || 'Trần Quốc Được'}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
-                      <button onclick="viewReport('${r.id}')" title="Xem & In" class="p-1.5 rounded-lg text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">visibility</span></button>
-                      <button onclick="editReportModal('${r.id}')" title="Sửa số / Tiêu đề" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
-                      <button onclick="deleteReport('${r.id}')" title="Xóa báo cáo này" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                  <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/60 transition-colors">
+                    <td class="p-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${r.code}</td>
+                    <td class="p-3 min-w-[260px] max-w-md font-bold text-slate-900 dark:text-slate-100 leading-snug">${r.title}</td>
+                    <td class="p-3 text-center text-slate-600 dark:text-slate-400 font-mono whitespace-nowrap">${r.reportDate}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-sport font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${r.year || '2026'}</span></td>
+                    <td class="p-3 text-center font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">${r.author || 'Trần Quốc Được'}</td>
+                    <td class="p-3 text-center whitespace-nowrap">
+                      <div class="flex items-center justify-center gap-1">
+                        <button onclick="viewReport('${r.id}')" title="Xem & In" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-blue-600 transition-colors btn-press"><span class="material-symbols-outlined text-[17px]">visibility</span></button>
+                        <button onclick="editReportModal('${r.id}')" title="Sửa số / Tiêu đề" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-blue-600 transition-colors btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
+                        <button onclick="deleteReport('${r.id}')" title="Xóa báo cáo này" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                      </div>
                     </td>
                   </tr>
                 `).join('')}

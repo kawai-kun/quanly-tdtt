@@ -64,43 +64,45 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
             </div>
           </div>
 
-          <!-- Interactive Budget Table -->
-          <div class="overflow-x-auto -webkit-overflow-scrolling-touch rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100/70 dark:bg-slate-900/70 text-slate-500 font-bold border-b border-slate-200 dark:border-slate-800">
+          <!-- Interactive Budget Table (Sổ Cái Kinh Phí Phân Tách Cột Sắc Nét) -->
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs bg-white dark:bg-slate-900">
+            <table class="referee-table w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-900 text-white font-sport font-black uppercase tracking-wider">
                 <tr>
-                  <th class="p-3.5 align-middle whitespace-nowrap w-20">Mã</th>
-                  <th class="p-3.5 align-middle min-w-[220px]">Hạng mục kinh phí / Hoạt động</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Năm</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap">Nguồn chi</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-right">Dự toán</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-right">Thực chi</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap">Chứng từ / QĐ</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-center">Trạng thái</th>
-                  <th class="p-3.5 align-middle whitespace-nowrap text-right w-24">Thao tác</th>
+                  <th class="p-3 text-center w-24">MÃ SỐ</th>
+                  <th class="p-3 min-w-[240px]">HẠNG MỤC KINH PHÍ / HOẠT ĐỘNG</th>
+                  <th class="p-3 text-center whitespace-nowrap">NĂM</th>
+                  <th class="p-3 text-center whitespace-nowrap">NGUỒN CHI</th>
+                  <th class="p-3 text-right whitespace-nowrap">DỰ TOÁN</th>
+                  <th class="p-3 text-right whitespace-nowrap">THỰC CHI</th>
+                  <th class="p-3 text-center whitespace-nowrap">CHỨNG TỪ / QĐ</th>
+                  <th class="p-3 text-center whitespace-nowrap">TRẠNG THÁI</th>
+                  <th class="p-3 text-center whitespace-nowrap w-24">THAO TÁC</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody class="text-slate-800 dark:text-slate-200">
                 ${items.map(b => `
-                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td class="p-3.5 align-middle whitespace-nowrap font-mono font-bold text-brand-700">${b.code}</td>
-                    <td class="p-3.5 align-middle min-w-[220px] max-w-sm">
+                  <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/60 transition-colors">
+                    <td class="p-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">${b.code}</td>
+                    <td class="p-3 min-w-[240px] max-w-sm">
                       <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${b.title}</div>
-                      ${b.note ? `<p class="text-[10px] text-slate-400 font-normal mt-0.5">${b.note}</p>` : ''}
+                      ${b.note ? `<p class="text-[11px] text-slate-500 font-normal mt-0.5">${b.note}</p>` : ''}
                     </td>
-                    <td class="p-3.5 align-middle whitespace-nowrap font-bold text-center">${b.year}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${b.source}</span></td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-right font-semibold text-slate-700 dark:text-slate-300">${(parseInt(b.budgetEstimated) || 0).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-right font-bold text-brand-700 dark:text-brand-400">${(parseInt(b.budgetActual) || 0).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap font-mono text-slate-500">${b.refDoc || 'Chưa lập'}</td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-center">
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${b.status === 'Đã quyết toán' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'}">
-                        ${b.status}
+                    <td class="p-3 font-mono font-bold text-center">${b.year}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-sport font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${b.source}</span></td>
+                    <td class="p-3 text-right font-mono font-bold text-slate-700 dark:text-slate-300 tabular-nums">${(parseInt(b.budgetEstimated) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3 text-right font-mono font-black text-blue-600 dark:text-blue-400 tabular-nums">${(parseInt(b.budgetActual) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3 text-center font-mono text-slate-500">${b.refDoc || 'Chưa lập'}</td>
+                    <td class="p-3 text-center">
+                      <span class="px-2 py-0.5 rounded font-sport font-bold text-xs ${b.status === 'Đã quyết toán' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'}">
+                        ● ${b.status.toUpperCase()}
                       </span>
                     </td>
-                    <td class="p-3.5 align-middle whitespace-nowrap text-right space-x-1">
-                      <button onclick="openBudgetModal('${b.id}')" title="Sửa" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-700 hover:bg-brand-50 btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
-                      <button onclick="confirmDeleteBudgetItem('${b.id}')" title="Xóa" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                    <td class="p-3 text-center whitespace-nowrap">
+                      <div class="flex items-center justify-center gap-1">
+                        <button onclick="openBudgetModal('${b.id}')" title="Sửa" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-blue-600 transition-colors btn-press"><span class="material-symbols-outlined text-[17px]">edit</span></button>
+                        <button onclick="confirmDeleteBudgetItem('${b.id}')" title="Xóa" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press"><span class="material-symbols-outlined text-[17px]">delete</span></button>
+                      </div>
                     </td>
                   </tr>
                 `).join('')}

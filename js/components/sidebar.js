@@ -27,24 +27,24 @@ import { state } from '../state.js';
 
     export function renderBottomNav() {
       const items = [
-        { id: 'bang-dieu-khien', label: 'Tổng quan', icon: 'dashboard' },
-        { id: 'quan-ly-giai-dau', label: 'Giải đấu', icon: 'emoji_events' },
+        { id: 'bang-dieu-khien', label: 'TỔNG QUAN', icon: 'dashboard' },
+        { id: 'quan-ly-giai-dau', label: 'GIẢI ĐẤU', icon: 'emoji_events' },
         { id: 'quan-ly-clb', label: 'CLB', icon: 'groups_2' },
-        { id: 'kinh-phi', label: 'Kinh phí', icon: 'account_balance_wallet' },
-        { id: 'bao-cao', label: 'Báo cáo', icon: 'summarize' },
-        { id: 'drawer', label: 'Thêm', icon: 'menu', isAction: true }
+        { id: 'kinh-phi', label: 'KINH PHÍ', icon: 'account_balance_wallet' },
+        { id: 'bao-cao', label: 'BÁO CÁO', icon: 'summarize' },
+        { id: 'drawer', label: 'MENU', icon: 'menu', isAction: true }
       ];
 
       return `
-        <div class="lg:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-slate-200/80 dark:border-slate-800/80 z-40 px-2 py-1 flex justify-around items-center shadow-lg">
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 glass-dock border-t border-slate-200/90 dark:border-slate-800/90 z-40 px-2 py-1 flex justify-around items-center shadow-lg">
           ${items.map(i => {
             const isActive = state.currentTab === i.id;
-            const color = isActive ? 'text-brand-700 dark:text-brand-400 font-bold' : 'text-slate-400 dark:text-slate-500';
+            const color = isActive ? 'text-blue-600 dark:text-blue-400 font-sport font-black' : 'text-slate-500 dark:text-slate-400 font-sport font-bold';
             const action = i.isAction ? 'toggleMobileDrawer()' : `switchTab('${i.id}')`;
             return `
               <button onclick="${action}" class="flex flex-col items-center justify-center py-1.5 px-1 flex-1 ${color} transition-all btn-press">
                 <span class="material-symbols-outlined text-[20px]">${i.icon}</span>
-                <span class="text-[10px] tracking-tight mt-0.5">${i.label}</span>
+                <span class="text-[10.5px] tracking-wider mt-0.5">${i.label}</span>
               </button>
             `;
           }).join('')}
@@ -54,13 +54,13 @@ import { state } from '../state.js';
 
     export function renderMobileDrawer() {
       const navs = [
-        { id: 'bang-dieu-khien', label: 'Bảng điều khiển', icon: 'dashboard' },
-        { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu', icon: 'emoji_events' },
-        { id: 'quan-ly-clb', label: 'Quản lý CLB thể thao', icon: 'groups_2' },
-        { id: 'lich-sinh-hoat', label: 'Lịch sinh hoạt & tập luyện', icon: 'calendar_month' },
-        { id: 'co-so-vat-chat', label: 'Cơ sở vật chất & sân bãi', icon: 'stadium' },
-        { id: 'kinh-phi', label: 'Kinh phí & quyết toán', icon: 'account_balance_wallet' },
-        { id: 'bao-cao', label: 'Báo cáo & Sổ lưu trữ', icon: 'summarize' }
+        { id: 'bang-dieu-khien', label: 'TỔNG QUAN HỆ THỐNG', icon: 'dashboard' },
+        { id: 'quan-ly-giai-dau', label: 'QUẢN LÝ GIẢI ĐẤU (30 GIẢI)', icon: 'emoji_events' },
+        { id: 'quan-ly-clb', label: 'CÂU LẠC BỘ THỂ THAO', icon: 'groups_2' },
+        { id: 'lich-sinh-hoat', label: 'LỊCH SINH HOẠT & TẬP LUYỆN', icon: 'calendar_month' },
+        { id: 'co-so-vat-chat', label: 'CƠ SỞ VẬT CHẤT & SÂN BÃI', icon: 'stadium' },
+        { id: 'kinh-phi', label: 'KINH PHÍ & QUYẾT TOÁN', icon: 'account_balance_wallet' },
+        { id: 'bao-cao', label: 'BÁO CÁO & SỔ LƯU TRỮ', icon: 'summarize' }
       ];
 
       return `
@@ -73,8 +73,8 @@ import { state } from '../state.js';
                     <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Huy hiệu UBND Phường Tân Khai" />
                   </div>
                   <div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">PHƯỜNG TÂN KHAI</span>
-                    <h3 class="font-black text-xs uppercase text-brand-700 dark:text-brand-400 leading-tight">QUẢN LÝ TDTT</h3>
+                    <span class="text-[10px] font-sport font-black uppercase tracking-widest text-slate-400 block">UBND PHƯỜNG TÂN KHAI</span>
+                    <h3 class="font-sport font-black text-sm uppercase text-slate-900 dark:text-white leading-tight">ĐIỀU HÀNH TDTT</h3>
                   </div>
                 </div>
                 <button onclick="toggleMobileDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
@@ -84,12 +84,12 @@ import { state } from '../state.js';
 
               <nav class="mt-4 space-y-1">
                 ${navs.map(n => `
-                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
+                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-sport font-bold tracking-wider ${
                     state.currentTab === n.id 
-                      ? 'bg-emerald-700 text-white font-semibold shadow-sm dark:bg-emerald-950 dark:text-emerald-300 dark:border dark:border-emerald-800' 
+                      ? 'btn-top-tier text-white font-black' 
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }">
-                    <span class="material-symbols-outlined text-[18px]">${n.icon}</span>
+                    <span class="material-symbols-outlined text-[19px]">${n.icon}</span>
                     <span>${n.label}</span>
                   </button>
                 `).join('')}

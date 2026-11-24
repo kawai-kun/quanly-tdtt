@@ -325,31 +325,42 @@ export function renderTournamentsTable(acts) {
 
                 <!-- 5. Bộ môn -->
                 <td class="py-3 px-2 text-center">
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-sport font-bold ${badge.bg} ${badge.text}">
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-sport font-bold ${badge.bg} ${badge.text} border ${badge.border} shadow-2xs">
+                    <span class="material-symbols-outlined text-[15px]">${badge.icon}</span>
                     <span>${a.sport || 'Bóng đá'}</span>
                   </span>
                 </td>
 
                 <!-- 6. Cấp độ -->
-                <td class="py-3 px-2 text-center font-sport font-bold text-xs text-slate-500 dark:text-slate-400">
+                <td class="py-3 px-2 text-center font-sport font-bold text-xs text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                   ${a.category || 'Cấp phường'}
                 </td>
 
                 <!-- 7. Ngày thi đấu -->
-                <td class="py-3 px-2 text-center font-mono font-bold text-xs text-slate-700 dark:text-slate-300">
+                <td class="py-3 px-2 text-center font-mono font-bold text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap">
                   ${a.date}
                 </td>
 
                 <!-- 8. VĐV -->
-                <td class="py-3 px-2 text-center font-mono font-bold text-sm text-slate-900 dark:text-white">
+                <td class="py-3 px-2 text-center font-mono font-bold text-sm text-slate-900 dark:text-white tabular-nums">
                   ${a.participants}
                 </td>
 
-                <!-- 9. Huy chương -->
+                <!-- 9. Huy chương Olympic -->
                 <td class="py-3 px-2 text-center font-mono text-xs font-bold whitespace-nowrap">
-                  <span class="text-amber-600">${a.goldMedals || 0}V</span> - 
-                  <span class="text-slate-400">${a.silverMedals || 0}B</span> - 
-                  <span class="text-amber-700">${a.bronzeMedals || 0}Đ</span>
+                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                    <span class="inline-flex items-center gap-0.5 text-amber-500 font-black" title="Huy chương Vàng">
+                      <span>🥇</span><span>${a.goldMedals || 0}</span>
+                    </span>
+                    <span class="text-slate-300 dark:text-slate-600">|</span>
+                    <span class="inline-flex items-center gap-0.5 text-slate-400 font-black" title="Huy chương Bạc">
+                      <span>🥈</span><span>${a.silverMedals || 0}</span>
+                    </span>
+                    <span class="text-slate-300 dark:text-slate-600">|</span>
+                    <span class="inline-flex items-center gap-0.5 text-amber-700 dark:text-amber-500 font-black" title="Huy chương Đồng">
+                      <span>🥉</span><span>${a.bronzeMedals || 0}</span>
+                    </span>
+                  </div>
                 </td>
 
                 <!-- 10. Thao tác -->
@@ -368,22 +379,28 @@ export function renderTournamentsTable(acts) {
           }).join('')}
         </tbody>
 
-        <!-- Footer Bảng -->
+        <!-- Footer Bảng Phân Tách Cột Sắc Nét -->
         <tfoot class="bg-slate-100 dark:bg-slate-800 font-sport font-black text-xs text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700 uppercase tracking-wider">
           <tr>
-            <td colspan="3" class="py-3.5 px-4 text-left">
-              TỔNG SỐ: <span class="font-mono text-base text-blue-600 dark:text-blue-400">${acts.length}</span> GIẢI ĐẤU
+            <td colspan="3" class="py-3 px-3 text-left border-r border-slate-300 dark:border-slate-700">
+              TỔNG SỐ: <span class="font-mono text-base text-blue-600 dark:text-blue-400 font-black ml-1">${acts.length}</span> GIẢI ĐẤU
             </td>
-            <td colspan="4" class="py-3 px-2 text-center text-slate-500 dark:text-slate-400">
-              ${totalReported} ĐÃ BÁO CÁO • ${acts.length - totalReported} CHỜ BÁO CÁO
+            <td colspan="4" class="py-3 px-2 text-center text-slate-600 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700">
+              <span class="text-emerald-600 dark:text-emerald-400 font-bold">${totalReported} ĐÃ BÁO CÁO</span> • <span class="text-amber-600 font-bold">${acts.length - totalReported} CHỜ BÁO CÁO</span>
             </td>
-            <td class="py-3 px-2 text-center font-mono text-base text-blue-600 dark:text-blue-400">
+            <td class="py-3 px-2 text-center font-mono text-base text-blue-600 dark:text-blue-400 font-black border-r border-slate-300 dark:border-slate-700 bg-blue-50/70 dark:bg-blue-950/40 tabular-nums">
               ${totalTableVdv.toLocaleString('vi-VN')}
             </td>
-            <td class="py-3 px-2 text-center font-mono text-xs">
-              <span class="text-amber-600">${totalGold}V</span> - <span class="text-slate-400">${totalSilver}B</span> - <span class="text-amber-700">${totalBronze}Đ</span>
+            <td class="py-3 px-2 text-center font-mono text-xs border-r border-slate-300 dark:border-slate-700 bg-amber-50/60 dark:bg-amber-950/30 whitespace-nowrap">
+              <div class="inline-flex items-center gap-1.5 font-bold">
+                <span class="text-amber-500 font-black">🥇${totalGold}</span>
+                <span class="text-slate-300 dark:text-slate-600">|</span>
+                <span class="text-slate-400 font-black">🥈${totalSilver}</span>
+                <span class="text-slate-300 dark:text-slate-600">|</span>
+                <span class="text-amber-700 dark:text-amber-500 font-black">🥉${totalBronze}</span>
+              </div>
             </td>
-            <td class="py-3 px-2 sticky right-0 z-10 bg-slate-100 dark:bg-slate-800 border-l border-slate-300 dark:border-slate-700"></td>
+            <td class="py-3 px-2 sticky right-0 z-10 bg-slate-100 dark:bg-slate-800"></td>
           </tr>
         </tfoot>
       </table>

@@ -9,19 +9,24 @@ import { showToast } from '../utils/toast.js';
 
     export function renderSchedules() {
       return `
-        <div class="space-y-6 tab-pane-animate">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-6 tab-pane-animate text-left">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h1 class="text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Lịch Sinh Hoạt & Tập Luyện
-              </h1>
+              <div class="flex items-center gap-2.5">
+                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                  LỊCH SINH HOẠT & TẬP LUYỆN
+                </h1>
+                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  ${state.schedules.length} KHUNG GIỜ
+                </span>
+              </div>
               <p class="text-xs text-slate-500 mt-1">
-                Thời khóa biểu tập luyện thể thao định kỳ các câu lạc bộ (${state.schedules.length} lịch)
+                Thời khóa biểu tập luyện thể thao định kỳ các câu lạc bộ trực thuộc Trung tâm Dịch vụ tổng hợp
               </p>
             </div>
-            <button onclick="openScheduleModal()" class="px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-2 cursor-pointer btn-press">
-              <span class="material-symbols-outlined text-[18px]">more_time</span>
-              <span>Thêm lịch mới</span>
+            <button onclick="openScheduleModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[17px]">more_time</span>
+              <span>THÊM LỊCH MỚI</span>
             </button>
           </div>
 
@@ -29,25 +34,25 @@ import { showToast } from '../utils/toast.js';
             ${state.schedules.map(s => {
               const badge = getSportBadge(s.sport || s.clubName);
               return `
-                <div class="p-5 rounded-xl glass-card border border-slate-200 dark:border-slate-800 shadow-sm card-lift flex items-start gap-4">
-                  <div class="w-12 h-12 rounded-2xl ${badge.bg} ${badge.text} flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[24px]">${badge.icon}</span>
+                <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl ${badge.bg} ${badge.text} flex items-center justify-center shrink-0 shadow-2xs">
+                    <span class="material-symbols-outlined text-[26px]">${badge.icon}</span>
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
-                      <span class="text-xs font-bold text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/60 px-2.5 py-0.5 rounded-lg border border-brand-200/60 dark:border-brand-800/60">${s.days}</span>
+                      <span class="text-xs font-sport font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-800/60 uppercase tracking-wider">${s.days}</span>
                       <div class="flex items-center gap-1">
-                        <button onclick="openScheduleModal('${s.id}')" title="Sửa lịch" class="text-slate-400 hover:text-brand-700 p-1 btn-press">
-                          <span class="material-symbols-outlined text-[16px]">edit</span>
+                        <button onclick="openScheduleModal('${s.id}')" title="Sửa lịch" class="text-slate-400 hover:text-blue-600 p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors btn-press">
+                          <span class="material-symbols-outlined text-[17px]">edit</span>
                         </button>
-                        <button onclick="confirmDeleteSchedule('${s.id}')" title="Xóa lịch" class="text-slate-400 hover:text-rose-600 p-1 btn-press">
-                          <span class="material-symbols-outlined text-[16px]">delete</span>
+                        <button onclick="confirmDeleteSchedule('${s.id}')" title="Xóa lịch" class="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors btn-press">
+                          <span class="material-symbols-outlined text-[17px]">delete</span>
                         </button>
                       </div>
                     </div>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-2">${s.clubName}</h3>
-                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>${s.location}</p>
-                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed">${s.description}</p>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-2 leading-snug">${s.clubName}</h3>
+                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-[15px] text-blue-500">location_on</span>${s.location}</p>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 font-medium leading-relaxed">${s.description}</p>
                   </div>
                 </div>
               `;

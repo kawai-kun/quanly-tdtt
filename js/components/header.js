@@ -69,26 +69,23 @@ export function renderHeader() {
           </div>
         </div>
 
-        <!-- Center: Desktop Studio Navigation (Thẳng hàng, sắc nét, có đường gạch chân thể thao) -->
-        <nav class="hidden lg:flex items-center gap-1 xl:gap-2 h-full">
+        <!-- Center: Desktop Studio Navigation (Hệ Thống Tab Capsule Đậm Chất Thể Thao & Đột Phá) -->
+        <nav class="hidden lg:flex items-center studio-nav-dock">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
               <button 
                 onclick="switchTab('${item.id}')" 
-                class="studio-nav-btn h-full px-2.5 xl:px-3 flex items-center gap-1.5 text-xs font-sport tracking-wider transition-colors ${
-                  isActive 
-                    ? 'active text-blue-600 dark:text-blue-400 font-black' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }"
+                class="studio-nav-btn ${isActive ? 'active' : ''}"
+                title="${item.label}"
               >
-                <span class="material-symbols-outlined text-[17px]">${item.icon}</span>
+                <span class="material-symbols-outlined text-[18px]">${item.icon}</span>
                 <span>${item.label}</span>
                 ${item.badge !== undefined ? `
-                  <span class="ml-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
+                  <span class="studio-badge ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
                     isActive 
-                      ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                      ? '' 
+                      : 'bg-slate-200/80 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300'
                   }">
                     ${item.badge}
                   </span>
