@@ -13,20 +13,20 @@ import { getSportBadge } from '../utils/sportBadges.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
-                  QUẢN LÝ CÂU LẠC BỘ THỂ THAO
+                <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                  Quản lý Câu lạc bộ Thể thao
                 </h1>
-                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                  ${state.clubs.length} CLB TRỰC THUỘC
+                <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                  ${state.clubs.length} CLB trực thuộc
                 </span>
               </div>
-              <p class="text-xs text-slate-500 mt-1">
+              <p class="text-xs text-slate-500 mt-1 font-normal">
                 Các câu lạc bộ, hội viên trực thuộc Trung tâm Dịch vụ tổng hợp UBND phường Tân Khai quản lý
               </p>
             </div>
-            <button onclick="openClubModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+            <button onclick="openClubModal()" class="btn-top-tier px-3.5 py-1.5 font-medium text-xs rounded-lg flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[17px]">group_add</span>
-              <span>THÊM CLB MỚI</span>
+              <span>Thêm CLB mới</span>
             </button>
           </div>
 
@@ -44,7 +44,7 @@ import { getSportBadge } from '../utils/sportBadges.js';
                         ${c.status === 'active' ? 'HOẠT ĐỘNG' : 'TẠM DỪNG'}
                       </span>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-3.5 leading-snug">${c.name}</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mt-3 leading-snug">${c.name}</h3>
                     <p class="text-xs text-blue-600 dark:text-blue-400 font-bold mt-0.5 font-sport uppercase tracking-wider">MÔN: ${c.sport}</p>
 
                     <div class="mt-4 space-y-1.5 text-sm text-slate-700 dark:text-slate-200 font-medium">

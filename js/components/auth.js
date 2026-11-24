@@ -22,9 +22,9 @@ import { showToast, toggleDarkMode } from '../utils/toast.js';
             </div>
 
             <div class="mb-6">
-              <h3 class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 dark:text-slate-400">ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI</h3>
-              <h2 class="text-xs font-extrabold uppercase tracking-wide text-brand-700 dark:text-brand-400 mt-1">TRUNG TÂM DỊCH VỤ TỔNG HỢP</h2>
-              <h1 class="text-xl font-display font-extrabold tracking-tight text-slate-900 dark:text-white mt-1.5">
+              <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI</h3>
+              <h2 class="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-400 mt-1">TRUNG TÂM DỊCH VỤ TỔNG HỢP</h2>
+              <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white mt-1.5">
                 Quản Lý Thể Dục Thể Thao
               </h1>
             </div>

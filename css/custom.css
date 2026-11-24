@@ -13,111 +13,45 @@
   --color-text-secondary: #334155;  /* Slate 700 - Chữ thứ cấp tương phản cao */
   --color-text-muted: #64748b;      /* Slate 500 */
   
-  --color-bg-base: #d9e3f0;         /* Nền tương phản cao, tách biệt hoàn toàn với thẻ trắng */
+  --color-bg-base: #edf3f0;         /* Nền dịu mắt, tương phản cao, trang trọng */
   --color-surface-card: #ffffff;    /* Trắng chuẩn */
   --color-border: #cbd5e1;          /* Slate 300 - Viền rõ nét */
   
   --font-family-primary: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-sport: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-sport: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Theme Tokens - Default Sapphire */
-  --theme-btn-start: #2563eb;
-  --theme-btn-end: #1d4ed8;
-  --theme-btn-glow: rgba(37, 99, 235, 0.55);
-  --theme-accent: #2563eb;
-  --theme-neon-color: #00e5ff;
-  --theme-neon-glow: rgba(0, 229, 255, 0.5);
-  --theme-neon-border: #00e5ff;
-  --theme-tab-dock-bg: #0b1528;
-  --theme-tab-inactive-bg: #152238;
-  --theme-tab-inactive-text: #cbd5e1;
-  --theme-page-bg: #dbe4ef;
-  --theme-ambient-1: rgba(37, 99, 235, 0.16);
-  --theme-ambient-2: rgba(0, 229, 255, 0.10);
-}
-
-/* 1. SAPPHIRE: COMMAND CENTER IOC - NEON CYAN / ELECTRIC BLUE */
-.theme-sapphire {
-  --theme-btn-start: #2563eb;
-  --theme-btn-end: #1d4ed8;
-  --theme-btn-glow: rgba(37, 99, 235, 0.55);
-  --theme-accent: #2563eb;
-  --theme-neon-color: #00e5ff;
-  --theme-neon-glow: rgba(0, 229, 255, 0.55);
-  --theme-neon-border: #00e5ff;
-  --theme-tab-dock-bg: #0b1528;
-  --theme-tab-inactive-bg: #152238;
-  --theme-tab-inactive-text: #e2e8f0;
-  --theme-page-bg: #d8e2ee;
-  --theme-ambient-1: rgba(37, 99, 235, 0.18);
-  --theme-ambient-2: rgba(0, 229, 255, 0.12);
-}
-
-/* 2. CRIMSON: SÂN VẬN ĐỘNG RỰC LỬA - NEON RUBY FLAME & GOLD */
-.theme-crimson {
-  --theme-btn-start: #dc2626;
-  --theme-btn-end: #991b1b;
-  --theme-btn-glow: rgba(220, 38, 38, 0.55);
-  --theme-accent: #dc2626;
-  --theme-neon-color: #ff0055;
-  --theme-neon-glow: rgba(255, 0, 85, 0.55);
-  --theme-neon-border: #ff0055;
-  --theme-tab-dock-bg: #2b080c;
-  --theme-tab-inactive-bg: #420f14;
-  --theme-tab-inactive-text: #fecdd3;
-  --theme-page-bg: #ecdedf;
-  --theme-ambient-1: rgba(220, 38, 38, 0.18);
-  --theme-ambient-2: rgba(245, 158, 11, 0.14);
-}
-
-/* 3. CARBON: CYBER ATHLETIC PRO - NEON ORANGE VOLT */
-.theme-carbon {
-  --theme-btn-start: #ea580c;
-  --theme-btn-end: #c2410c;
-  --theme-btn-glow: rgba(234, 88, 12, 0.55);
-  --theme-accent: #ea580c;
-  --theme-neon-color: #ff6b00;
-  --theme-neon-glow: rgba(255, 107, 0, 0.55);
-  --theme-neon-border: #ff6b00;
-  --theme-tab-dock-bg: #090a0d;
-  --theme-tab-inactive-bg: #1a1d24;
-  --theme-tab-inactive-text: #fed7aa;
-  --theme-page-bg: #14171d;
-  --theme-ambient-1: rgba(234, 88, 12, 0.22);
-  --theme-ambient-2: rgba(0, 255, 136, 0.14);
-}
-
-/* 4. TITANIUM: HÀNH CHÍNH NHÀ NƯỚC - NEON EMERALD MINT */
-.theme-titanium {
+  /* Theme Tokens - BẢN 4 DUY NHẤT: TITANIUM / SỔ BỘ HÀNH CHÍNH & CHÍNH QUYỀN SỐ */
   --theme-btn-start: #047857;
   --theme-btn-end: #064e3b;
-  --theme-btn-glow: rgba(4, 120, 87, 0.55);
+  --theme-btn-glow: rgba(4, 120, 87, 0.4);
   --theme-accent: #047857;
-  --theme-neon-color: #00e676;
-  --theme-neon-glow: rgba(0, 230, 118, 0.5);
-  --theme-neon-border: #00e676;
-  --theme-tab-dock-bg: #062b1f;
+  --theme-neon-color: #10b981;
+  --theme-neon-glow: rgba(16, 185, 129, 0.35);
+  --theme-neon-border: #059669;
+  --theme-tab-dock-bg: #064e3b;
   --theme-tab-inactive-bg: #0b3d2c;
   --theme-tab-inactive-text: #d1fae5;
-  --theme-page-bg: #d7e2dc;
-  --theme-ambient-1: rgba(4, 120, 87, 0.18);
-  --theme-ambient-2: rgba(14, 165, 233, 0.10);
+  --theme-page-bg: #edf3f0;
+  --theme-ambient-1: rgba(4, 120, 87, 0.10);
+  --theme-ambient-2: rgba(16, 185, 129, 0.06);
 }
 
-.theme-emerald {
-  --theme-btn-start: #059669;
-  --theme-btn-end: #047857;
-  --theme-btn-glow: rgba(5, 150, 105, 0.5);
-  --theme-accent: #059669;
+/* KHÓA CHẶT BẢN 4 (TITANIUM) - CÁC THEME KHÁC TỰ ĐỘNG ĐỒNG BỘ THEO BẢN 4 */
+.theme-titanium, .theme-sapphire, .theme-crimson, .theme-carbon, .theme-emerald {
+  --theme-btn-start: #047857;
+  --theme-btn-end: #064e3b;
+  --theme-btn-glow: rgba(4, 120, 87, 0.4);
+  --theme-accent: #047857;
   --theme-neon-color: #10b981;
-  --theme-neon-glow: rgba(16, 185, 129, 0.45);
-  --theme-neon-border: #10b981;
+  --theme-neon-glow: rgba(16, 185, 129, 0.35);
+  --theme-neon-border: #059669;
   --theme-tab-dock-bg: #064e3b;
-  --theme-tab-inactive-bg: #065f46;
+  --theme-tab-inactive-bg: #0b3d2c;
   --theme-tab-inactive-text: #d1fae5;
-  --theme-page-bg: #d8e2dc;
-  --theme-ambient-1: rgba(5, 150, 105, 0.12);
-  --theme-ambient-2: rgba(16, 185, 129, 0.08);
+  --theme-page-bg: #edf3f0;
+  --theme-ambient-1: rgba(4, 120, 87, 0.10);
+  --theme-ambient-2: rgba(16, 185, 129, 0.06);
+}
 }
 
 .dark {
@@ -434,13 +368,13 @@ select option {
 }
 
 /* ==============================================================================
-   HUMAN-CRAFTED ATHLETIC PRO ARCHITECTURE (THOÁT LY HOÀN TOÀN KHỎI AI TEMPLATE)
-   Mạnh mẽ, Sáng tạo, Đĩnh đạc, Chuẩn mực Thể thao & Công thái học Thực tế
+   TYPOGRAPHY: BE VIETNAM PRO - NHẸ NHÀNG, TINH TẾ, DỄ NHÌN, CHUẨN MỰC HÀNH CHÍNH
    ============================================================================== */
 
-.font-sport {
-  font-family: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  text-transform: uppercase;
+.font-sport, .font-display {
+  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 /* Stadium Scoreboard - Bảng điện tử sân vận động nguyên khối */
@@ -515,12 +449,12 @@ select option {
   gap: 7px;
   padding: 8px 14px;
   border-radius: 9px;
-  font-family: var(--font-family-sport);
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  background: var(--theme-tab-inactive-bg, #152238);
-  color: var(--theme-tab-inactive-text, #cbd5e1);
+  font-family: var(--font-family-primary);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: normal;
+  background: var(--theme-tab-inactive-bg, #0b3d2c);
+  color: var(--theme-tab-inactive-text, #d1fae5);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
@@ -528,7 +462,7 @@ select option {
   cursor: pointer;
 }
 .dark .studio-nav-btn {
-  background: #111a2e;
+  background: #09281a;
   color: #94a3b8;
   border-color: rgba(255, 255, 255, 0.06);
 }
@@ -540,16 +474,13 @@ select option {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Active Tab: Rực Lửa / Sắc Nét Với Hiệu Ứng Neon Glow Aura */
+/* Active Tab: Thanh lịch, dịu mắt, nổi bật nhưng tinh tế */
 .studio-nav-btn.active {
-  background: linear-gradient(180deg, var(--theme-btn-start, #2563eb) 0%, var(--theme-btn-end, #1d4ed8) 100%) !important;
-  color: #ffffff !important;
-  font-weight: 900 !important;
-  border: 1.5px solid var(--theme-neon-border, #00e5ff) !important;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 0 18px -2px var(--theme-neon-glow, rgba(0, 229, 255, 0.55)),
-    0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  background: #ffffff !important;
+  color: #064e3b !important;
+  font-weight: 600 !important;
+  border: 1.5px solid #a7f3d0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-1px);
 }
 .studio-nav-btn.active .material-symbols-outlined {

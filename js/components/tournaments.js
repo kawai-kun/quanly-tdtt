@@ -41,16 +41,16 @@ export function getTournamentsCountsHtml(acts) {
   const total = acts ? acts.length : allYearActs.length;
 
   return `
-    <span class="text-slate-700 dark:text-slate-300 font-bold font-sport text-xs tracking-wider">
-      TỔNG CỘNG: <b class="font-mono text-sm text-slate-900 dark:text-white">${total}</b> GIẢI
+    <span class="text-slate-700 dark:text-slate-300 font-medium text-xs tracking-wide">
+      Tổng cộng: <b class="font-mono text-sm text-slate-900 dark:text-white font-semibold">${total}</b> giải
     </span>
     <span class="text-slate-300 dark:text-slate-700">|</span>
-    <span class="inline-flex items-center gap-1.5 font-sport font-black text-sm tracking-wider text-emerald-600 dark:text-emerald-400">
-      <span class="w-2 h-2 rounded-full bg-emerald-600"></span>ĐÃ BÁO CÁO: ${reportedCount}
+    <span class="inline-flex items-center gap-1.5 font-medium text-xs tracking-wide text-emerald-700 dark:text-emerald-400">
+      <span class="w-2 h-2 rounded-full bg-emerald-600"></span>Đã báo cáo: ${reportedCount}
     </span>
     <span class="text-slate-300 dark:text-slate-700">|</span>
-    <span class="inline-flex items-center gap-1.5 font-sport font-black text-sm tracking-wider text-amber-600 dark:text-amber-400">
-      <span class="w-2 h-2 rounded-full bg-amber-500"></span>CHỜ BÁO CÁO: ${unreportedCount}
+    <span class="inline-flex items-center gap-1.5 font-medium text-xs tracking-wide text-amber-700 dark:text-amber-400">
+      <span class="w-2 h-2 rounded-full bg-amber-500"></span>Chờ báo cáo: ${unreportedCount}
     </span>
   `;
 }
@@ -68,11 +68,11 @@ export function renderTournaments() {
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
         <div>
           <div class="flex items-center gap-2.5">
-            <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
-              SỔ TAY ĐIỀU HÀNH & QUẢN LÝ GIẢI ĐẤU
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+              Sổ tay Điều hành & Quản lý Giải đấu
             </h1>
-            <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-              30 GIẢI THỰC TẾ
+            <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+              30 giải thực tế
             </span>
           </div>
           <p id="tournaments_counts_display" class="text-xs text-slate-500 mt-1.5 flex items-center gap-2 flex-wrap">
@@ -81,13 +81,13 @@ export function renderTournaments() {
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <button onclick="pullFromGoogleSheet(false)" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-sport font-black text-sm tracking-wider rounded-lg flex items-center gap-1.5 shadow-2xs">
+          <button onclick="pullFromGoogleSheet(false)" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-medium text-xs rounded-lg flex items-center gap-1.5 shadow-2xs">
             <span class="material-symbols-outlined text-[16px]">sync</span>
-            <span>ĐỒNG BỘ DRIVE</span>
+            <span>Đồng bộ Drive</span>
           </button>
-          <button onclick="openActivityModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-black text-sm tracking-wider rounded-lg flex items-center gap-1.5">
+          <button onclick="openActivityModal()" class="btn-top-tier px-3.5 py-1.5 font-medium text-xs rounded-lg flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[17px]">add</span>
-            <span>THÊM GIẢI ĐẤU (N)</span>
+            <span>Thêm giải đấu (N)</span>
           </button>
         </div>
       </div>
@@ -284,7 +284,7 @@ export function renderTournamentsTable(acts) {
                 <!-- 1. STT -->
                 <td class="py-3 px-2 text-center font-mono font-bold text-xs text-slate-400">
                   ${isTop ? `
-                    <span class="px-1.5 py-0.5 rounded text-[10px] font-sport font-black bg-blue-600 text-white">#1 MỚI</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-700 text-white">#1 Mới</span>
                   ` : (i + 1)}
                 </td>
 
@@ -347,26 +347,26 @@ export function renderTournamentsTable(acts) {
                 </td>
 
                 <!-- 9. Huy chương Olympic -->
-                <td class="py-3 px-2 text-center font-mono text-xs font-bold whitespace-nowrap">
+                <td class="py-3 px-2 text-center font-mono text-xs font-semibold whitespace-nowrap">
                   <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-2xs">
-                    <span class="inline-flex items-center gap-0.5 text-amber-500 font-black" title="Huy chương Vàng">
+                    <span class="inline-flex items-center gap-0.5 text-amber-600 font-bold" title="Huy chương Vàng">
                       <span>🥇</span><span>${a.goldMedals || 0}</span>
                     </span>
                     <span class="text-slate-300 dark:text-slate-600">|</span>
-                    <span class="inline-flex items-center gap-0.5 text-slate-400 font-black" title="Huy chương Bạc">
+                    <span class="inline-flex items-center gap-0.5 text-slate-500 font-bold" title="Huy chương Bạc">
                       <span>🥈</span><span>${a.silverMedals || 0}</span>
                     </span>
                     <span class="text-slate-300 dark:text-slate-600">|</span>
-                    <span class="inline-flex items-center gap-0.5 text-amber-700 dark:text-amber-500 font-black" title="Huy chương Đồng">
+                    <span class="inline-flex items-center gap-0.5 text-amber-700 dark:text-amber-500 font-bold" title="Huy chương Đồng">
                       <span>🥉</span><span>${a.bronzeMedals || 0}</span>
                     </span>
                   </div>
                 </td>
 
                 <!-- 10. Thao tác -->
-                <td class="py-3 px-2 text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-blue-50/70 dark:group-hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800">
+                <td class="py-3 px-2 text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800">
                   <div class="flex items-center justify-center gap-1">
-                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-blue-600 transition-colors btn-press">
+                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-700 transition-colors btn-press">
                       <span class="material-symbols-outlined text-[17px]">edit</span>
                     </button>
                     <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press">
@@ -380,24 +380,24 @@ export function renderTournamentsTable(acts) {
         </tbody>
 
         <!-- Footer Bảng Phân Tách Cột Sắc Nét -->
-        <tfoot class="bg-slate-100 dark:bg-slate-800 font-sport font-black text-xs text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700 uppercase tracking-wider">
+        <tfoot class="bg-slate-100 dark:bg-slate-800 font-semibold text-xs text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700 uppercase tracking-wide">
           <tr>
             <td colspan="3" class="py-3 px-3 text-left border-r border-slate-300 dark:border-slate-700">
-              TỔNG SỐ: <span class="font-mono text-base text-blue-600 dark:text-blue-400 font-black ml-1">${acts.length}</span> GIẢI ĐẤU
+              Tổng số: <span class="font-mono text-sm text-emerald-700 dark:text-emerald-400 font-bold ml-1">${acts.length}</span> giải đấu
             </td>
             <td colspan="4" class="py-3 px-2 text-center text-slate-600 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700">
-              <span class="text-emerald-600 dark:text-emerald-400 font-bold">${totalReported} ĐÃ BÁO CÁO</span> • <span class="text-amber-600 font-bold">${acts.length - totalReported} CHỜ BÁO CÁO</span>
+              <span class="text-emerald-700 dark:text-emerald-400 font-semibold">${totalReported} đã báo cáo</span> • <span class="text-amber-700 font-semibold">${acts.length - totalReported} chờ báo cáo</span>
             </td>
-            <td class="py-3 px-2 text-center font-mono text-base text-blue-600 dark:text-blue-400 font-black border-r border-slate-300 dark:border-slate-700 bg-blue-50/70 dark:bg-blue-950/40 tabular-nums">
+            <td class="py-3 px-2 text-center font-mono text-sm text-emerald-700 dark:text-emerald-400 font-bold border-r border-slate-300 dark:border-slate-700 bg-emerald-50/70 dark:bg-emerald-950/40 tabular-nums">
               ${totalTableVdv.toLocaleString('vi-VN')}
             </td>
             <td class="py-3 px-2 text-center font-mono text-xs border-r border-slate-300 dark:border-slate-700 bg-amber-50/60 dark:bg-amber-950/30 whitespace-nowrap">
               <div class="inline-flex items-center gap-1.5 font-bold">
-                <span class="text-amber-500 font-black">🥇${totalGold}</span>
+                <span class="text-amber-600 font-bold">🥇${totalGold}</span>
                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                <span class="text-slate-400 font-black">🥈${totalSilver}</span>
+                <span class="text-slate-500 font-bold">🥈${totalSilver}</span>
                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                <span class="text-amber-700 dark:text-amber-500 font-black">🥉${totalBronze}</span>
+                <span class="text-amber-700 dark:text-amber-500 font-bold">🥉${totalBronze}</span>
               </div>
             </td>
             <td class="py-3 px-2 sticky right-0 z-10 bg-slate-100 dark:bg-slate-800"></td>
@@ -432,90 +432,82 @@ export function renderTournamentsGrid(acts) {
         const badge = getSportBadge(a.sport);
         const rep = getActivityReportStatus(a);
 
-        // Styling theo từng bản giao diện
-        let cardBorderCls = 'luxury-card border-l-[6px] border-l-blue-600 shadow-md hover:shadow-[0_0_20px_rgba(0,229,255,0.45)]';
-        let titleCls = 'text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug';
-        
-        if (isCrimson) {
-          cardBorderCls = 'luxury-card border-l-8 border-l-red-600 shadow-lg';
-          titleCls = 'text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase';
-        } else if (isCarbon) {
-          cardBorderCls = 'luxury-card rounded-2xl border-l-[6px] border-l-orange-500 shadow-lg hover:shadow-[0_0_22px_rgba(255,107,0,0.5)]';
-          titleCls = 'text-base sm:text-lg font-bold text-slate-900 dark:text-white';
-        }
+        // Styling chuẩn Bản 4: Sổ bộ Hành chính Titanium (Trang nhã, Viền Emerald, Dịu mắt)
+        let cardBorderCls = 'luxury-card border-l-4 border-l-emerald-600 shadow-sm hover:shadow-md transition-shadow';
+        let titleCls = 'text-base font-semibold text-slate-900 dark:text-white leading-snug';
 
         return `
-          <div class="${cardBorderCls} p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+          <div class="${cardBorderCls} p-5 rounded-xl flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div>
-              <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <span class="px-3 py-1 rounded-md text-xs font-sport font-bold flex items-center gap-1.5 ${badge.bg} ${badge.text} border ${badge.border} shadow-2xs">
-                  <span class="material-symbols-outlined text-[16px]">${badge.icon}</span>
-                  <span>${badge.label.toUpperCase()}</span>
+              <div class="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-slate-800">
+                <span class="px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 ${badge.bg} ${badge.text} border ${badge.border}">
+                  <span class="material-symbols-outlined text-[15px]">${badge.icon}</span>
+                  <span>${badge.label}</span>
                 </span>
-                <span class="font-mono text-base font-black text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded border border-slate-300 dark:border-slate-700">${a.code}</span>
+                <span class="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700">${a.code}</span>
               </div>
 
               <h3 
                 onclick="openActivityModal('${a.id}')"
-                class="${titleCls} mt-3.5 leading-snug cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                class="${titleCls} mt-3 cursor-pointer hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
                 title="Bấm để xem và sửa chi tiết"
               >
                 ${a.title}
               </h3>
 
               ${a.achievementNote ? `
-                <div class="mt-2.5 ${isCrimson ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white font-black' : 'badge-gold'} px-3 py-1.5 rounded-lg text-xs font-sport font-bold flex items-center gap-2 shadow-2xs">
-                  <span class="text-base">🏆</span>
-                  <span class="truncate font-black">${a.achievementNote}</span>
+                <div class="mt-2.5 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800/60 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-2xs">
+                  <span class="text-sm">🏆</span>
+                  <span class="truncate">${a.achievementNote}</span>
                 </div>
               ` : ''}
 
-              <div class="mt-4 space-y-2.5 text-sm sm:text-base text-slate-700 dark:text-slate-200 font-medium">
+              <div class="mt-3.5 space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal">
                 <div class="flex justify-between items-center">
                   <span>Ngày thi đấu:</span>
-                  <strong class="text-slate-900 dark:text-white font-mono text-sm sm:text-base font-bold">${a.date}</strong>
+                  <strong class="text-slate-900 dark:text-white font-mono text-xs sm:text-sm font-semibold">${a.date}</strong>
                 </div>
                 <div class="flex justify-between items-center">
                   <span>VĐV tham gia:</span>
-                  <strong class="text-slate-900 dark:text-white font-mono text-sm sm:text-base font-bold">${a.participants} ${a.participantsUnit || 'VĐV'}</strong>
+                  <strong class="text-slate-900 dark:text-white font-mono text-xs sm:text-sm font-semibold">${a.participants} ${a.participantsUnit || 'VĐV'}</strong>
                 </div>
                 <div class="flex justify-between items-center">
                   <span>Kinh phí giải:</span>
-                  <strong class="${isCrimson ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'} font-mono text-base font-black">${formatVNCurrency(a.budgetTotal || 0)}</strong>
+                  <strong class="text-emerald-700 dark:text-emerald-400 font-mono text-xs sm:text-sm font-semibold">${formatVNCurrency(a.budgetTotal || 0)}</strong>
                 </div>
               </div>
 
-              <!-- Huy chương Olympic To Rõ Ràng -->
-              <div class="mt-4 p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 flex items-center justify-around font-mono font-bold shadow-inner">
+              <!-- Huy chương To Rõ Gọn Gàng -->
+              <div class="mt-3.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-around font-mono shadow-xs">
                 <div class="text-center flex items-center gap-1.5">
-                  <span class="text-lg">🥇</span>
+                  <span class="text-base">🥇</span>
                   <div>
-                    <span class="text-xs text-amber-600 dark:text-amber-400 block leading-none font-sport font-black">VÀNG</span>
-                    <span class="text-lg text-slate-900 dark:text-white font-black">${a.goldMedals || 0}</span>
+                    <span class="text-[10px] text-amber-600 dark:text-amber-400 block leading-none font-medium">VÀNG</span>
+                    <span class="text-base text-slate-900 dark:text-white font-bold">${a.goldMedals || 0}</span>
                   </div>
                 </div>
-                <div class="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+                <div class="w-px h-5 bg-slate-200 dark:bg-slate-700"></div>
                 <div class="text-center flex items-center gap-1.5">
-                  <span class="text-lg">🥈</span>
+                  <span class="text-base">🥈</span>
                   <div>
-                    <span class="text-xs text-slate-500 dark:text-slate-400 block leading-none font-sport font-black">BẠC</span>
-                    <span class="text-lg text-slate-900 dark:text-white font-black">${a.silverMedals || 0}</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block leading-none font-medium">BẠC</span>
+                    <span class="text-base text-slate-900 dark:text-white font-bold">${a.silverMedals || 0}</span>
                   </div>
                 </div>
-                <div class="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+                <div class="w-px h-5 bg-slate-200 dark:bg-slate-700"></div>
                 <div class="text-center flex items-center gap-1.5">
-                  <span class="text-lg">🥉</span>
+                  <span class="text-base">🥉</span>
                   <div>
-                    <span class="text-xs text-amber-700 dark:text-amber-500 block leading-none font-sport font-black">ĐỒNG</span>
-                    <span class="text-lg text-slate-900 dark:text-white font-black">${a.bronzeMedals || 0}</span>
+                    <span class="text-[10px] text-amber-700 dark:text-amber-500 block leading-none font-medium">ĐỒNG</span>
+                    <span class="text-base text-slate-900 dark:text-white font-bold">${a.bronzeMedals || 0}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <span class="text-xs font-sport font-black uppercase tracking-wider ${rep.isReported ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">
-                ● ${rep.isReported ? 'ĐÃ LẬP BÁO CÁO' : 'CHỜ LẬP BÁO CÁO'}
+            <div class="mt-3.5 pt-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <span class="text-xs font-medium tracking-wide ${rep.isReported ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'}">
+                ● ${rep.isReported ? 'Đã lập báo cáo' : 'Chờ lập báo cáo'}
               </span>
 
               <div class="flex items-center gap-1">
@@ -560,7 +552,7 @@ export function renderTournamentsKanban(acts) {
         <div class="w-[300px] shrink-0 bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg p-3 space-y-2.5">
           <!-- Column Header with Top Accent -->
           <div class="border-t-2 ${col.color.split(' ')[0]} pt-2 flex items-center justify-between">
-            <span class="font-sport font-black text-xs tracking-wider ${col.color.split(' ')[1]} uppercase">${col.title}</span>
+            <span class="font-semibold text-xs tracking-wide ${col.color.split(' ')[1]} uppercase">${col.title}</span>
             <span class="font-mono font-bold text-xs px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
               ${col.count}
             </span>

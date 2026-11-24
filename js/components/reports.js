@@ -27,32 +27,32 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
-                  BÁO CÁO & SỔ LƯU TRỮ VĂN BẢN
+                <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                  Báo cáo & Sổ Lưu trữ Văn bản
                 </h1>
-                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                  NGHỊ ĐỊNH 30/2020/NĐ-CP
+                <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                  Chuẩn hành chính
                 </span>
               </div>
-              <p class="text-xs text-slate-500 mt-1">Đơn vị lập: <b>Bộ phận Thể dục thể thao</b> • Trung tâm Dịch vụ tổng hợp UBND Phường Tân Khai</p>
+              <p class="text-xs text-slate-500 mt-1 font-normal">Đơn vị lập: <b>Bộ phận Thể dục thể thao</b> • Trung tâm Dịch vụ tổng hợp UBND Phường Tân Khai</p>
             </div>
 
             <!-- Sub Tabs & Telegram Config Button -->
             <div class="flex items-center gap-2 flex-wrap">
-              <button onclick="openTelegramConfigModal('list')" class="btn-glass-tactile px-3.5 py-2 rounded-lg text-sm font-sport font-black tracking-wider flex items-center gap-1.5 ${activeSchedCount > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-400'}" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
+              <button onclick="openTelegramConfigModal('list')" class="btn-glass-tactile px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 ${activeSchedCount > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-400'}" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
                 <span class="material-symbols-outlined text-[16px] text-sky-500">schedule_send</span>
-                <span>LỊCH TELEGRAM (${activeSchedCount}/${totalSchedCount})</span>
+                <span>Lịch Telegram (${activeSchedCount}/${totalSchedCount})</span>
                 ${activeSchedCount > 0 ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
               </button>
 
               <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-inner">
-                <button onclick="setReportSubTab('document')" class="px-3.5 py-1.5 rounded-md text-sm font-sport font-black tracking-wider transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
+                <button onclick="setReportSubTab('document')" class="px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
                   <span class="material-symbols-outlined text-[16px]">description</span>
-                  <span>VĂN BẢN BÁO CÁO</span>
+                  <span>Văn bản báo cáo</span>
                 </button>
-                <button onclick="setReportSubTab('registry')" class="px-3.5 py-1.5 rounded-md text-sm font-sport font-black tracking-wider transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
+                <button onclick="setReportSubTab('registry')" class="px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
                   <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
-                  <span>SỔ LƯU TRỮ (${state.savedReports.length})</span>
+                  <span>Sổ lưu trữ (${state.savedReports.length})</span>
                 </button>
               </div>
             </div>
@@ -470,18 +470,18 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
         <div class="space-y-4">
           <div class="p-4 rounded-xl luxury-card border border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-sport font-black text-slate-900 dark:text-white uppercase tracking-wider">SỔ LƯU TRỮ VĂN BẢN BÁO CÁO</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Quản lý số hiệu công văn, lưu trữ hồ sơ và rà soát các văn bản báo cáo theo đúng thẩm quyền</p>
+              <h3 class="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Sổ lưu trữ văn bản báo cáo</h3>
+              <p class="text-xs text-slate-500 mt-0.5 font-normal">Quản lý số hiệu công văn, lưu trữ hồ sơ và rà soát các văn bản báo cáo theo đúng thẩm quyền</p>
             </div>
-            <button onclick="createNewReportPrompt()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+            <button onclick="createNewReportPrompt()" class="btn-top-tier px-3.5 py-1.5 font-medium text-xs rounded-lg flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[17px]">add_circle</span>
-              <span>TẠO BÁO CÁO SỐ MỚI</span>
+              <span>Tạo báo cáo số mới</span>
             </button>
           </div>
 
           <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs bg-white dark:bg-slate-900">
             <table class="referee-table w-full text-left text-xs border-collapse">
-              <thead class="bg-slate-900 text-white font-sport font-black uppercase tracking-wider">
+              <thead class="bg-slate-900 text-white font-semibold uppercase tracking-wider">
                 <tr>
                   <th class="p-3 text-center whitespace-nowrap w-36">SỐ HIỆU VĂN BẢN</th>
                   <th class="p-3 min-w-[260px]">TIÊU ĐỀ BÁO CÁO</th>

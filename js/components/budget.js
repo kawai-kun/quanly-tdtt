@@ -22,52 +22,52 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
-                  KINH PHÍ & QUYẾT TOÁN THỂ DỤC THỂ THAO
+                <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                  Kinh phí & Quyết toán Thể dục Thể thao
                 </h1>
-                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                  ${items.length} HẠNG MỤC
+                <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                  ${items.length} hạng mục
                 </span>
               </div>
-              <p class="text-xs text-slate-500 mt-1">
+              <p class="text-xs text-slate-500 mt-1 font-normal">
                 Theo dõi phân bổ ngân sách nhà nước, thanh quyết toán và lưu trữ hồ sơ chứng từ theo luật NSNN
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openBudgetModal()" class="btn-top-tier px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5">
+              <button onclick="openBudgetModal()" class="btn-top-tier px-3.5 py-1.5 font-medium text-xs rounded-lg flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[17px]">add_card</span>
-                <span>THÊM MỤC KINH PHÍ</span>
+                <span>Thêm mục kinh phí</span>
               </button>
-              <button onclick="exportAllExcel()" class="btn-glass-tactile px-3.5 py-1.5 font-sport font-bold text-xs tracking-wider rounded-lg flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+              <button onclick="exportAllExcel()" class="btn-glass-tactile px-3.5 py-1.5 font-medium text-xs rounded-lg flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                 <span class="material-symbols-outlined text-[17px]">download</span>
-                <span class="hidden sm:inline">XUẤT EXCEL</span>
+                <span class="hidden sm:inline">Xuất Excel</span>
               </button>
             </div>
           </div>
 
           <!-- Summary Scoreboard Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800">
-              <span class="font-sport font-black text-sm text-slate-600 dark:text-slate-300 uppercase tracking-wider">Dự toán ngân sách duyệt</span>
-              <p class="text-3xl sm:text-4xl font-sport font-black text-blue-600 dark:text-blue-400 mt-2 font-mono">${totalEstimated.toLocaleString('vi-VN')} đ</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Bao gồm ngân sách phường & sự nghiệp</p>
+            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+              <span class="font-semibold text-xs text-slate-600 dark:text-slate-300 uppercase tracking-wide">Dự toán ngân sách duyệt</span>
+              <p class="text-2xl sm:text-3xl font-bold text-emerald-700 dark:text-emerald-400 mt-2 font-mono">${totalEstimated.toLocaleString('vi-VN')} đ</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal">Bao gồm ngân sách phường & sự nghiệp</p>
             </div>
-            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800">
-              <span class="font-sport font-black text-sm text-slate-600 dark:text-slate-300 uppercase tracking-wider">Đã thực chi quyết toán</span>
-              <p class="text-3xl sm:text-4xl font-sport font-black text-amber-600 mt-2 font-mono">${totalActual.toLocaleString('vi-VN')} đ</p>
-              <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-1 font-medium">Đã hoàn thành thủ tục hóa đơn, chứng từ</p>
+            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+              <span class="font-semibold text-xs text-slate-600 dark:text-slate-300 uppercase tracking-wide">Đã thực chi quyết toán</span>
+              <p class="text-2xl sm:text-3xl font-bold text-amber-600 mt-2 font-mono">${totalActual.toLocaleString('vi-VN')} đ</p>
+              <p class="text-xs text-amber-700 dark:text-amber-400 mt-1 font-normal">Đã hoàn thành thủ tục hóa đơn, chứng từ</p>
             </div>
-            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800">
-              <span class="font-sport font-black text-sm text-slate-600 dark:text-slate-300 uppercase tracking-wider">Tổng giải ngân thể thao toàn diện</span>
-              <p class="text-3xl sm:text-4xl font-sport font-black text-slate-900 dark:text-white mt-2 font-mono">${totalAllDisbursed.toLocaleString('vi-VN')} đ</p>
-              <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">Đạt 100% chỉ tiêu quyết toán năm</p>
+            <div class="luxury-card p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+              <span class="font-semibold text-xs text-slate-600 dark:text-slate-300 uppercase tracking-wide">Tổng giải ngân thể thao toàn diện</span>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-2 font-mono">${totalAllDisbursed.toLocaleString('vi-VN')} đ</p>
+              <p class="text-xs text-emerald-700 dark:text-emerald-400 font-medium mt-1">Đạt 100% chỉ tiêu quyết toán năm</p>
             </div>
           </div>
 
           <!-- Interactive Budget Table (Sổ Cái Kinh Phí Phân Tách Cột Sắc Nét) -->
           <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs bg-white dark:bg-slate-900">
             <table class="referee-table w-full text-left text-sm border-collapse">
-              <thead class="bg-slate-900 text-white font-sport font-black uppercase tracking-wider">
+              <thead class="bg-slate-900 text-white font-semibold text-xs uppercase tracking-wider">
                 <tr>
                   <th class="p-3 text-center w-24">MÃ SỐ</th>
                   <th class="p-3 min-w-[240px]">HẠNG MỤC KINH PHÍ / HOẠT ĐỘNG</th>
@@ -82,20 +82,20 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
               </thead>
               <tbody class="text-slate-800 dark:text-slate-200">
                 ${items.map(b => `
-                  <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/60 transition-colors">
-                    <td class="p-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">${b.code}</td>
+                  <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+                    <td class="p-3 text-center font-mono font-medium text-emerald-700 dark:text-emerald-400">${b.code}</td>
                     <td class="p-3 min-w-[240px] max-w-sm">
-                      <div class="font-bold text-slate-900 dark:text-slate-100 leading-snug">${b.title}</div>
-                      ${b.note ? `<p class="text-[11px] text-slate-500 font-normal mt-0.5">${b.note}</p>` : ''}
+                      <div class="font-semibold text-slate-800 dark:text-slate-100 leading-snug">${b.title}</div>
+                      ${b.note ? `<p class="text-xs text-slate-500 font-normal mt-0.5">${b.note}</p>` : ''}
                     </td>
-                    <td class="p-3 font-mono font-bold text-center">${b.year}</td>
-                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-sport font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${b.source}</span></td>
-                    <td class="p-3 text-right font-mono font-bold text-slate-700 dark:text-slate-300 tabular-nums">${(parseInt(b.budgetEstimated) || 0).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-3 text-right font-mono font-black text-blue-600 dark:text-blue-400 tabular-nums">${(parseInt(b.budgetActual) || 0).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-3 text-center font-mono text-slate-500">${b.refDoc || 'Chưa lập'}</td>
+                    <td class="p-3 font-mono font-medium text-center">${b.year}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-medium text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${b.source}</span></td>
+                    <td class="p-3 text-right font-mono font-medium text-slate-700 dark:text-slate-300 tabular-nums">${(parseInt(b.budgetEstimated) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400 tabular-nums">${(parseInt(b.budgetActual) || 0).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-3 text-center font-mono text-slate-500 font-normal">${b.refDoc || 'Chưa lập'}</td>
                     <td class="p-3 text-center">
-                      <span class="px-2 py-0.5 rounded font-sport font-bold text-xs ${b.status === 'Đã quyết toán' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'}">
-                        ● ${b.status.toUpperCase()}
+                      <span class="px-2 py-0.5 rounded font-medium text-xs ${b.status === 'Đã quyết toán' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'}">
+                        ● ${b.status}
                       </span>
                     </td>
                     <td class="p-3 text-center whitespace-nowrap">

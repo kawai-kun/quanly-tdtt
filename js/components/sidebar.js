@@ -39,12 +39,12 @@ import { state } from '../state.js';
         <div class="lg:hidden fixed bottom-0 left-0 right-0 glass-dock border-t border-slate-200/90 dark:border-slate-800/90 z-40 px-2 py-1 flex justify-around items-center shadow-lg">
           ${items.map(i => {
             const isActive = state.currentTab === i.id;
-            const color = isActive ? 'text-blue-600 dark:text-blue-400 font-sport font-black' : 'text-slate-500 dark:text-slate-400 font-sport font-bold';
+            const color = isActive ? 'text-emerald-700 dark:text-emerald-400 font-semibold' : 'text-slate-500 dark:text-slate-400 font-medium';
             const action = i.isAction ? 'toggleMobileDrawer()' : `switchTab('${i.id}')`;
             return `
               <button onclick="${action}" class="flex flex-col items-center justify-center py-1.5 px-1 flex-1 ${color} transition-all btn-press">
                 <span class="material-symbols-outlined text-[20px]">${i.icon}</span>
-                <span class="text-[10.5px] tracking-wider mt-0.5">${i.label}</span>
+                <span class="text-[10.5px] tracking-wide mt-0.5">${i.label}</span>
               </button>
             `;
           }).join('')}
@@ -54,13 +54,13 @@ import { state } from '../state.js';
 
     export function renderMobileDrawer() {
       const navs = [
-        { id: 'bang-dieu-khien', label: 'TỔNG QUAN HỆ THỐNG', icon: 'dashboard' },
-        { id: 'quan-ly-giai-dau', label: 'QUẢN LÝ GIẢI ĐẤU (30 GIẢI)', icon: 'emoji_events' },
-        { id: 'quan-ly-clb', label: 'CÂU LẠC BỘ THỂ THAO', icon: 'groups_2' },
-        { id: 'lich-sinh-hoat', label: 'LỊCH SINH HOẠT & TẬP LUYỆN', icon: 'calendar_month' },
-        { id: 'co-so-vat-chat', label: 'CƠ SỞ VẬT CHẤT & SÂN BÃI', icon: 'stadium' },
-        { id: 'kinh-phi', label: 'KINH PHÍ & QUYẾT TOÁN', icon: 'account_balance_wallet' },
-        { id: 'bao-cao', label: 'BÁO CÁO & SỔ LƯU TRỮ', icon: 'summarize' }
+        { id: 'bang-dieu-khien', label: 'Tổng quan hệ thống', icon: 'dashboard' },
+        { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu (30 giải)', icon: 'emoji_events' },
+        { id: 'quan-ly-clb', label: 'Câu lạc bộ thể thao', icon: 'groups_2' },
+        { id: 'lich-sinh-hoat', label: 'Lịch sinh hoạt & tập luyện', icon: 'calendar_month' },
+        { id: 'co-so-vat-chat', label: 'Cơ sở vật chất & sân bãi', icon: 'stadium' },
+        { id: 'kinh-phi', label: 'Kinh phí & quyết toán', icon: 'account_balance_wallet' },
+        { id: 'bao-cao', label: 'Báo cáo & sổ lưu trữ', icon: 'summarize' }
       ];
 
       return `
@@ -69,12 +69,12 @@ import { state } from '../state.js';
             <div>
               <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div class="flex items-center gap-3">
-                  <div class="w-11 h-11 rounded-full p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
+                  <div class="w-10 h-10 rounded-full p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
                     <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Huy hiệu UBND Phường Tân Khai" />
                   </div>
                   <div>
-                    <span class="text-[10px] font-sport font-black uppercase tracking-widest text-slate-400 block">UBND PHƯỜNG TÂN KHAI</span>
-                    <h3 class="font-sport font-black text-sm uppercase text-slate-900 dark:text-white leading-tight">ĐIỀU HÀNH TDTT</h3>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 block">UBND PHƯỜNG TÂN KHAI</span>
+                    <h3 class="font-bold text-xs uppercase text-slate-900 dark:text-white leading-tight">ĐIỀU HÀNH TDTT</h3>
                   </div>
                 </div>
                 <button onclick="toggleMobileDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
@@ -84,9 +84,9 @@ import { state } from '../state.js';
 
               <nav class="mt-4 space-y-1">
                 ${navs.map(n => `
-                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-sport font-bold tracking-wider ${
+                  <button onclick="switchTab('${n.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide ${
                     state.currentTab === n.id 
-                      ? 'btn-top-tier text-white font-black' 
+                      ? 'bg-emerald-700 text-white font-semibold shadow-sm' 
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }">
                     <span class="material-symbols-outlined text-[19px]">${n.icon}</span>

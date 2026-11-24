@@ -30,40 +30,17 @@ import { animateToastIn, animateToastOut } from './animations.js';
       }, 3500);
     }
 
-    export function setColorTheme(themeName) {
-      state.colorTheme = themeName;
-      lsSet('tk_color_theme', themeName);
-
-      // Tự động chuyển đổi layout & chế độ xem đặc thù theo từng bản giao diện
-      if (themeName === 'titanium') {
-        state.tournamentsFilter.viewMode = 'table'; // Bản 4: Mặc định bảng số liệu 11 cột hành chính
-        showToast('Giao diện Bản 4', 'Đã chuyển sang: Sổ Bộ Hành Chính (Mặc định Bảng 11 Cột to rõ)');
-      } else if (themeName === 'carbon') {
-        state.tournamentsFilter.viewMode = 'cards';
-        showToast('Giao diện Bản 3', 'Đã chuyển sang: Modern Studio Bento (Cột Menu Dọc Bên Trái)');
-      } else if (themeName === 'crimson') {
-        state.tournamentsFilter.viewMode = 'cards';
-        showToast('Giao diện Bản 2', 'Đã chuyển sang: Athletic Arena Broadcast (Băng rôn Đỏ Sân vận động)');
-      } else {
-        state.tournamentsFilter.viewMode = 'cards';
-        showToast('Giao diện Bản 1', 'Đã chuyển sang: Executive IOC Center (Top Capsule Dock & Scoreboard)');
-      }
-
+    export function setColorTheme(themeName = 'titanium') {
+      state.colorTheme = 'titanium';
+      lsSet('tk_color_theme', 'titanium');
       applyColorTheme();
-      try {
-        const url = new URL(window.location);
-        url.searchParams.set('theme', themeName);
-        window.history.replaceState({}, '', url);
-      } catch (e) {}
       window.renderApp();
     }
 
     export function applyColorTheme() {
       const root = document.documentElement;
-      root.classList.remove('theme-sapphire', 'theme-crimson', 'theme-carbon', 'theme-titanium', 'theme-emerald');
-      if (state.colorTheme && state.colorTheme !== 'emerald') {
-        root.classList.add(`theme-${state.colorTheme}`);
-      }
+      root.classList.remove('theme-sapphire', 'theme-crimson', 'theme-carbon', 'theme-emerald');
+      root.classList.add('theme-titanium');
     }
 
     export function toggleDarkMode() {
@@ -74,14 +51,9 @@ import { animateToastIn, animateToastOut } from './animations.js';
     }
 
     export function initTheme() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const qTheme = params.get('theme');
-        if (qTheme && ['sapphire', 'crimson', 'carbon', 'titanium', 'emerald'].includes(qTheme)) {
-          state.colorTheme = qTheme;
-          lsSet('tk_color_theme', qTheme);
-        }
-      } catch (e) {}
+      // Khóa cứng duy nhất Bản 4: Titanium / Sổ bộ Hành chính Chính quyền số
+      state.colorTheme = 'titanium';
+      lsSet('tk_color_theme', 'titanium');
 
       applyColorTheme();
 

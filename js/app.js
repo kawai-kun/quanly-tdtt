@@ -70,7 +70,7 @@ import {
 } from './services/telegramService.js';
 
 // 4. UI COMPONENTS
-import { renderHeader, renderLeftSidebarStudio, renderStudioTopBar, setGlobalYear, renderSyncPillHTML, renderSyncPill } from './components/header.js';
+import { renderHeader, setGlobalYear, renderSyncPillHTML, renderSyncPill } from './components/header.js';
 import { switchTab, toggleMobileDrawer, renderSidebar, renderBottomNav, renderMobileDrawer } from './components/sidebar.js';
 import {
   renderDashboard,
@@ -265,40 +265,18 @@ export function renderApp() {
   else if (state.currentTab === 'kinh-phi') contentHTML = renderBudget();
   else if (state.currentTab === 'bao-cao') contentHTML = renderReports();
 
-  if (state.colorTheme === 'carbon') {
-    // ==============================================================================
-    // BẢN 3: MODERN STUDIO BENTO - CỘT MENU DỌC BÊN TRÁI (LEFT SIDEBAR DOCK 260px)
-    // ==============================================================================
-    app.innerHTML = `
-      <div class="min-h-screen flex w-full text-slate-900 dark:text-slate-100">
-        ${renderLeftSidebarStudio()}
-        <div class="flex-1 flex flex-col min-w-0">
-          ${renderStudioTopBar()}
-          <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
-            ${contentHTML}
-          </main>
-        </div>
-      </div>
-      ${renderBottomNav()}
-      ${renderMobileDrawer()}
-      <div id="commandPaletteContainer"></div>
-    `;
-  } else {
-    // ==============================================================================
-    // BẢN 1, 2, 4: HEADER BẢNG ĐIỀU HÀNH TƯƠNG ỨNG TỪNG PHONG CÁCH
-    // ==============================================================================
-    app.innerHTML = `
-      <div class="min-h-screen flex flex-col w-full text-slate-800 dark:text-slate-100">
-        ${renderHeader()}
-        <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
-          ${contentHTML}
-        </main>
-      </div>
-      ${renderBottomNav()}
-      ${renderMobileDrawer()}
-      <div id="commandPaletteContainer"></div>
-    `;
-  }
+  // BẢN 4 DUY NHẤT: CHÍNH QUYỀN SỐ & SỔ BỘ HÀNH CHÍNH PHƯỜNG TÂN KHAI
+  app.innerHTML = `
+    <div class="min-h-screen flex flex-col w-full text-slate-800 dark:text-slate-100">
+      ${renderHeader()}
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
+        ${contentHTML}
+      </main>
+    </div>
+    ${renderBottomNav()}
+    ${renderMobileDrawer()}
+    <div id="commandPaletteContainer"></div>
+  `;
 
   if (state.currentTab === 'bang-dieu-khien') {
     setTimeout(initDashboardCharts, 50);
@@ -317,6 +295,14 @@ export function renderApp() {
 // 7. KHỞI CHẠY HỆ THỐNG & ĐỒNG BỘ NỀN (LIFECYCLE INITIALIZATION)
 // ==============================================================================
 document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const qTab = params.get('tab');
+    if (qTab && ['bang-dieu-khien', 'quan-ly-giai-dau', 'quan-ly-clb', 'lich-sinh-hoat', 'co-so-vat-chat', 'kinh-phi', 'bao-cao'].includes(qTab)) {
+      state.currentTab = qTab;
+    }
+  } catch (e) {}
+
   initTheme();
   window.renderApp();
 
