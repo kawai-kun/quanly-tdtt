@@ -33,6 +33,22 @@ import { animateToastIn, animateToastOut } from './animations.js';
     export function setColorTheme(themeName) {
       state.colorTheme = themeName;
       lsSet('tk_color_theme', themeName);
+
+      // Tự động chuyển đổi layout & chế độ xem đặc thù theo từng bản giao diện
+      if (themeName === 'titanium') {
+        state.tournamentsFilter.viewMode = 'table'; // Bản 4: Mặc định bảng số liệu 11 cột hành chính
+        showToast('Giao diện Bản 4', 'Đã chuyển sang: Sổ Bộ Hành Chính (Mặc định Bảng 11 Cột to rõ)');
+      } else if (themeName === 'carbon') {
+        state.tournamentsFilter.viewMode = 'cards';
+        showToast('Giao diện Bản 3', 'Đã chuyển sang: Modern Studio Bento (Cột Menu Dọc Bên Trái)');
+      } else if (themeName === 'crimson') {
+        state.tournamentsFilter.viewMode = 'cards';
+        showToast('Giao diện Bản 2', 'Đã chuyển sang: Athletic Arena Broadcast (Băng rôn Đỏ Sân vận động)');
+      } else {
+        state.tournamentsFilter.viewMode = 'cards';
+        showToast('Giao diện Bản 1', 'Đã chuyển sang: Executive IOC Center (Top Capsule Dock & Scoreboard)');
+      }
+
       applyColorTheme();
       try {
         const url = new URL(window.location);

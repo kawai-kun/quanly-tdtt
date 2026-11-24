@@ -70,7 +70,7 @@ import {
 } from './services/telegramService.js';
 
 // 4. UI COMPONENTS
-import { renderHeader, setGlobalYear, renderSyncPillHTML, renderSyncPill } from './components/header.js';
+import { renderHeader, renderLeftSidebarStudio, renderStudioTopBar, setGlobalYear, renderSyncPillHTML, renderSyncPill } from './components/header.js';
 import { switchTab, toggleMobileDrawer, renderSidebar, renderBottomNav, renderMobileDrawer } from './components/sidebar.js';
 import {
   renderDashboard,
@@ -265,17 +265,40 @@ export function renderApp() {
   else if (state.currentTab === 'kinh-phi') contentHTML = renderBudget();
   else if (state.currentTab === 'bao-cao') contentHTML = renderReports();
 
-  app.innerHTML = `
-    <div class="min-h-screen flex flex-col w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
-      ${renderHeader()}
-      <main class="flex-1 p-3.5 sm:p-5 lg:p-7 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
-        ${contentHTML}
-      </main>
-    </div>
-    ${renderBottomNav()}
-    ${renderMobileDrawer()}
-    <div id="commandPaletteContainer"></div>
-  `;
+  if (state.colorTheme === 'carbon') {
+    // ==============================================================================
+    // BẢN 3: MODERN STUDIO BENTO - CỘT MENU DỌC BÊN TRÁI (LEFT SIDEBAR DOCK 260px)
+    // ==============================================================================
+    app.innerHTML = `
+      <div class="min-h-screen flex w-full bg-[#e8edf3] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+        ${renderLeftSidebarStudio()}
+        <div class="flex-1 flex flex-col min-w-0">
+          ${renderStudioTopBar()}
+          <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
+            ${contentHTML}
+          </main>
+        </div>
+      </div>
+      ${renderBottomNav()}
+      ${renderMobileDrawer()}
+      <div id="commandPaletteContainer"></div>
+    `;
+  } else {
+    // ==============================================================================
+    // BẢN 1, 2, 4: HEADER BẢNG ĐIỀU HÀNH TƯƠNG ỨNG TỪNG PHONG CÁCH
+    // ==============================================================================
+    app.innerHTML = `
+      <div class="min-h-screen flex flex-col w-full bg-[#e8edf3] dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+        ${renderHeader()}
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
+          ${contentHTML}
+        </main>
+      </div>
+      ${renderBottomNav()}
+      ${renderMobileDrawer()}
+      <div id="commandPaletteContainer"></div>
+    `;
+  }
 
   if (state.currentTab === 'bang-dieu-khien') {
     setTimeout(initDashboardCharts, 50);
