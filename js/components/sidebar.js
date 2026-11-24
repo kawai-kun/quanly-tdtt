@@ -20,84 +20,10 @@ import { state } from '../state.js';
       }
     }
     export function renderSidebar() {
-      const navs = [
-        { id: 'bang-dieu-khien', label: 'Bảng điều khiển', icon: 'dashboard' },
-        { id: 'quan-ly-giai-dau', label: 'Quản lý giải đấu', icon: 'emoji_events', badge: state.activities.length },
-        { id: 'quan-ly-clb', label: 'Quản lý CLB', icon: 'groups_2', badge: state.clubs.length },
-        { id: 'lich-sinh-hoat', label: 'Lịch sinh hoạt', icon: 'calendar_month', badge: state.schedules.length },
-        { id: 'co-so-vat-chat', label: 'Cơ sở vật chất', icon: 'stadium', badge: state.facilities.length },
-        { id: 'kinh-phi', label: 'Quản lý kinh phí', icon: 'account_balance_wallet', badge: state.budgetItems.length },
-        { id: 'bao-cao', label: 'Báo cáo & Sổ lưu trữ', icon: 'summarize', badge: state.savedReports.length }
-      ];
-
-      return `
-        <aside class="hidden lg:flex flex-col justify-between w-[260px] shrink-0 sticky top-0 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 z-40 select-none overflow-y-auto">
-          <div>
-            <!-- Official Brand Header: Dedicated to Logo + HỆ THỐNG QUẢN LÝ TDTT (Góc bên trái) -->
-            <div class="px-2 py-3 flex items-center gap-3 border-b border-slate-200/80 dark:border-slate-800/80 pb-5 mb-4">
-              <div class="w-14 h-14 shrink-0 flex items-center justify-center p-1 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group">
-                <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover:scale-105" alt="Huy hiệu UBND Phường Tân Khai" />
-              </div>
-              <div class="flex flex-col text-left min-w-0">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">PHƯỜNG TÂN KHAI</span>
-                <span class="text-sm font-extrabold uppercase tracking-tight text-emerald-700 dark:text-emerald-400 leading-tight">HỆ THỐNG QUẢN LÝ</span>
-                <span class="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide leading-tight mt-0.5">THỂ DỤC THỂ THAO</span>
-              </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="space-y-1">
-              ${navs.map(item => {
-                const isActive = state.currentTab === item.id;
-                const cls = isActive
-                  ? 'bg-emerald-700 text-white font-semibold shadow-sm dark:bg-emerald-950 dark:text-emerald-300 dark:border dark:border-emerald-800'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium';
-                return `
-                  <button onclick="switchTab('${item.id}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all text-left ${cls} group btn-press">
-                    <span class="flex items-center gap-3">
-                      <span class="material-symbols-outlined text-[19px]">${item.icon}</span>
-                      <span>${item.label}</span>
-                    </span>
-                    ${item.badge !== undefined ? `
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold ${
-                        isActive 
-                          ? 'bg-white/20 text-white dark:bg-emerald-900 dark:text-emerald-200' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                      }">
-                        ${item.badge}
-                      </span>
-                    ` : ''}
-                  </button>
-                `;
-              }).join('')}
-            </nav>
-          </div>
-
-          <!-- Bottom Cloud Card -->
-          <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60">
-            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-brand-50 to-emerald-100/50 dark:from-slate-900 dark:to-slate-800 border border-brand-200/60 dark:border-slate-700 text-left">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-brand-800 dark:text-brand-300 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full ${state.apiUrl ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}"></span>
-                  Google Drive Cloud
-                </span>
-                <button onclick="openSyncModal()" class="text-[11px] text-brand-700 dark:text-brand-400 font-bold hover:underline">Cấu hình</button>
-              </div>
-              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 truncate">Lần cuối: ${state.lastSyncTime}</p>
-              <div class="mt-2.5 grid grid-cols-2 gap-1.5">
-                <button onclick="pullFromGoogleSheet(false)" class="py-2 px-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm transition-all flex items-center justify-center gap-1 btn-press" title="Lấy dữ liệu mới nhất từ Google Drive về máy (bao gồm giải đấu vừa thêm qua Telegram)">
-                  <span class="material-symbols-outlined text-[15px]">cloud_download</span>
-                  <span>Tải về</span>
-                </button>
-                <button onclick="pushToGoogleSheet(true)" class="py-2 px-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] rounded-xl border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-1 btn-press" title="Lưu dữ liệu hiện tại lên Google Drive">
-                  <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
-                  <span>Lưu lên</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </aside>
-      `;
+      // Đã nâng cấp lên Top Navigation Dock (Kiến trúc IOC Command Center)
+      // Giải phóng 100% diện tích bề ngang cho nội dung và dữ liệu
+      return '';
+    }
     }
 
     export function renderBottomNav() {

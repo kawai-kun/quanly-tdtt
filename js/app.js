@@ -123,6 +123,14 @@ import {
   openSyncModal
 } from './components/modals.js';
 
+import {
+  openCommandPalette,
+  closeCommandPalette,
+  handleCommandPaletteSearch,
+  handleCommandPaletteKeydown,
+  isCommandPaletteOpen
+} from './components/commandPalette.js';
+
 import { renderLogin, togglePassVisibility, handleLoginSubmit, handleLogout } from './components/auth.js';
 
 // ==============================================================================
@@ -222,7 +230,13 @@ const globalBindings = {
   closeModal,
   showToast,
   anime,
-  initTournamentsAnimations
+  initTournamentsAnimations,
+
+  // Command Palette (Ctrl+K)
+  openCommandPalette,
+  closeCommandPalette,
+  handleCommandPaletteSearch,
+  handleCommandPaletteKeydown
 };
 
 for (const [key, fn] of Object.entries(globalBindings)) {
@@ -251,17 +265,15 @@ export function renderApp() {
   else if (state.currentTab === 'bao-cao') contentHTML = renderReports();
 
   app.innerHTML = `
-    <div class="min-h-screen flex w-full bg-slate-50 dark:bg-slate-950">
-      ${renderSidebar()}
-      <div class="flex-1 flex flex-col min-w-0 min-h-screen">
-        ${renderHeader()}
-        <main class="flex-1 p-3.5 sm:p-5 lg:p-7 pb-28 lg:pb-8 max-w-[1720px] w-full mx-auto">
-          ${contentHTML}
-        </main>
-      </div>
+    <div class="min-h-screen flex flex-col w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+      ${renderHeader()}
+      <main class="flex-1 p-3.5 sm:p-5 lg:p-7 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
+        ${contentHTML}
+      </main>
     </div>
     ${renderBottomNav()}
     ${renderMobileDrawer()}
+    <div id="commandPaletteContainer"></div>
   `;
 
   if (state.currentTab === 'bang-dieu-khien') {
@@ -292,7 +304,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Phím tắt nhanh cho cán bộ (Enterprise Shortcuts)
 document.addEventListener('keydown', (e) => {
+  // Phím tắt Ctrl+K hoặc Cmd+K mở Command Palette
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+    e.preventDefault();
+    if (isCommandPaletteOpen()) closeCommandPalette();
+    else openCommandPalette();
+    return;
+  }
+
   if (e.key === 'Escape') {
+    if (isCommandPaletteOpen()) {
+      closeCommandPalette();
+      return;
+    }
     window.closeModal();
     return;
   }

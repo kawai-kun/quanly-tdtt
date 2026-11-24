@@ -150,3 +150,180 @@ select option {
 .admin-table tr {
   transition: background-color 0.12s ease;
 }
+
+/* ==============================================================================
+   THIẾT KẾ ĐỘT PHÁ: SPORTS IOC COMMAND CENTER + BENTO-GRID + METALLIC MEDALS
+   ============================================================================== */
+
+/* Glassmorphism & High-Tech Floating Dock */
+.glass-dock {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+.dark .glass-dock {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Bento Card Style */
+.bento-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.dark .bento-card {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+.bento-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.06);
+}
+.dark .bento-card:hover {
+  border-color: #334155;
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.4);
+}
+
+/* Metallic Badges for Medals (Huy chương Ánh kim) */
+.badge-gold {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f59e0b 100%);
+  color: #78350f;
+  border: 1px solid #fcd34d;
+  box-shadow: 0 2px 8px -1px rgba(245, 158, 11, 0.25);
+  font-weight: 800;
+}
+.dark .badge-gold {
+  background: linear-gradient(135deg, #78350f 0%, #b45309 60%, #f59e0b 100%);
+  color: #fef3c7;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge-silver {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #94a3b8 100%);
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 2px 8px -1px rgba(148, 163, 184, 0.25);
+  font-weight: 800;
+}
+.dark .badge-silver {
+  background: linear-gradient(135deg, #334155 0%, #475569 60%, #94a3b8 100%);
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.badge-bronze {
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 50%, #d97706 100%);
+  color: #7c2d12;
+  border: 1px solid #fdba74;
+  box-shadow: 0 2px 8px -1px rgba(217, 119, 6, 0.25);
+  font-weight: 800;
+}
+.dark .badge-bronze {
+  background: linear-gradient(135deg, #7c2d12 0%, #9a3412 60%, #d97706 100%);
+  color: #ffedd5;
+  border: 1px solid rgba(217, 119, 6, 0.4);
+}
+
+/* Live Pulse Ring */
+.live-pulse {
+  position: relative;
+}
+.live-pulse::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: inherit;
+  transform: translate(-50%, -50%) scale(1);
+  animation: pulseExpand 2s infinite ease-out;
+  opacity: 0.6;
+  z-index: 0;
+}
+@keyframes pulseExpand {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+}
+
+/* Command Palette (Ctrl+K) Backdrop & Dialog */
+.command-palette-backdrop {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.command-palette-box {
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  animation: popCommand 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes popCommand {
+  from { opacity: 0; transform: scale(0.96) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Kanban Board Styling */
+.kanban-col {
+  min-width: 290px;
+  max-width: 340px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+}
+.dark .kanban-col {
+  background: #0b1322;
+  border-color: #1e293b;
+}
+
+.kanban-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  transition: all 0.15s ease;
+}
+.dark .kanban-card {
+  background: #111c30;
+  border-color: #1e293b;
+}
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+.dark .kanban-card:hover {
+  border-color: #334155;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.35);
+}
+
+/* Match Center Sport Poster Card */
+.match-poster-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dark .match-poster-card {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+.match-poster-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.1);
+  border-color: #10b981;
+}
+.dark .match-poster-card:hover {
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.45);
+  border-color: #059669;
+}
