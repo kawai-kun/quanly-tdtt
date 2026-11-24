@@ -143,6 +143,113 @@ select option {
   transform: scale(0.97);
 }
 
+/* ==============================================================================
+   HUMAN-CRAFTED ATHLETIC PRO ARCHITECTURE (THOÁT LY HOÀN TOÀN KHỎI AI TEMPLATE)
+   Mạnh mẽ, Sáng tạo, Đĩnh đạc, Chuẩn mực Thể thao & Công thái học Thực tế
+   ============================================================================== */
+
+.font-sport {
+  font-family: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  text-transform: uppercase;
+}
+
+/* Stadium Scoreboard - Bảng điện tử sân vận động nguyên khối */
+.stadium-scoreboard {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+}
+.dark .stadium-scoreboard {
+  background: #0b1120;
+  border-color: #1e293b;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+}
+
+/* Scoreboard Cell Divider */
+.scoreboard-cell {
+  position: relative;
+}
+@media (min-width: 1024px) {
+  .scoreboard-cell:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 15%;
+    height: 70%;
+    width: 1px;
+    background: #e2e8f0;
+  }
+  .dark .scoreboard-cell:not(:last-child)::after {
+    background: #1e293b;
+  }
+}
+
+/* Action Control Deck - Thanh công cụ nguyên khối */
+.action-deck {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.dark .action-deck {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+/* Unibody Navigation Tabs */
+.studio-nav-btn {
+  position: relative;
+  transition: all 0.15s ease;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.studio-nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12%;
+  right: 12%;
+  height: 3px;
+  background: currentColor;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Match Pass Card - Thẻ thi đấu chuyên nghiệp */
+.match-pass-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--theme-primary, #2563eb);
+  border-radius: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.dark .match-pass-card {
+  background: #0f172a;
+  border-color: #1e293b;
+  border-left-color: var(--theme-primary, #3b82f6);
+}
+.match-pass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.08);
+}
+.dark .match-pass-card:hover {
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.45);
+}
+
+/* Referee Table - Bảng trọng tài liên đoàn sắc nét */
+.referee-table thead th {
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.05em;
+  font-size: 13px;
+  font-weight: 800;
+}
+.referee-table tbody tr:nth-child(even) {
+  background-color: rgba(248, 250, 252, 0.7);
+}
+.dark .referee-table tbody tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.5);
+}
+
 /* Bảng dữ liệu có vạch chia cột thanh lịch */
 .admin-table th {
   letter-spacing: 0.03em;
