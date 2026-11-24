@@ -12,10 +12,10 @@ import { showToast } from '../utils/toast.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
                   CƠ SỞ VẬT CHẤT & SÂN BÃI THỂ THAO
                 </h1>
-                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   ${state.facilities.length} ĐỊA ĐIỂM
                 </span>
               </div>
@@ -36,7 +36,7 @@ import { showToast } from '../utils/toast.js';
                   <div class="flex items-start justify-between">
                     <div>
                       <span class="px-2 py-0.5 rounded font-sport font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase tracking-wider">${f.type}</span>
-                      <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mt-2 leading-snug">${f.name}</h3>
+                      <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-2 leading-snug">${f.name}</h3>
                       <p class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-[15px] text-blue-500">location_on</span>${f.location}</p>
                     </div>
                     <span class="px-2.5 py-1 rounded font-sport font-bold text-xs ${f.status === 'Hoạt động tốt' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
@@ -45,7 +45,7 @@ import { showToast } from '../utils/toast.js';
                   </div>
 
                   <div class="mt-4 space-y-1.5">
-                    <div class="flex justify-between text-xs font-semibold">
+                    <div class="flex justify-between text-sm font-bold">
                       <span class="text-slate-500">Tỷ lệ khai thác sử dụng</span>
                       <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">${f.usageRate || 75}%</span>
                     </div>

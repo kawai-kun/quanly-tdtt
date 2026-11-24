@@ -13,10 +13,10 @@ import { getSportBadge } from '../utils/sportBadges.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
                   QUẢN LÝ CÂU LẠC BỘ THỂ THAO
                 </h1>
-                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   ${state.clubs.length} CLB TRỰC THUỘC
                 </span>
               </div>
@@ -44,10 +44,10 @@ import { getSportBadge } from '../utils/sportBadges.js';
                         ${c.status === 'active' ? 'HOẠT ĐỘNG' : 'TẠM DỪNG'}
                       </span>
                     </div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-3.5 leading-snug">${c.name}</h3>
+                    <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-3.5 leading-snug">${c.name}</h3>
                     <p class="text-xs text-blue-600 dark:text-blue-400 font-bold mt-0.5 font-sport uppercase tracking-wider">MÔN: ${c.sport}</p>
 
-                    <div class="mt-4 space-y-1.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    <div class="mt-4 space-y-1.5 text-sm text-slate-700 dark:text-slate-200 font-medium">
                       <div class="flex justify-between"><span class="text-slate-400">Chủ nhiệm:</span><b class="text-slate-800 dark:text-slate-200">${c.leader}</b></div>
                       <div class="flex justify-between"><span class="text-slate-400">Số ĐT:</span><span class="font-mono">${c.phone || 'Đang cập nhật'}</span></div>
                       <div class="flex justify-between"><span class="text-slate-400">Hội viên:</span><b class="text-blue-600 dark:text-blue-400 font-mono text-sm">${c.membersCount} người</b></div>

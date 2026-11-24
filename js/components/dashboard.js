@@ -34,14 +34,14 @@ export function renderDashboard() {
       <section class="stadium-scoreboard overflow-hidden">
         
         <!-- Scoreboard Header Strip -->
-        <div class="px-5 py-3.5 bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800">
+        <div class="px-5 py-4 bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-slate-800">
           <div class="flex items-center gap-3">
-            <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-sport font-bold tracking-widest uppercase">
-              <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+            <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-sport font-black tracking-widest uppercase shadow-[0_0_12px_rgba(0,229,255,0.35)]">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00e5ff]"></span>
               TRUNG TÂM CHỈ HUY THỂ THAO
             </span>
             <span class="text-xs text-slate-300 font-medium">
-              UBND Phường Tân Khai • Cán bộ phụ trách: <strong class="text-white">Trần Quốc Được</strong>
+              UBND Phường Tân Khai • Cán bộ phụ trách: <strong class="text-white font-black text-sm">Trần Quốc Được</strong>
             </span>
           </div>
 
@@ -73,14 +73,14 @@ export function renderDashboard() {
           <!-- Cell 1: Tổng giải đấu -->
           <div class="scoreboard-cell p-5 sm:p-6 text-left">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span class="font-sport font-bold text-xs tracking-wider uppercase">TỔNG GIẢI TỔ CHỨC</span>
+              <span class="font-sport font-black text-sm tracking-wider uppercase text-blue-600 dark:text-blue-400">TỔNG GIẢI TỔ CHỨC</span>
               <span class="material-symbols-outlined text-[18px]">emoji_events</span>
             </div>
             <div class="mt-2 flex items-baseline gap-2">
               <span id="stat_total_acts" class="font-sport font-black text-4xl sm:text-5xl text-slate-900 dark:text-white leading-none">${totalActs}</span>
-              <span class="text-xs font-sport font-bold text-slate-400">GIẢI ĐẤU</span>
+              <span class="text-sm font-sport font-black text-slate-500 uppercase">GIẢI ĐẤU</span>
             </div>
-            <p class="text-[11px] font-medium text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">
+            <p class="text-xs font-bold text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">
               <span class="material-symbols-outlined text-[13px]">verified</span>
               <span>30 Giải đấu thực tế của Cán bộ Được</span>
             </p>
@@ -89,14 +89,14 @@ export function renderDashboard() {
           <!-- Cell 2: Lượt VĐV -->
           <div class="scoreboard-cell p-5 sm:p-6 text-left">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span class="font-sport font-bold text-xs tracking-wider uppercase">LƯỢT VĐV THAM GIA</span>
+              <span class="font-sport font-black text-sm tracking-wider uppercase text-emerald-600 dark:text-emerald-400">LƯỢT VĐV THAM GIA</span>
               <span class="material-symbols-outlined text-[18px]">groups</span>
             </div>
             <div class="mt-2 flex items-baseline gap-2">
               <span id="stat_total_parts" class="font-sport font-black text-4xl sm:text-5xl text-slate-900 dark:text-white leading-none">${totalParticipants.toLocaleString('vi-VN')}</span>
-              <span class="text-xs font-sport font-bold text-slate-400">LƯỢT NGƯỜI</span>
+              <span class="text-sm font-sport font-black text-slate-500 uppercase">LƯỢT NGƯỜI</span>
             </div>
-            <p class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
+            <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
               <span class="material-symbols-outlined text-[13px]">trending_up</span>
               <span>Phong trào quần chúng & 5 CLB cơ sở</span>
             </p>
@@ -105,31 +105,31 @@ export function renderDashboard() {
           <!-- Cell 3: Huy chương đạt được -->
           <div class="scoreboard-cell p-5 sm:p-6 text-left">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span class="font-sport font-bold text-xs tracking-wider uppercase">THÀNH TÍCH HUY CHƯƠNG</span>
+              <span class="font-sport font-black text-sm tracking-wider uppercase text-amber-500">THÀNH TÍCH HUY CHƯƠNG</span>
               <span class="material-symbols-outlined text-[18px]">military_tech</span>
             </div>
             <div class="mt-2 flex items-baseline gap-2">
               <span id="stat_total_medals" class="font-sport font-black text-4xl sm:text-5xl text-amber-600 dark:text-amber-400 leading-none">${totalMedals}</span>
-              <span class="text-xs font-sport font-bold text-slate-400">TỔNG HUY CHƯƠNG</span>
+              <span class="text-sm font-sport font-black text-slate-500 uppercase">TỔNG HUY CHƯƠNG</span>
             </div>
             <div class="flex items-center gap-1.5 mt-2">
-              <span class="badge-gold px-2 py-0.5 rounded text-[10px] font-sport font-bold">🥇 ${goldMedals || 14} VÀNG</span>
-              <span class="badge-silver px-2 py-0.5 rounded text-[10px] font-sport font-bold">🥈 ${silverMedals || 14} BẠC</span>
-              <span class="badge-bronze px-2 py-0.5 rounded text-[10px] font-sport font-bold">🥉 ${bronzeMedals || 13} ĐỒNG</span>
+              <span class="badge-gold px-2 py-0.5 rounded text-xs font-sport font-black">🥇 ${goldMedals || 14} VÀNG</span>
+              <span class="badge-silver px-2 py-0.5 rounded text-xs font-sport font-black">🥈 ${silverMedals || 14} BẠC</span>
+              <span class="badge-bronze px-2 py-0.5 rounded text-xs font-sport font-black">🥉 ${bronzeMedals || 13} ĐỒNG</span>
             </div>
           </div>
 
           <!-- Cell 4: Kinh phí giải ngân -->
           <div class="scoreboard-cell p-5 sm:p-6 text-left">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span class="font-sport font-bold text-xs tracking-wider uppercase">KINH PHÍ QUYẾT TOÁN</span>
+              <span class="font-sport font-black text-sm tracking-wider uppercase text-blue-600 dark:text-blue-400">KINH PHÍ QUYẾT TOÁN</span>
               <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
             </div>
             <div class="mt-2 flex items-baseline gap-2">
               <span id="stat_total_budget" class="font-sport font-black text-4xl sm:text-5xl text-slate-900 dark:text-white leading-none">${(totalBudget / 1000000).toFixed(1)}</span>
-              <span class="text-xs font-sport font-bold text-slate-400">TRIỆU VNĐ</span>
+              <span class="text-sm font-sport font-black text-slate-500 uppercase">TRIỆU VNĐ</span>
             </div>
-            <p class="text-[11px] font-medium text-slate-500 mt-2 flex items-center gap-1">
+            <p class="text-xs font-bold text-slate-600 dark:text-slate-400 mt-2 flex items-center gap-1">
               <span class="material-symbols-outlined text-[13px]">receipt</span>
               <span>100% Hồ sơ thanh quyết toán hợp lệ</span>
             </p>
@@ -149,11 +149,11 @@ export function renderDashboard() {
           <div class="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
-              <h2 class="text-sm font-sport font-black tracking-wider uppercase text-slate-900 dark:text-white">
+              <h2 class="text-base sm:text-lg font-sport font-black tracking-wider uppercase text-slate-900 dark:text-white">
                 HOẠT ĐỘNG THỂ THAO TRỌNG ĐIỂM
               </h2>
             </div>
-            <button onclick="switchTab('quan-ly-giai-dau')" class="text-xs font-sport font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+            <button onclick="switchTab('quan-ly-giai-dau')" class="text-sm font-sport font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
               <span>XEM TẤT CẢ 30 GIẢI</span>
               <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
             </button>
@@ -174,13 +174,13 @@ export function renderDashboard() {
                         <span class="px-2 py-0.2 rounded text-[9px] font-sport font-bold ${badge.bg} ${badge.text}">${badge.label}</span>
                         <span class="text-[10px] text-slate-400 font-medium">• ${a.category || 'Cấp phường'}</span>
                       </div>
-                      <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate mt-1 leading-snug">
+                      <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate mt-1.5 leading-snug">
                         ${a.title}
                       </h3>
-                      <div class="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        <span>Ngày: <strong class="text-slate-700 dark:text-slate-200 font-mono">${a.date}</strong></span>
-                        <span>VĐV: <strong class="text-slate-700 dark:text-slate-200 font-mono">${a.participants}</strong></span>
-                        <span>Kinh phí: <strong class="text-slate-700 dark:text-slate-200 font-mono">${formatVNCurrency(a.budgetTotal || 0)}</strong></span>
+                      <div class="flex items-center gap-5 text-sm text-slate-600 dark:text-slate-300 font-medium mt-2">
+                        <span>Ngày: <strong class="text-slate-900 dark:text-white font-mono font-bold text-sm">${a.date}</strong></span>
+                        <span>VĐV: <strong class="text-slate-900 dark:text-white font-mono font-bold text-sm">${a.participants}</strong></span>
+                        <span>Kinh phí: <strong class="text-slate-900 dark:text-white font-mono font-bold text-sm">${formatVNCurrency(a.budgetTotal || 0)}</strong></span>
                       </div>
                     </div>
                   </div>
@@ -205,7 +205,7 @@ export function renderDashboard() {
         <!-- Right: Giám sát Sân bãi & CSVC Thực địa -->
         <div class="space-y-3">
           <div class="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
-            <h2 class="text-sm font-sport font-black tracking-wider uppercase text-slate-900 dark:text-white flex items-center gap-1.5">
+            <h2 class="text-base sm:text-lg font-sport font-black tracking-wider uppercase text-slate-900 dark:text-white flex items-center gap-2">
               <span class="material-symbols-outlined text-[17px] text-slate-500">stadium</span>
               <span>TRẠNG THÁI SÂN BÃI CSVC</span>
             </h2>
@@ -226,7 +226,7 @@ export function renderDashboard() {
                   <p class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">${f.name}</p>
                   <p class="text-[10px] text-slate-500">${f.type || 'Sân bãi thể thao'}</p>
                 </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1 shrink-0">
+                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1 shrink-0">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   <span>SẴN SÀNG</span>
                 </span>
@@ -291,14 +291,14 @@ export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
         <div>
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 class="text-sm font-sport font-black tracking-wider uppercase text-slate-900 dark:text-white">
+            <h3 class="text-base sm:text-lg font-sport font-black tracking-wider uppercase text-slate-900 dark:text-white">
               TIẾN ĐỘ THỰC HIỆN CHỈ TIÊU THI ĐUA NĂM ${state.selectedYear === 'all' ? '2026' : state.selectedYear}
             </h3>
-            <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+            <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
               HOÀN THÀNH VƯỢT MỨC (${avgPct}%)
             </span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p class="text-sm text-slate-600 dark:text-slate-300 mt-1.5">
             ${kpi.planTitle || 'Kế hoạch phát triển TDTT Phường Tân Khai'} • Toàn bộ các chỉ tiêu được giao đã hoàn thành xuất sắc.
           </p>
         </div>
@@ -315,13 +315,13 @@ export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants
         <!-- Metric 1: Giải đấu -->
         <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-sport font-bold text-slate-700 dark:text-slate-200 uppercase">GIẢI ĐẤU TỔ CHỨC</span>
+            <span class="text-sm font-sport font-black text-slate-800 dark:text-slate-100 uppercase">GIẢI ĐẤU TỔ CHỨC</span>
             <span class="font-sport font-black text-sm text-blue-600 dark:text-blue-400">${actPct}%</span>
           </div>
           <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded overflow-hidden">
             <div class="bg-blue-600 h-2.5 rounded transition-all duration-500" style="width: ${Math.min(100, actPct)}%"></div>
           </div>
-          <div class="flex justify-between items-center text-[11px] text-slate-500 font-mono">
+          <div class="flex justify-between items-center text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-mono font-bold">
             <span>Đạt: <b>${totalActs}</b> giải</span>
             <span>Chỉ tiêu: ${kpi.targetActivities || 20}</span>
           </div>
@@ -330,13 +330,13 @@ export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants
         <!-- Metric 2: Lượt VĐV -->
         <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-sport font-bold text-slate-700 dark:text-slate-200 uppercase">LƯỢT VĐV THAM GIA</span>
+            <span class="text-sm font-sport font-black text-slate-800 dark:text-slate-100 uppercase">LƯỢT VĐV THAM GIA</span>
             <span class="font-sport font-black text-sm text-emerald-600 dark:text-emerald-400">${partPct}%</span>
           </div>
           <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded overflow-hidden">
             <div class="bg-emerald-600 h-2.5 rounded transition-all duration-500" style="width: ${Math.min(100, partPct)}%"></div>
           </div>
-          <div class="flex justify-between items-center text-[11px] text-slate-500 font-mono">
+          <div class="flex justify-between items-center text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-mono font-bold">
             <span>Đạt: <b>${totalParticipants.toLocaleString('vi-VN')}</b></span>
             <span>Chỉ tiêu: ${(kpi.targetParticipants || 1500).toLocaleString('vi-VN')}</span>
           </div>
@@ -345,13 +345,13 @@ export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants
         <!-- Metric 3: Huy chương -->
         <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-sport font-bold text-slate-700 dark:text-slate-200 uppercase">THÀNH TÍCH HUY CHƯƠNG</span>
+            <span class="text-sm font-sport font-black text-slate-800 dark:text-slate-100 uppercase">THÀNH TÍCH HUY CHƯƠNG</span>
             <span class="font-sport font-black text-sm text-amber-600">${medalPct}%</span>
           </div>
           <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded overflow-hidden">
             <div class="bg-amber-500 h-2.5 rounded transition-all duration-500" style="width: ${Math.min(100, medalPct)}%"></div>
           </div>
-          <div class="flex justify-between items-center text-[11px] text-slate-500 font-mono">
+          <div class="flex justify-between items-center text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-mono font-bold">
             <span>Đạt: <b>${totalMedals}</b> HC</span>
             <span>Chỉ tiêu: ${kpi.targetMedals || 30}</span>
           </div>
@@ -360,13 +360,13 @@ export function renderKpiProgressCard(filteredActs, totalActs, totalParticipants
         <!-- Metric 4: CLB duy trì -->
         <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-sport font-bold text-slate-700 dark:text-slate-200 uppercase">CLB THỂ THAO CƠ SỞ</span>
+            <span class="text-sm font-sport font-black text-slate-800 dark:text-slate-100 uppercase">CLB THỂ THAO CƠ SỞ</span>
             <span class="font-sport font-black text-sm text-slate-700 dark:text-slate-300">${clubPct}%</span>
           </div>
           <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded overflow-hidden">
             <div class="bg-slate-600 dark:bg-slate-400 h-2.5 rounded transition-all duration-500" style="width: ${Math.min(100, clubPct)}%"></div>
           </div>
-          <div class="flex justify-between items-center text-[11px] text-slate-500 font-mono">
+          <div class="flex justify-between items-center text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-mono font-bold">
             <span>Duy trì: <b>${clubCount}</b> CLB</span>
             <span>Chỉ tiêu: ${kpi.targetClubs || 5}</span>
           </div>

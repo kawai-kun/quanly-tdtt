@@ -27,10 +27,10 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
                   BÁO CÁO & SỔ LƯU TRỮ VĂN BẢN
                 </h1>
-                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   NGHỊ ĐỊNH 30/2020/NĐ-CP
                 </span>
               </div>
@@ -39,18 +39,18 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
 
             <!-- Sub Tabs & Telegram Config Button -->
             <div class="flex items-center gap-2 flex-wrap">
-              <button onclick="openTelegramConfigModal('list')" class="btn-glass-tactile px-3.5 py-2 rounded-lg text-xs font-sport font-bold tracking-wider flex items-center gap-1.5 ${activeSchedCount > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-400'}" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
+              <button onclick="openTelegramConfigModal('list')" class="btn-glass-tactile px-3.5 py-2 rounded-lg text-sm font-sport font-black tracking-wider flex items-center gap-1.5 ${activeSchedCount > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-400'}" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
                 <span class="material-symbols-outlined text-[16px] text-sky-500">schedule_send</span>
                 <span>LỊCH TELEGRAM (${activeSchedCount}/${totalSchedCount})</span>
                 ${activeSchedCount > 0 ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
               </button>
 
               <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-inner">
-                <button onclick="setReportSubTab('document')" class="px-3.5 py-1.5 rounded-md text-xs font-sport font-bold tracking-wider transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
+                <button onclick="setReportSubTab('document')" class="px-3.5 py-1.5 rounded-md text-sm font-sport font-black tracking-wider transition-all flex items-center gap-1.5 ${sub === 'document' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
                   <span class="material-symbols-outlined text-[16px]">description</span>
                   <span>VĂN BẢN BÁO CÁO</span>
                 </button>
-                <button onclick="setReportSubTab('registry')" class="px-3.5 py-1.5 rounded-md text-xs font-sport font-bold tracking-wider transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
+                <button onclick="setReportSubTab('registry')" class="px-3.5 py-1.5 rounded-md text-sm font-sport font-black tracking-wider transition-all flex items-center gap-1.5 ${sub === 'registry' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs ring-1 ring-slate-200 dark:ring-slate-600' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'}">
                   <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
                   <span>SỔ LƯU TRỮ (${state.savedReports.length})</span>
                 </button>

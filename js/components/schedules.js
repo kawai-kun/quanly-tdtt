@@ -13,10 +13,10 @@ import { showToast } from '../utils/toast.js';
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div class="flex items-center gap-2.5">
-                <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+                <h1 class="text-2xl sm:text-3xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
                   LỊCH SINH HOẠT & TẬP LUYỆN
                 </h1>
-                <span class="px-2 py-0.5 rounded text-[10px] font-sport font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                <span class="px-2 py-0.5 rounded text-xs font-sport font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   ${state.schedules.length} KHUNG GIỜ
                 </span>
               </div>
@@ -40,7 +40,7 @@ import { showToast } from '../utils/toast.js';
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
-                      <span class="text-xs font-sport font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-800/60 uppercase tracking-wider">${s.days}</span>
+                      <span class="text-xs sm:text-sm font-sport font-black text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-800/60 uppercase tracking-wider">${s.days}</span>
                       <div class="flex items-center gap-1">
                         <button onclick="openScheduleModal('${s.id}')" title="Sửa lịch" class="text-slate-400 hover:text-blue-600 p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors btn-press">
                           <span class="material-symbols-outlined text-[17px]">edit</span>
@@ -50,9 +50,9 @@ import { showToast } from '../utils/toast.js';
                         </button>
                       </div>
                     </div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-2 leading-snug">${s.clubName}</h3>
+                    <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-2 leading-snug">${s.clubName}</h3>
                     <p class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-[15px] text-blue-500">location_on</span>${s.location}</p>
-                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 font-medium leading-relaxed">${s.description}</p>
+                    <p class="text-sm text-slate-700 dark:text-slate-200 mt-3 font-medium bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 font-medium leading-relaxed">${s.description}</p>
                   </div>
                 </div>
               `;

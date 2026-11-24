@@ -1,7 +1,6 @@
 /* ==============================================================================
    HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO - PHƯỜNG TÂN KHAI
-   THIẾT KẾ CHÍNH QUY & HÀNH CHÍNH (HUMAN-CRAFTED ENTERPRISE UI)
-   Không hiệu ứng giả cầy, không màu dạ quang, tối ưu công thái học và mật độ thông tin
+   THIẾT KẾ ĐỘT PHÁ: HIGH-CONTRAST CHUYÊN NGHIỆP + HIỆU ỨNG NEON SẮC NÉT
    ============================================================================== */
 
 :root {
@@ -11,58 +10,98 @@
   --color-accent-gold: #b45309;     /* Vàng đồng thể thao */
   
   --color-text-primary: #0f172a;    /* Slate 900 - Đen chữ sắc nét */
-  --color-text-secondary: #475569;  /* Slate 600 - Chữ thứ cấp */
-  --color-text-muted: #94a3b8;      /* Slate 400 */
+  --color-text-secondary: #334155;  /* Slate 700 - Chữ thứ cấp tương phản cao */
+  --color-text-muted: #64748b;      /* Slate 500 */
   
-  --color-bg-base: #f8fafc;         /* Slate 50 - Nền công sở sạch sẽ */
+  --color-bg-base: #d9e3f0;         /* Nền tương phản cao, tách biệt hoàn toàn với thẻ trắng */
   --color-surface-card: #ffffff;    /* Trắng chuẩn */
-  --color-border: #e2e8f0;          /* Slate 200 - Viền mảnh 1px */
+  --color-border: #cbd5e1;          /* Slate 300 - Viền rõ nét */
   
   --font-family-primary: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-sport: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* Theme Accent & Button Tokens (Linear / Vercel / Stripe Standard) */
+  /* Theme Tokens - Default Sapphire */
   --theme-btn-start: #2563eb;
   --theme-btn-end: #1d4ed8;
-  --theme-btn-glow: rgba(37, 99, 235, 0.45);
+  --theme-btn-glow: rgba(37, 99, 235, 0.55);
   --theme-accent: #2563eb;
-  --theme-ambient-1: rgba(37, 99, 235, 0.08);
-  --theme-ambient-2: rgba(245, 158, 11, 0.05);
+  --theme-neon-color: #00e5ff;
+  --theme-neon-glow: rgba(0, 229, 255, 0.5);
+  --theme-neon-border: #00e5ff;
+  --theme-tab-dock-bg: #0b1528;
+  --theme-tab-inactive-bg: #152238;
+  --theme-tab-inactive-text: #cbd5e1;
+  --theme-page-bg: #dbe4ef;
+  --theme-ambient-1: rgba(37, 99, 235, 0.16);
+  --theme-ambient-2: rgba(0, 229, 255, 0.10);
 }
 
+/* 1. SAPPHIRE: COMMAND CENTER IOC - NEON CYAN / ELECTRIC BLUE */
 .theme-sapphire {
   --theme-btn-start: #2563eb;
   --theme-btn-end: #1d4ed8;
-  --theme-btn-glow: rgba(37, 99, 235, 0.5);
+  --theme-btn-glow: rgba(37, 99, 235, 0.55);
   --theme-accent: #2563eb;
-  --theme-ambient-1: rgba(37, 99, 235, 0.12);
-  --theme-ambient-2: rgba(245, 158, 11, 0.06);
+  --theme-neon-color: #00e5ff;
+  --theme-neon-glow: rgba(0, 229, 255, 0.55);
+  --theme-neon-border: #00e5ff;
+  --theme-tab-dock-bg: #0b1528;
+  --theme-tab-inactive-bg: #152238;
+  --theme-tab-inactive-text: #e2e8f0;
+  --theme-page-bg: #d8e2ee;
+  --theme-ambient-1: rgba(37, 99, 235, 0.18);
+  --theme-ambient-2: rgba(0, 229, 255, 0.12);
 }
 
+/* 2. CRIMSON: SÂN VẬN ĐỘNG RỰC LỬA - NEON RUBY FLAME & GOLD */
 .theme-crimson {
   --theme-btn-start: #dc2626;
   --theme-btn-end: #991b1b;
-  --theme-btn-glow: rgba(220, 38, 38, 0.5);
+  --theme-btn-glow: rgba(220, 38, 38, 0.55);
   --theme-accent: #dc2626;
-  --theme-ambient-1: rgba(220, 38, 38, 0.12);
-  --theme-ambient-2: rgba(234, 179, 8, 0.08);
+  --theme-neon-color: #ff0055;
+  --theme-neon-glow: rgba(255, 0, 85, 0.55);
+  --theme-neon-border: #ff0055;
+  --theme-tab-dock-bg: #2b080c;
+  --theme-tab-inactive-bg: #420f14;
+  --theme-tab-inactive-text: #fecdd3;
+  --theme-page-bg: #ecdedf;
+  --theme-ambient-1: rgba(220, 38, 38, 0.18);
+  --theme-ambient-2: rgba(245, 158, 11, 0.14);
 }
 
+/* 3. CARBON: CYBER ATHLETIC PRO - NEON ORANGE VOLT */
 .theme-carbon {
   --theme-btn-start: #ea580c;
   --theme-btn-end: #c2410c;
-  --theme-btn-glow: rgba(234, 88, 12, 0.5);
+  --theme-btn-glow: rgba(234, 88, 12, 0.55);
   --theme-accent: #ea580c;
-  --theme-ambient-1: rgba(234, 88, 12, 0.14);
-  --theme-ambient-2: rgba(124, 58, 237, 0.08);
+  --theme-neon-color: #ff6b00;
+  --theme-neon-glow: rgba(255, 107, 0, 0.55);
+  --theme-neon-border: #ff6b00;
+  --theme-tab-dock-bg: #090a0d;
+  --theme-tab-inactive-bg: #1a1d24;
+  --theme-tab-inactive-text: #fed7aa;
+  --theme-page-bg: #14171d;
+  --theme-ambient-1: rgba(234, 88, 12, 0.22);
+  --theme-ambient-2: rgba(0, 255, 136, 0.14);
 }
 
+/* 4. TITANIUM: HÀNH CHÍNH NHÀ NƯỚC - NEON EMERALD MINT */
 .theme-titanium {
-  --theme-btn-start: #334155;
-  --theme-btn-end: #0f172a;
-  --theme-btn-glow: rgba(51, 65, 85, 0.5);
-  --theme-accent: #475569;
-  --theme-ambient-1: rgba(71, 85, 105, 0.12);
-  --theme-ambient-2: rgba(14, 165, 233, 0.06);
+  --theme-btn-start: #047857;
+  --theme-btn-end: #064e3b;
+  --theme-btn-glow: rgba(4, 120, 87, 0.55);
+  --theme-accent: #047857;
+  --theme-neon-color: #00e676;
+  --theme-neon-glow: rgba(0, 230, 118, 0.5);
+  --theme-neon-border: #00e676;
+  --theme-tab-dock-bg: #062b1f;
+  --theme-tab-inactive-bg: #0b3d2c;
+  --theme-tab-inactive-text: #d1fae5;
+  --theme-page-bg: #d7e2dc;
+  --theme-ambient-1: rgba(4, 120, 87, 0.18);
+  --theme-ambient-2: rgba(14, 165, 233, 0.10);
 }
 
 .theme-emerald {
@@ -70,64 +109,97 @@
   --theme-btn-end: #047857;
   --theme-btn-glow: rgba(5, 150, 105, 0.5);
   --theme-accent: #059669;
-  --theme-ambient-1: rgba(5, 150, 105, 0.10);
-  --theme-ambient-2: rgba(16, 185, 129, 0.05);
+  --theme-neon-color: #10b981;
+  --theme-neon-glow: rgba(16, 185, 129, 0.45);
+  --theme-neon-border: #10b981;
+  --theme-tab-dock-bg: #064e3b;
+  --theme-tab-inactive-bg: #065f46;
+  --theme-tab-inactive-text: #d1fae5;
+  --theme-page-bg: #d8e2dc;
+  --theme-ambient-1: rgba(5, 150, 105, 0.12);
+  --theme-ambient-2: rgba(16, 185, 129, 0.08);
 }
 
 .dark {
-  --color-brand-primary: #10b981;   /* Emerald 500 */
+  --color-brand-primary: #10b981;
   --color-brand-dark: #022c22;
   --color-brand-light: rgba(16, 185, 129, 0.1);
   --color-accent-gold: #f59e0b;
   
   --color-text-primary: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #64748b;
+  --color-text-secondary: #e2e8f0;
+  --color-text-muted: #94a3b8;
   
-  --color-bg-base: #0b1120;         /* Slate 950 sâu */
-  --color-surface-card: #0f172a;    /* Slate 900 */
-  --color-border: #1e293b;          /* Slate 800 */
+  --color-bg-base: #090d16;
+  --color-surface-card: #0f172a;
+  --color-border: #334155;
+}
+
+/* Tối ưu công thái học font chữ hiển thị chuẩn sắc nét */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Scrollbar thanh lịch chuẩn Desktop */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-.dark ::-webkit-scrollbar-thumb { background: #334155; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-/* Nền Ambient Lighting Đẳng Cấp Thế Giới - Tách Biệt Rõ Ràng Nền và Thẻ */
+/* Nền Ambient Lighting Đẳng Cấp - Tách Biệt Rõ Ràng Màu Nền Trang So Với Thẻ */
 body {
   font-family: var(--font-family-primary);
-  background-color: #e8edf3;
+  background-color: var(--theme-page-bg, #d8e2ee);
   background-image: 
-    radial-gradient(circle at 15% 0%, var(--theme-ambient-1, rgba(37, 99, 235, 0.12)) 0%, transparent 45%),
-    radial-gradient(circle at 85% 5%, var(--theme-ambient-2, rgba(245, 158, 11, 0.08)) 0%, transparent 45%);
+    radial-gradient(circle at 12% 0%, var(--theme-ambient-1, rgba(37, 99, 235, 0.18)) 0%, transparent 45%),
+    radial-gradient(circle at 88% 5%, var(--theme-ambient-2, rgba(0, 229, 255, 0.12)) 0%, transparent 45%);
   background-attachment: fixed;
   color: #0f172a;
 }
 
-.dark body {
-  background-color: #080d1a !important;
+.dark body, .theme-carbon body {
+  background-color: #090d16 !important;
   background-image: 
-    radial-gradient(circle at 15% 0%, var(--theme-ambient-1, rgba(37, 99, 235, 0.16)) 0%, transparent 50%),
-    radial-gradient(circle at 85% 5%, var(--theme-ambient-2, rgba(245, 158, 11, 0.10)) 0%, transparent 50%),
-    radial-gradient(circle at 50% 60%, rgba(15, 23, 42, 0.6) 0%, transparent 100%);
+    radial-gradient(circle at 15% 0%, var(--theme-ambient-1, rgba(37, 99, 235, 0.22)) 0%, transparent 50%),
+    radial-gradient(circle at 85% 5%, var(--theme-ambient-2, rgba(0, 229, 255, 0.15)) 0%, transparent 50%),
+    radial-gradient(circle at 50% 60%, rgba(15, 23, 42, 0.7) 0%, transparent 100%) !important;
   background-attachment: fixed;
-  color: #f8fafc;
+  color: #f8fafc !important;
 }
 
-/* Thẻ Dữ Liệu Tách Biệt Khỏi Nền - Đổ Bóng Sâu Nổi Khối */
-.luxury-card, .match-pass-card, .admin-card, .action-deck, .glass-card {
+/* Thẻ Dữ Liệu Tách Biệt Hoàn Toàn Khỏi Nền - Đổ Bóng Nổi Khối & Hiệu Ứng Neon Viền */
+.luxury-card, .match-pass-card, .admin-card, .action-deck, .glass-card, .bento-card {
   background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 
+    0 4px 18px -2px rgba(15, 23, 42, 0.09),
+    0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.dark .luxury-card, .dark .match-pass-card, .dark .admin-card, .dark .action-deck, .dark .glass-card {
-  background-color: #0f172a !important;
-  border-color: #334155 !important;
-  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5) !important;
+
+.dark .luxury-card, .dark .match-pass-card, .dark .admin-card, .dark .action-deck, .dark .glass-card, .dark .bento-card,
+.theme-carbon .luxury-card, .theme-carbon .match-pass-card, .theme-carbon .admin-card, .theme-carbon .action-deck, .theme-carbon .glass-card, .theme-carbon .bento-card {
+  background-color: #111827 !important;
+  border-color: #374151 !important;
+  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Hiệu Ứng Neon Lướt Chuột Lên Thẻ (Card Hover Neon Aura) */
+.luxury-card:hover, .match-pass-card:hover, .bento-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--theme-accent, #2563eb) !important;
+  box-shadow: 
+    0 12px 30px -4px rgba(15, 23, 42, 0.14),
+    0 0 20px -2px var(--theme-neon-glow, rgba(0, 229, 255, 0.45)) !important;
+}
+.dark .luxury-card:hover, .dark .match-pass-card:hover, .dark .bento-card:hover,
+.theme-carbon .luxury-card:hover, .theme-carbon .match-pass-card:hover, .theme-carbon .bento-card:hover {
+  border-color: var(--theme-neon-border, #ff6b00) !important;
+  box-shadow: 
+    0 16px 36px -4px rgba(0, 0, 0, 0.7),
+    0 0 24px -2px var(--theme-neon-glow, rgba(255, 107, 0, 0.5)) !important;
 }
 
 /* ==============================================================================
@@ -372,79 +444,78 @@ select option {
   border-color: #1e293b;
 }
 
-/* Unibody Tactile Dock Navigation Tabs (Tách Biệt Màu Nền Dock & Tab Rõ Ràng) */
+/* ==============================================================================
+   STUDIO NAVIGATION DOCK - BẢNG ĐIỀU KHIỂN TÁCH BIỆT MÀU NỀN & HIỆU ỨNG NEON
+   ============================================================================== */
 .studio-nav-dock {
-  background: #cbd5e1;
-  border: 1px solid #94a3b8;
-  border-radius: 12px;
-  padding: 4px;
+  background: var(--theme-tab-dock-bg, #0b1528) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 14px;
+  padding: 5px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  gap: 5px;
+  box-shadow: 
+    0 4px 20px -2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.12);
 }
 .dark .studio-nav-dock {
-  background: #0f172a;
-  border-color: #334155;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: #060a12 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.15);
 }
 
 .studio-nav-btn {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 13px;
-  border-radius: 8px;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 9px;
   font-family: var(--font-family-sport);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
-  letter-spacing: 0.03em;
-  background: #f1f5f9;
-  color: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.04em;
+  background: var(--theme-tab-inactive-bg, #152238);
+  color: var(--theme-tab-inactive-text, #cbd5e1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 .dark .studio-nav-btn {
-  background: #1e293b;
-  color: #e2e8f0;
-  border-color: #334155;
+  background: #111a2e;
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.06);
 }
 .studio-nav-btn:hover {
-  color: #000000;
-  background: #ffffff;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.18) !important;
   transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-.dark .studio-nav-btn:hover {
-  color: #ffffff;
-  background: #334155;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Active Tab: Solid High-Contrast Tactile Capsule */
+/* Active Tab: Rực Lửa / Sắc Nét Với Hiệu Ứng Neon Glow Aura */
 .studio-nav-btn.active {
   background: linear-gradient(180deg, var(--theme-btn-start, #2563eb) 0%, var(--theme-btn-end, #1d4ed8) 100%) !important;
   color: #ffffff !important;
-  font-weight: 900;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  font-weight: 900 !important;
+  border: 1.5px solid var(--theme-neon-border, #00e5ff) !important;
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    0 2px 4px rgba(0, 0, 0, 0.15),
-    0 6px 16px -2px var(--theme-btn-glow, rgba(37, 99, 235, 0.45)) !important;
-  transform: translateY(-0.5px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 0 18px -2px var(--theme-neon-glow, rgba(0, 229, 255, 0.55)),
+    0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-1px);
 }
 .studio-nav-btn.active .material-symbols-outlined {
   color: #ffffff !important;
 }
 .studio-nav-btn.active .studio-badge {
-  background: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
   color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
-}
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
 }
 
 /* Match Pass Card - Thẻ thi đấu chuyên nghiệp */
@@ -472,9 +543,10 @@ select option {
 .referee-table {
   border-collapse: separate !important;
   border-spacing: 0 !important;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
   overflow: hidden;
+  font-size: 15px;
 }
 .dark .referee-table {
   border-color: #334155;
@@ -484,10 +556,11 @@ select option {
 .referee-table thead th {
   font-family: 'Barlow Condensed', sans-serif;
   letter-spacing: 0.05em;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
-  border-bottom: 2px solid var(--theme-btn-start, #2563eb);
+  padding: 12px 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 2px solid var(--theme-neon-border, #00e5ff);
 }
 .referee-table thead th:last-child {
   border-right: none;
@@ -495,8 +568,10 @@ select option {
 
 /* Vạch phân chia cột giữa các ô dữ liệu (Body Column Dividers) */
 .referee-table tbody td {
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid #cbd5e1;
   border-bottom: 1px solid #e2e8f0;
+  padding: 12px 10px;
+  font-size: 14.5px;
 }
 .dark .referee-table tbody td {
   border-right: 1px solid #1e293b;
@@ -504,6 +579,19 @@ select option {
 }
 .referee-table tbody td:last-child {
   border-right: none;
+}
+
+/* Hiệu ứng Neon tiện ích (Neon Utility Accents) */
+.neon-glow-accent {
+  box-shadow: 0 0 16px -2px var(--theme-neon-glow, rgba(0, 229, 255, 0.55));
+}
+.neon-border-pulse {
+  border-color: var(--theme-neon-border, #00e5ff) !important;
+  animation: neonBorderPulse 2.5s infinite ease-in-out;
+}
+@keyframes neonBorderPulse {
+  0%, 100% { box-shadow: 0 0 10px var(--theme-neon-glow, rgba(0, 229, 255, 0.4)); }
+  50% { box-shadow: 0 0 22px var(--theme-neon-glow, rgba(0, 229, 255, 0.7)); }
 }
 
 /* Màu phân cách các cột (Column Group Shading) */
