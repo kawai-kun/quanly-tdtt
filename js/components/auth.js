@@ -60,10 +60,14 @@ import { showToast, toggleDarkMode } from '../utils/toast.js';
                 </button>
               </div>
 
-              <div class="pt-2">
+              <div class="pt-2 space-y-2">
                 <button type="submit" class="w-full py-3 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer btn-press">
                   <span>Đăng nhập hệ thống</span>
                   <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </button>
+                <button type="button" onclick="state.isAuthenticated=true; lsSet('tk_auth',true); renderApp();" class="w-full py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 font-bold text-xs rounded-xl border border-emerald-200 dark:border-emerald-800 transition-all flex items-center justify-center gap-2 btn-press">
+                  <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                  <span>Vào xem trực tiếp (Cán bộ Trần Quốc Được)</span>
                 </button>
               </div>
             </form>

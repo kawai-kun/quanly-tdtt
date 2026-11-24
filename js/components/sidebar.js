@@ -24,7 +24,6 @@ import { state } from '../state.js';
       // Giải phóng 100% diện tích bề ngang cho nội dung và dữ liệu
       return '';
     }
-    }
 
     export function renderBottomNav() {
       const items = [

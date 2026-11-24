@@ -33,7 +33,7 @@ export function lsSet(k, v) {
 }
 
 export const state = {
-  isAuthenticated: lsGet('tk_auth', false),
+  isAuthenticated: lsGet('tk_auth', true),
   currentTab: 'bang-dieu-khien',
   darkMode: lsGet('tk_dark', false),
   apiUrl: lsGet('tk_api_url', '') || DEFAULT_API_URL,
