@@ -179,11 +179,54 @@ body {
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.dark .luxury-card, .dark .match-pass-card, .dark .admin-card, .dark .action-deck, .dark .glass-card, .dark .bento-card,
-.theme-carbon .luxury-card, .theme-carbon .match-pass-card, .theme-carbon .admin-card, .theme-carbon .action-deck, .theme-carbon .glass-card, .theme-carbon .bento-card {
-  background-color: #111827 !important;
-  border-color: #374151 !important;
+.dark .luxury-card, .dark .match-pass-card, .dark .admin-card, .dark .action-deck, .dark .glass-card, .dark .bento-card {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
   box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Carbon Theme (Bản 3): Giao diện Cyber Dark Độc Quyền với chữ phát sáng tương phản cao */
+.theme-carbon .stadium-scoreboard,
+.theme-carbon .scoreboard-cell,
+.theme-carbon .luxury-card, 
+.theme-carbon .match-pass-card, 
+.theme-carbon .admin-card, 
+.theme-carbon .action-deck, 
+.theme-carbon .glass-card, 
+.theme-carbon .bento-card,
+.theme-carbon .bg-white {
+  background-color: #161b22 !important;
+  border-color: #30363d !important;
+  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.7) !important;
+  color: #f0f6fc !important;
+}
+.theme-carbon .stadium-scoreboard > div:first-child {
+  background-color: #0d1117 !important;
+  border-color: #30363d !important;
+}
+.theme-carbon .scoreboard-cell:not(:last-child)::after {
+  background: #30363d !important;
+}
+.theme-carbon .text-slate-900,
+.theme-carbon .text-slate-800,
+.theme-carbon .text-slate-700 {
+  color: #f0f6fc !important;
+}
+.theme-carbon .text-slate-600,
+.theme-carbon .text-slate-500,
+.theme-carbon .text-slate-400 {
+  color: #9ca3af !important;
+}
+.theme-carbon .bg-slate-100,
+.theme-carbon .bg-slate-50,
+.theme-carbon .bg-slate-200 {
+  background-color: #21262d !important;
+  color: #e6edf3 !important;
+  border-color: #30363d !important;
+}
+.theme-carbon .border-slate-200,
+.theme-carbon .border-slate-300 {
+  border-color: #30363d !important;
 }
 
 /* Hiệu Ứng Neon Lướt Chuột Lên Thẻ (Card Hover Neon Aura) */

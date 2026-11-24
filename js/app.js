@@ -270,7 +270,7 @@ export function renderApp() {
     // BẢN 3: MODERN STUDIO BENTO - CỘT MENU DỌC BÊN TRÁI (LEFT SIDEBAR DOCK 260px)
     // ==============================================================================
     app.innerHTML = `
-      <div class="min-h-screen flex w-full bg-[#e8edf3] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      <div class="min-h-screen flex w-full text-slate-900 dark:text-slate-100">
         ${renderLeftSidebarStudio()}
         <div class="flex-1 flex flex-col min-w-0">
           ${renderStudioTopBar()}
@@ -288,7 +288,7 @@ export function renderApp() {
     // BẢN 1, 2, 4: HEADER BẢNG ĐIỀU HÀNH TƯƠNG ỨNG TỪNG PHONG CÁCH
     // ==============================================================================
     app.innerHTML = `
-      <div class="min-h-screen flex flex-col w-full bg-[#e8edf3] dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+      <div class="min-h-screen flex flex-col w-full text-slate-800 dark:text-slate-100">
         ${renderHeader()}
         <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
           ${contentHTML}

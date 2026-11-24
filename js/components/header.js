@@ -34,23 +34,50 @@ export function getGlobalNavs() {
   ];
 }
 
-export function renderThemeSwitcherPills(extraCls = '') {
+export function renderSidebarThemeGrid() {
+  const current = state.colorTheme || 'sapphire';
   return `
-    <div class="flex items-center gap-1.5 p-1 bg-slate-900/15 dark:bg-slate-900/95 rounded-xl border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-sport font-bold tracking-wider shadow-inner ${extraCls}" title="Chuyển đổi 4 bản giao diện khác biệt hoàn toàn về kiến trúc và màu sắc">
-      <button onclick="setColorTheme('sapphire')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${(state.colorTheme === 'sapphire' || !state.colorTheme) ? 'bg-blue-600 text-white shadow-md font-black ring-2 ring-cyan-400' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600'}" title="Bản 1: IOC Command Center">
-        <span class="w-2.5 h-2.5 rounded-full ${(state.colorTheme === 'sapphire' || !state.colorTheme) ? 'bg-cyan-300 shadow-[0_0_8px_#00e5ff]' : 'bg-blue-600'}"></span>
+    <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-900/95 rounded-xl border border-slate-800 text-[11px] font-sport font-black tracking-wider shadow-inner">
+      <button onclick="setColorTheme('sapphire')" class="px-2 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 ${current === 'sapphire' ? 'bg-blue-600 text-white font-black ring-2 ring-cyan-400' : 'text-slate-400 hover:text-white bg-slate-800/60'}" title="Bản 1: IOC Sapphire">
+        <span class="w-2 h-2 rounded-full ${current === 'sapphire' ? 'bg-cyan-300' : 'bg-blue-500'}"></span>
         <span>1. SAPPHIRE</span>
       </button>
-      <button onclick="setColorTheme('crimson')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${state.colorTheme === 'crimson' ? 'bg-red-600 text-white shadow-md font-black ring-2 ring-amber-400' : 'text-slate-700 dark:text-slate-300 hover:text-red-600'}" title="Bản 2: Sân Vận Động Rực Lửa">
-        <span class="w-2.5 h-2.5 rounded-full ${state.colorTheme === 'crimson' ? 'bg-amber-300 shadow-[0_0_8px_#ff0055]' : 'bg-red-600'}"></span>
+      <button onclick="setColorTheme('crimson')" class="px-2 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 ${current === 'crimson' ? 'bg-red-600 text-white font-black ring-2 ring-amber-400' : 'text-slate-400 hover:text-white bg-slate-800/60'}" title="Bản 2: Arena Crimson">
+        <span class="w-2 h-2 rounded-full ${current === 'crimson' ? 'bg-amber-300' : 'bg-red-500'}"></span>
         <span>2. CRIMSON</span>
       </button>
-      <button onclick="setColorTheme('carbon')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${state.colorTheme === 'carbon' ? 'bg-orange-500 text-white shadow-md font-black ring-2 ring-orange-300' : 'text-slate-700 dark:text-slate-300 hover:text-orange-500'}" title="Bản 3: Modern Left-Sidebar Studio">
-        <span class="w-2.5 h-2.5 rounded-full ${state.colorTheme === 'carbon' ? 'bg-yellow-300 shadow-[0_0_8px_#ff6b00]' : 'bg-orange-500'}"></span>
+      <button onclick="setColorTheme('carbon')" class="px-2 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 ${current === 'carbon' ? 'bg-orange-500 text-white font-black ring-2 ring-orange-300' : 'text-slate-400 hover:text-white bg-slate-800/60'}" title="Bản 3: Bento Carbon">
+        <span class="w-2 h-2 rounded-full ${current === 'carbon' ? 'bg-yellow-300' : 'bg-orange-500'}"></span>
         <span>3. CARBON</span>
       </button>
-      <button onclick="setColorTheme('titanium')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${state.colorTheme === 'titanium' ? 'bg-emerald-700 text-white shadow-md font-black ring-2 ring-emerald-300' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-700'}" title="Bản 4: Sổ Bộ Hành Chính Nhà Nước">
-        <span class="w-2.5 h-2.5 rounded-full ${state.colorTheme === 'titanium' ? 'bg-emerald-200 shadow-[0_0_8px_#00e676]' : 'bg-emerald-700'}"></span>
+      <button onclick="setColorTheme('titanium')" class="px-2 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 ${current === 'titanium' ? 'bg-emerald-700 text-white font-black ring-2 ring-emerald-300' : 'text-slate-400 hover:text-white bg-slate-800/60'}" title="Bản 4: Sổ bộ Titanium">
+        <span class="w-2 h-2 rounded-full ${current === 'titanium' ? 'bg-emerald-200' : 'bg-emerald-600'}"></span>
+        <span>4. TITANIUM</span>
+      </button>
+    </div>
+  `;
+}
+
+export function renderThemeSwitcherPills(extraCls = '') {
+  const current = state.colorTheme || 'sapphire';
+  const isDarkContainer = extraCls.includes('bg-red') || extraCls.includes('bg-emerald') || extraCls.includes('dark');
+  const inactiveTextCls = isDarkContainer ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-slate-700 dark:text-slate-200 hover:text-blue-600';
+  return `
+    <div class="flex items-center gap-1 p-1 bg-slate-900/15 dark:bg-slate-900/95 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-sport font-black tracking-wider shadow-inner ${extraCls}" title="Chuyển đổi 4 bản giao diện">
+      <button onclick="setColorTheme('sapphire')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${current === 'sapphire' ? 'bg-blue-600 text-white shadow-md font-black ring-2 ring-cyan-400' : inactiveTextCls}" title="Bản 1: IOC Command Center (Sapphire)">
+        <span class="w-2 h-2 rounded-full ${current === 'sapphire' ? 'bg-cyan-300 shadow-[0_0_8px_#00e5ff]' : 'bg-blue-600'}"></span>
+        <span>1. SAPPHIRE</span>
+      </button>
+      <button onclick="setColorTheme('crimson')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${current === 'crimson' ? 'bg-red-600 text-white shadow-md font-black ring-2 ring-amber-400' : inactiveTextCls}" title="Bản 2: Sân Vận Động Rực Lửa (Crimson)">
+        <span class="w-2 h-2 rounded-full ${current === 'crimson' ? 'bg-amber-300 shadow-[0_0_8px_#ff0055]' : 'bg-red-600'}"></span>
+        <span>2. CRIMSON</span>
+      </button>
+      <button onclick="setColorTheme('carbon')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${current === 'carbon' ? 'bg-orange-500 text-white shadow-md font-black ring-2 ring-orange-300' : inactiveTextCls}" title="Bản 3: Modern Left-Sidebar Studio (Carbon)">
+        <span class="w-2 h-2 rounded-full ${current === 'carbon' ? 'bg-yellow-300 shadow-[0_0_8px_#ff6b00]' : 'bg-orange-500'}"></span>
+        <span>3. CARBON</span>
+      </button>
+      <button onclick="setColorTheme('titanium')" class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 ${current === 'titanium' ? 'bg-emerald-700 text-white shadow-md font-black ring-2 ring-emerald-300' : inactiveTextCls}" title="Bản 4: Sổ Bộ Hành Chính Nhà Nước (Titanium)">
+        <span class="w-2 h-2 rounded-full ${current === 'titanium' ? 'bg-emerald-200 shadow-[0_0_8px_#00e676]' : 'bg-emerald-700'}"></span>
         <span>4. TITANIUM</span>
       </button>
     </div>
@@ -62,28 +89,30 @@ export function renderThemeSwitcherPills(extraCls = '') {
 // ==============================================================================
 function renderSapphireIocHeader(navs) {
   return `
-    <header class="sticky top-0 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b-2 border-slate-300 dark:border-slate-800 shadow-md select-none">
-      <div class="px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+    <header class="sticky top-0 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-300 dark:border-slate-800 shadow-md select-none">
+      
+      <!-- Tier 1: Main Masthead (Emblem + Title + Utility Controls) -->
+      <div class="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800/80">
         
         <!-- Left: Official Institutional Emblem & Title -->
-        <div class="flex items-center gap-3 shrink-0 py-2">
+        <div class="flex items-center gap-3 shrink-0">
           <button onclick="toggleMobileDrawer()" class="p-2 -ml-1 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden btn-press" title="Mở menu">
-            <span class="material-symbols-outlined text-[26px]">menu</span>
+            <span class="material-symbols-outlined text-[24px]">menu</span>
           </button>
 
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center p-0.5 bg-white dark:bg-slate-800 border-2 border-blue-600 shadow-md shrink-0 overflow-hidden ring-2 ring-cyan-400/40">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center p-0.5 bg-white dark:bg-slate-800 border-2 border-blue-600 shadow-md shrink-0 overflow-hidden ring-2 ring-cyan-400/40">
               <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Huy hiệu UBND Phường Tân Khai" />
             </div>
             <div class="flex flex-col text-left">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 leading-tight">
+              <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-tight">
                 UBND PHƯỜNG TÂN KHAI • TRUNG TÂM DỊCH VỤ TỔNG HỢP
               </span>
-              <div class="flex items-center gap-2.5 mt-0.5">
-                <span class="text-lg sm:text-xl font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-base sm:text-lg font-sport font-black tracking-wide text-slate-900 dark:text-white uppercase leading-none">
                   TRUNG TÂM CHỈ HUY THỂ THAO
                 </span>
-                <span class="hidden xl:inline-block px-2 py-0.5 rounded text-xs font-mono font-bold bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700 shadow-[0_0_8px_rgba(0,229,255,0.4)]">
+                <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700 shadow-[0_0_8px_rgba(0,229,255,0.4)]">
                   IOC PRO
                 </span>
               </div>
@@ -91,21 +120,55 @@ function renderSapphireIocHeader(navs) {
           </div>
         </div>
 
-        <!-- Center: Desktop Studio Navigation Dock (Tách Biệt Màu Nền So Với Header) -->
-        <nav class="hidden lg:flex items-center studio-nav-dock">
+        <!-- Right: Utility Controls & Theme Switcher -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <button onclick="window.openCommandPalette()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold btn-press" title="Tìm kiếm (Ctrl+K)">
+            <span class="material-symbols-outlined text-[18px]">search</span>
+            <span class="hidden md:inline">Tìm kiếm</span>
+            <kbd class="hidden sm:inline-block text-[11px] font-mono bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700 text-slate-500 font-bold">⌘K</kbd>
+          </button>
+
+          ${renderThemeSwitcherPills('flex')}
+          <div id="syncPillBox">${renderSyncPillHTML()}</div>
+          <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 btn-press">
+            <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
+          </button>
+
+          <!-- Officer Profile -->
+          <div class="flex items-center gap-2 pl-2 sm:pl-3 border-l border-slate-300 dark:border-slate-800">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 font-sport shadow-md shadow-blue-500/30">TQD</div>
+            <div class="hidden xl:flex flex-col text-left">
+              <span class="text-xs font-bold leading-tight text-slate-900 dark:text-slate-100">Trần Quốc Được</span>
+              <span class="text-[10px] text-slate-500 font-medium">Cán bộ TDTT</span>
+            </div>
+            <button onclick="handleLogout()" title="Đăng xuất" class="p-1 text-slate-400 hover:text-rose-600">
+              <span class="material-symbols-outlined text-[17px]">logout</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Tách biệt màu nền hoàn toàn, to rõ ràng, hiệu ứng neon rực sáng) -->
+      <div class="hidden lg:flex w-full bg-[#0b1528] dark:bg-[#060a12] border-b border-cyan-500/20 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar shadow-inner">
+        <nav class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
               <button 
                 onclick="switchTab('${item.id}')" 
-                class="studio-nav-btn ${isActive ? 'active' : ''}"
+                class="px-3.5 py-2 rounded-xl font-sport font-black text-sm tracking-wider flex items-center gap-2 transition-all whitespace-nowrap ${
+                  isActive 
+                    ? 'bg-blue-600 text-white shadow-[0_0_18px_rgba(0,229,255,0.7)] ring-2 ring-cyan-400 border border-cyan-300 scale-102 font-black' 
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                }"
                 title="${item.label}"
               >
-                <span class="material-symbols-outlined text-[20px]">${item.icon}</span>
+                <span class="material-symbols-outlined text-[19px] ${isActive ? 'text-cyan-300' : 'text-slate-400'}">${item.icon}</span>
                 <span>${item.label}</span>
                 ${item.badge !== undefined ? `
-                  <span class="studio-badge ml-1 px-2 py-0.5 rounded-full text-xs font-mono font-bold ${
-                    isActive ? '' : 'bg-slate-700/80 text-slate-200'
+                  <span class="ml-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-black ${
+                    isActive ? 'bg-cyan-950 text-cyan-300 border border-cyan-400/50' : 'bg-slate-800 text-slate-300'
                   }">
                     ${item.badge}
                   </span>
@@ -114,35 +177,8 @@ function renderSapphireIocHeader(navs) {
             `;
           }).join('')}
         </nav>
-
-        <!-- Right Controls -->
-        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-          <button onclick="window.openCommandPalette()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold btn-press" title="Tìm kiếm (Ctrl+K)">
-            <span class="material-symbols-outlined text-[18px]">search</span>
-            <span class="hidden md:inline">Tìm kiếm</span>
-            <kbd class="hidden sm:inline-block text-[11px] font-mono bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700 text-slate-500 font-bold">⌘K</kbd>
-          </button>
-
-          ${renderThemeSwitcherPills('hidden xl:flex')}
-          <div id="syncPillBox">${renderSyncPillHTML()}</div>
-          <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 btn-press">
-            <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
-          </button>
-
-          <!-- Officer Profile -->
-          <div class="flex items-center gap-2.5 pl-2.5 border-l border-slate-300 dark:border-slate-800">
-            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shrink-0 font-sport shadow-md shadow-blue-500/30">TQD</div>
-            <div class="hidden 2xl:flex flex-col text-left">
-              <span class="text-xs font-bold leading-tight text-slate-900 dark:text-slate-100">Trần Quốc Được</span>
-              <span class="text-[11px] text-slate-500 font-medium">Cán bộ TDTT</span>
-            </div>
-            <button onclick="handleLogout()" title="Đăng xuất" class="p-1.5 text-slate-400 hover:text-rose-600">
-              <span class="material-symbols-outlined text-[18px]">logout</span>
-            </button>
-          </div>
-        </div>
-
       </div>
+
     </header>
   `;
 }
@@ -155,53 +191,75 @@ function renderCrimsonArenaHeader(navs) {
     <header class="sticky top-0 z-40 w-full bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border-b-4 border-amber-400 shadow-2xl select-none">
       
       <!-- Top Running Banner Ticker -->
-      <div class="bg-red-950/90 px-4 py-1.5 text-xs font-sport font-black uppercase tracking-widest text-amber-300 flex items-center justify-between border-b border-red-900/80">
+      <div class="bg-red-950/95 px-4 sm:px-6 py-1.5 text-xs font-sport font-black uppercase tracking-widest text-amber-300 flex items-center justify-between border-b border-red-900/80">
         <div class="flex items-center gap-2.5">
-          <span class="w-3 h-3 rounded-full bg-amber-400 animate-ping"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
           <span class="text-xs sm:text-sm">SÂN VẬN ĐỘNG THỂ THAO ĐIỀU HÀNH TRỰC TIẾP • BẢN LĨNH THỂ THAO PHƯỜNG TÂN KHAI</span>
         </div>
-        <div class="hidden sm:flex items-center gap-4 text-white font-mono text-xs">
-          <span class="px-2 py-0.5 rounded bg-red-900 border border-amber-400/30">30 GIẢI ĐẤU QUY MÔ</span>
+        <div class="hidden sm:flex items-center gap-3 text-white font-mono text-xs">
+          <span class="px-2 py-0.5 rounded bg-red-900 border border-amber-400/30">31 GIẢI ĐẤU QUY MÔ</span>
           <span class="px-2 py-0.5 rounded bg-red-900 border border-amber-400/30">168 TỔNG HUY CHƯƠNG</span>
         </div>
       </div>
 
-      <div class="px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <!-- Tier 1: Arena Masthead (Emblem + Title + Utility Controls) -->
+      <div class="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 border-b border-red-800/80">
         
         <!-- Left: Athletic Emblem & Title -->
-        <div class="flex items-center gap-3.5 shrink-0 py-2">
-          <div class="w-13 h-13 rounded-full flex items-center justify-center p-0.5 bg-amber-400 shadow-lg shrink-0 overflow-hidden ring-2 ring-red-400">
+        <div class="flex items-center gap-3 shrink-0">
+          <button onclick="toggleMobileDrawer()" class="p-2 -ml-1 rounded-lg text-amber-300 hover:bg-red-900/80 lg:hidden btn-press" title="Mở menu">
+            <span class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+          <div class="w-11 h-11 rounded-full flex items-center justify-center p-0.5 bg-amber-400 shadow-lg shrink-0 overflow-hidden ring-2 ring-red-400">
             <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Logo" />
           </div>
           <div class="flex flex-col text-left">
-            <span class="text-xs font-sport font-black uppercase tracking-widest text-amber-300 leading-none">
+            <span class="text-[10px] sm:text-xs font-sport font-black uppercase tracking-widest text-amber-300 leading-none">
               ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI
             </span>
-            <h1 class="text-xl sm:text-2xl font-sport font-black tracking-wider text-white uppercase leading-tight mt-0.5 flex items-center gap-2">
+            <h1 class="text-base sm:text-xl font-sport font-black tracking-wider text-white uppercase leading-tight mt-0.5 flex items-center gap-2">
               <span>ĐẤU TRƯỜNG THỂ THAO ARENA</span>
-              <span class="px-2 py-0.5 rounded text-xs bg-amber-400 text-red-950 font-black shadow-[0_0_10px_#f59e0b]">BẢN 2</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-400 text-red-950 font-black shadow-[0_0_10px_#f59e0b]">BẢN 2</span>
             </h1>
           </div>
         </div>
 
-        <!-- Center: Arena Dock Navigation with Gold Active Pill -->
-        <nav class="hidden lg:flex items-center p-1.5 bg-red-950/95 rounded-xl border-2 border-red-700/80 shadow-2xl gap-1.5">
+        <!-- Right: Utility Controls & Theme Switcher -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <button onclick="window.openCommandPalette()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-900/80 border border-red-700 text-amber-200 text-xs sm:text-sm font-semibold btn-press" title="Tìm kiếm (Ctrl+K)">
+            <span class="material-symbols-outlined text-[18px]">search</span>
+            <span class="hidden md:inline">Tìm kiếm</span>
+            <kbd class="hidden sm:inline-block text-[11px] font-mono bg-red-950 px-1.5 py-0.5 rounded border border-red-700 text-amber-300 font-bold">⌘K</kbd>
+          </button>
+
+          ${renderThemeSwitcherPills('flex bg-red-950/90 border-red-800')}
+          <div id="syncPillBox">${renderSyncPillHTML()}</div>
+          <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-lg text-amber-300 hover:bg-red-900/80 btn-press">
+            <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Đấu trường rực lửa, tách biệt màu nền) -->
+      <div class="hidden lg:flex w-full bg-[#200307] border-b border-amber-400/30 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar shadow-inner">
+        <nav class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
               <button 
                 onclick="switchTab('${item.id}')" 
-                class="px-4 py-2 rounded-lg font-sport font-black text-sm sm:text-base tracking-wider flex items-center gap-2 transition-all ${
+                class="px-3.5 py-2 rounded-xl font-sport font-black text-sm tracking-wider flex items-center gap-2 transition-all whitespace-nowrap ${
                   isActive 
-                    ? 'bg-amber-400 text-red-950 shadow-[0_0_16px_rgba(255,0,85,0.7)] scale-105 ring-2 ring-white/60 font-black' 
-                    : 'text-red-200 hover:text-white hover:bg-red-800/80'
+                    ? 'bg-amber-400 text-red-950 shadow-[0_0_18px_rgba(255,0,85,0.7)] scale-102 ring-2 ring-white/80 font-black' 
+                    : 'text-red-200 hover:text-white hover:bg-red-900/80'
                 }"
               >
-                <span class="material-symbols-outlined text-[20px]">${item.icon}</span>
+                <span class="material-symbols-outlined text-[19px]">${item.icon}</span>
                 <span>${item.label}</span>
                 ${item.badge !== undefined ? `
-                  <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-mono font-black ${
-                    isActive ? 'bg-red-900 text-amber-300' : 'bg-red-900/80 text-red-200'
+                  <span class="ml-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-black ${
+                    isActive ? 'bg-red-900 text-amber-300' : 'bg-red-950 text-red-200'
                   }">
                     ${item.badge}
                   </span>
@@ -210,17 +268,8 @@ function renderCrimsonArenaHeader(navs) {
             `;
           }).join('')}
         </nav>
-
-        <!-- Right Controls -->
-        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-          ${renderThemeSwitcherPills('hidden xl:flex bg-red-950/90 border-red-800')}
-          <div id="syncPillBox">${renderSyncPillHTML()}</div>
-          <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-lg text-amber-300 hover:bg-red-900/80 btn-press">
-            <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
-          </button>
-        </div>
-
       </div>
+
     </header>
   `;
 }
@@ -233,7 +282,7 @@ function renderGovOfficialHeader(navs) {
     <header class="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b-2 border-emerald-800 shadow-md select-none">
       
       <!-- Top Red Strip with National Motto -->
-      <div class="bg-red-700 text-white px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm border-b border-red-800">
+      <div class="bg-red-700 text-white px-4 py-1.5 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm border-b border-red-800">
         <div class="font-bold tracking-wider uppercase flex items-center gap-2">
           <span>★ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM • Độc lập - Tự do - Hạnh phúc</span>
         </div>
@@ -243,38 +292,59 @@ function renderGovOfficialHeader(navs) {
         </div>
       </div>
 
-      <!-- Main Government Masthead -->
-      <div class="px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 bg-emerald-850 bg-[#047857] text-white">
+      <!-- Tier 1: Main Government Masthead -->
+      <div class="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 bg-[#047857] text-white">
         
         <!-- Left: Official Emblem & Department Name -->
-        <div class="flex items-center gap-3.5 shrink-0 py-2">
-          <div class="w-13 h-13 rounded-full flex items-center justify-center p-0.5 bg-white shadow-md shrink-0 overflow-hidden border-2 border-amber-400">
+        <div class="flex items-center gap-3 shrink-0">
+          <button onclick="toggleMobileDrawer()" class="p-2 -ml-1 rounded-lg text-white hover:bg-emerald-800 lg:hidden btn-press" title="Mở menu">
+            <span class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+          <div class="w-11 h-11 rounded-full flex items-center justify-center p-0.5 bg-white shadow-md shrink-0 overflow-hidden border-2 border-amber-400">
             <img src="logo.png" onerror="if(typeof EMBEDDED_LOGO_B64!=='undefined') this.src=EMBEDDED_LOGO_B64" class="w-full h-full object-contain rounded-full" alt="Huy hiệu UBND Phường Tân Khai" />
           </div>
           <div class="flex flex-col text-left">
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-100 leading-tight">
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-100 leading-tight">
               ỦY BAN NHÂN DÂN PHƯỜNG TÂN KHAI
             </span>
-            <h1 class="text-lg sm:text-xl font-bold tracking-wide text-white uppercase leading-snug">
+            <h1 class="text-base sm:text-lg font-bold tracking-wide text-white uppercase leading-snug">
               TRUNG TÂM DỊCH VỤ TỔNG HỢP • BỘ PHẬN TDTT
             </h1>
           </div>
         </div>
 
-        <!-- Center: Official Government Tab Bar -->
-        <nav class="hidden lg:flex items-center p-1.5 bg-emerald-900/90 rounded-xl border border-emerald-600 shadow-inner gap-1.5">
+        <!-- Right: Utility Controls & Theme Switcher -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <button onclick="window.openCommandPalette()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-900/80 border border-emerald-600 text-emerald-100 text-xs sm:text-sm font-semibold btn-press" title="Tìm kiếm (Ctrl+K)">
+            <span class="material-symbols-outlined text-[18px]">search</span>
+            <span class="hidden md:inline">Tìm kiếm</span>
+            <kbd class="hidden sm:inline-block text-[11px] font-mono bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-700 text-emerald-200 font-bold">⌘K</kbd>
+          </button>
+
+          ${renderThemeSwitcherPills('flex bg-emerald-950/80 border-emerald-700')}
+          <div id="syncPillBox">${renderSyncPillHTML()}</div>
+          <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded text-emerald-100 hover:bg-emerald-800 btn-press">
+            <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Sổ bộ hành chính, màu ngọc bích đậm) -->
+      <div class="hidden lg:flex w-full bg-[#064e3b] border-b border-emerald-600 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar shadow-inner">
+        <nav class="flex items-center justify-center gap-1.5 w-full max-w-[1780px] mx-auto">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
               <button 
                 onclick="switchTab('${item.id}')" 
-                class="px-4 py-2 rounded-lg font-bold text-sm tracking-wider flex items-center gap-2 transition-all ${
+                class="px-3 py-1.5 rounded-lg font-bold text-xs sm:text-sm tracking-wider flex items-center gap-1.5 transition-all whitespace-nowrap ${
                   isActive 
-                    ? 'bg-white text-emerald-950 shadow-md font-black ring-2 ring-emerald-300' 
+                    ? 'bg-white text-emerald-950 shadow-md font-black ring-2 ring-emerald-300 scale-102' 
                     : 'text-emerald-100 hover:bg-emerald-800 hover:text-white'
                 }"
               >
-                <span class="material-symbols-outlined text-[19px]">${item.icon}</span>
+                <span class="material-symbols-outlined text-[17px]">${item.icon}</span>
                 <span>${item.label}</span>
                 ${item.badge !== undefined ? `
                   <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-mono font-bold ${
@@ -287,17 +357,8 @@ function renderGovOfficialHeader(navs) {
             `;
           }).join('')}
         </nav>
-
-        <!-- Right Controls -->
-        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-          ${renderThemeSwitcherPills('hidden xl:flex bg-emerald-950/80 border-emerald-700')}
-          <div id="syncPillBox">${renderSyncPillHTML()}</div>
-          <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded text-emerald-100 hover:bg-emerald-800 btn-press">
-            <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
-          </button>
-        </div>
-
       </div>
+
     </header>
   `;
 }
@@ -360,10 +421,10 @@ export function renderLeftSidebarStudio() {
 
       <!-- Bottom Studio Controls & Profile -->
       <div class="pt-4 border-t border-slate-800/80 space-y-3">
-        <!-- 4 Theme Pills in Sidebar -->
-        <div class="space-y-1">
-          <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest block">CHUYỂN 4 GIAO DIỆN:</span>
-          ${renderThemeSwitcherPills('w-full justify-between')}
+        <!-- 4 Theme Pills in Sidebar (Lưới 2x2 gọn gàng, không tràn mép) -->
+        <div class="space-y-1.5">
+          <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block font-bold">CHUYỂN 4 BẢN GIAO DIỆN:</span>
+          ${renderSidebarThemeGrid()}
         </div>
 
         <!-- Officer Card -->
@@ -388,30 +449,30 @@ export function renderLeftSidebarStudio() {
 
 export function renderStudioTopBar() {
   return `
-    <header class="sticky top-0 z-30 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-300 dark:border-slate-800 shadow-xs h-16 px-6 flex items-center justify-between gap-4">
+    <header class="sticky top-0 z-30 w-full bg-[#0d1117]/95 dark:bg-[#0d1117]/95 backdrop-blur-md border-b border-slate-800 shadow-sm h-16 px-6 flex items-center justify-between gap-4 select-none">
       <div class="flex items-center gap-3">
-        <button onclick="toggleMobileDrawer()" class="p-2 rounded-lg text-slate-700 lg:hidden btn-press">
+        <button onclick="toggleMobileDrawer()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-800 lg:hidden btn-press">
           <span class="material-symbols-outlined text-[24px]">menu</span>
         </button>
-        <div class="flex items-center gap-2">
-          <span class="font-sport font-black text-base uppercase text-slate-900 dark:text-white">
+        <div class="flex items-center gap-2.5">
+          <span class="font-sport font-black text-lg uppercase text-white tracking-wider">
             ${state.currentTab.replace(/-/g, ' ').toUpperCase()}
           </span>
-          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-orange-100 text-orange-700 border border-orange-200">
+          <span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-orange-950 text-orange-400 border border-orange-800/80 shadow-[0_0_8px_rgba(255,107,0,0.3)]">
             BẢN 3: BENTO PRO
           </span>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <button onclick="window.openCommandPalette()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 font-medium btn-press">
-          <span class="material-symbols-outlined text-[16px]">search</span>
+        <button onclick="window.openCommandPalette()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 font-semibold btn-press hover:border-slate-700">
+          <span class="material-symbols-outlined text-[17px] text-orange-400">search</span>
           <span>Tìm nhanh</span>
-          <kbd class="text-[10px] font-mono bg-white dark:bg-slate-900 px-1 py-0.5 rounded border text-slate-500">⌘K</kbd>
+          <kbd class="text-[10px] font-mono bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-slate-400">⌘K</kbd>
         </button>
         <div id="syncPillBox">${renderSyncPillHTML()}</div>
-        <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 btn-press">
-          <span class="material-symbols-outlined text-[19px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
+        <button onclick="toggleDarkMode()" title="Chế độ sáng/tối" class="p-2 rounded-xl text-slate-300 hover:bg-slate-800 btn-press">
+          <span class="material-symbols-outlined text-[20px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
         </button>
       </div>
     </header>
