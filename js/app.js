@@ -303,6 +303,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (qTab && ['bang-dieu-khien', 'quan-ly-giai-dau', 'quan-ly-clb', 'lich-sinh-hoat', 'co-so-vat-chat', 'kinh-phi', 'bao-cao'].includes(qTab)) {
       state.currentTab = qTab;
     }
+    const qDark = params.get('dark');
+    if (qDark === '1' || qDark === 'true') {
+      state.darkMode = true;
+    } else if (qDark === '0' || qDark === 'false') {
+      state.darkMode = false;
+    }
   } catch (e) {}
 
   initTheme();

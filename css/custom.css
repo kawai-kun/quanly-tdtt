@@ -1111,17 +1111,17 @@ select option {
 }
 
 /* ==============================================================================
-   COMPONENT: DAY-NIGHT DARK MODE TOGGLE (Lucian UX/UI #447)
+   COMPONENT: DAY-NIGHT SKY SWITCH (Lucian UX/UI #447 - KÍCH THƯỚC CHUẨN GỐC 176px x 74px)
+   Chế độ Ngày/Đêm nghệ thuật: Mặt trời halo xoay chuyển thành Mặt trăng miệng núi lửa 3D,
+   Bầu trời đêm huyền ảo đa sắc, sao lấp lánh lung linh và sao băng (meteor) lướt qua.
    ============================================================================== */
-.u447-mini-wrapper {
+.u447-wrapper {
   position: relative;
-  width: 68px;
-  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  overflow: visible;
   flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
 }
 .u447-b {
   position: relative;
@@ -1133,107 +1133,185 @@ select option {
   overflow: hidden;
   isolation: isolate;
   background: #4FA8F7;
-  box-shadow: inset 0 3px 7px rgba(0,0,0,.28), inset 0 -1px 2px rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.06), 0 10px 24px -14px rgba(20,40,90,.55);
-  transition: transform .45s cubic-bezier(.34,1.45,.64,1);
-  transform: scale(0.386);
-  transform-origin: center center;
+  box-shadow: 
+    inset 0 3px 8px rgba(0, 0, 0, 0.32),
+    inset 0 -1px 3px rgba(255, 255, 255, 0.35),
+    0 0 0 1.5px rgba(255, 255, 255, 0.15),
+    0 10px 24px -10px rgba(10, 20, 50, 0.6);
+  transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1), box-shadow 0.5s ease;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.u447-b:hover {
+  transform: scale(1.02);
 }
 .u447-b:active {
-  transform: scale(0.35);
+  transform: scale(0.97);
 }
 .u447-b:focus-visible {
-  outline: 2px solid #a7f3d0;
+  outline: 2px solid #fbbf24;
   outline-offset: 4px;
 }
 .u447-b > * {
   position: absolute;
   pointer-events: none;
 }
+
+/* Nền trời ban ngày */
 .u447-sky {
   inset: 0;
-  background: linear-gradient(180deg,#3E97EC,#86C8FF);
-  transition: opacity .6s;
+  background: linear-gradient(180deg, #388ae4 0%, #76beff 65%, #aee1ff 100%);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Nền trời ban đêm: Vũ trụ sâu thẳm, cực kỳ lãng mạn & sống động */
 .u447-ngt {
   inset: 0;
   opacity: 0;
-  background: linear-gradient(180deg,#151840,#2C3170);
-  transition: opacity .6s;
+  background: radial-gradient(circle at 75% 50%, #222765 0%, #101438 55%, #060718 100%);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.u447-b[aria-checked="true"] {
+  background: #101438;
+  box-shadow: 
+    inset 0 3px 8px rgba(0, 0, 0, 0.75),
+    inset 0 -1px 3px rgba(255, 255, 255, 0.15),
+    0 0 0 1.5px rgba(147, 197, 253, 0.35),
+    0 10px 25px -8px rgba(0, 0, 0, 0.85),
+    0 0 16px rgba(99, 102, 241, 0.3);
+}
+.u447-b[aria-checked="true"] .u447-ngt {
+  opacity: 1;
+}
+
+/* Vệt sao băng (Shooting Star) lướt qua bầu trời đêm */
+.u447-meteor {
+  position: absolute;
+  top: 18px;
+  right: 120px;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.4) 60%, transparent);
+  border-radius: 999px;
+  transform: rotate(-35deg) scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+}
+.u447-b[aria-checked="true"] .u447-meteor {
+  animation: u447-shooting-star 5s ease-in-out infinite 1.2s;
+}
+@keyframes u447-shooting-star {
+  0% { transform: translate(0, 0) rotate(-35deg) scaleX(0); opacity: 0; }
+  4% { opacity: 1; transform: translate(0, 0) rotate(-35deg) scaleX(1); }
+  10% { transform: translate(-38px, 24px) rotate(-35deg) scaleX(0); opacity: 0; }
+  100% { opacity: 0; transform: translate(-38px, 24px) rotate(-35deg) scaleX(0); }
+}
+
+/* Quầng sáng mặt trời / ánh trăng đa tầng */
 .u447-halo {
   left: 6px;
   top: 6px;
   width: 62px;
   height: 62px;
-  transition: transform .75s cubic-bezier(.34,1.45,.64,1);
+  transition: transform 0.75s cubic-bezier(0.34, 1.45, 0.64, 1);
 }
 .u447-halo i {
   position: absolute;
   left: 50%;
   top: 50%;
   border-radius: 50%;
-  background: rgba(255,255,255,.12);
-  transform: translate(-50%,-50%);
+  background: rgba(255, 255, 255, 0.14);
+  transform: translate(-50%, -50%);
+  transition: background 0.6s ease, box-shadow 0.6s ease;
 }
 .u447-halo i:nth-child(1) { width: 96px; height: 96px; }
-.u447-halo i:nth-child(2) { width: 132px; height: 132px; background: rgba(255,255,255,.09); }
-.u447-halo i:nth-child(3) { width: 170px; height: 170px; background: rgba(255,255,255,.06); }
+.u447-halo i:nth-child(2) { width: 132px; height: 132px; background: rgba(255, 255, 255, 0.1); }
+.u447-halo i:nth-child(3) { width: 170px; height: 170px; background: rgba(255, 255, 255, 0.06); }
+.u447-b[aria-checked="true"] .u447-halo {
+  transform: translateX(102px);
+}
+.u447-b[aria-checked="true"] .u447-halo i {
+  background: rgba(216, 235, 255, 0.12);
+  box-shadow: 0 0 16px rgba(165, 204, 255, 0.15);
+}
+
+/* Các tầng mây cuộn ban ngày */
 .u447-cl {
   right: -14px;
   bottom: -16px;
   width: 136px;
   height: 68px;
-  transition: transform .6s cubic-bezier(.2,.8,.2,1) .05s;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s;
 }
 .u447-cl g {
   animation: u447-drift 7s ease-in-out infinite alternate;
 }
-.u447-cl g+g {
+.u447-cl g + g {
   animation-duration: 5.5s;
 }
 @keyframes u447-drift {
-  to { transform: translateX(-5px); }
+  to { transform: translateX(-6px); }
 }
+.u447-b[aria-checked="true"] .u447-cl {
+  transform: translateY(64px);
+  transition-delay: 0s;
+}
+
+/* Các ngôi sao lấp lánh ban đêm có độ sâu */
 .u447-sr {
-  left: 16px;
+  left: 14px;
   top: 8px;
   width: 90px;
   height: 58px;
   opacity: 0;
   transform: translateY(-36px);
-  transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .4s;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
 }
 .u447-sr path, .u447-sr circle {
   fill: #FFFFFF;
   transform-box: fill-box;
   transform-origin: center;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95));
   animation: u447-tw 2.4s ease-in-out infinite;
 }
-.u447-sr :nth-child(2n) { animation-delay: -.8s; }
+.u447-sr :nth-child(2n) { animation-delay: -0.8s; }
 .u447-sr :nth-child(3n) { animation-delay: -1.6s; }
 @keyframes u447-tw {
-  50% { opacity: .45; transform: scale(.7); }
+  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 4px #fff); }
+  50% { opacity: 0.35; transform: scale(0.65); filter: drop-shadow(0 0 1px #fff); }
 }
+.u447-b[aria-checked="true"] .u447-sr {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.15s;
+}
+
+/* Thiên thể: Mặt trời vàng ➔ Mặt trăng ngọc lấp lánh (62px x 62px) */
 .u447-th {
   left: 6px;
   top: 6px;
   width: 62px;
   height: 62px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%,#FFE27A,#FFC21F 60%,#F2A900);
-  box-shadow: 0 4px 8px rgba(0,0,0,.28), inset -3px -4px 6px rgba(190,110,0,.35), inset 3px 3px 5px rgba(255,255,255,.45);
-  transition: transform .75s cubic-bezier(.34,1.45,.64,1);
+  background: radial-gradient(circle at 35% 30%, #FFE585 0%, #FFC11F 55%, #F09B00 100%);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.35),
+    inset -3px -4px 6px rgba(180, 100, 0, 0.4),
+    inset 3px 3px 6px rgba(255, 255, 255, 0.6);
+  transition: transform 0.75s cubic-bezier(0.34, 1.45, 0.64, 1);
 }
 .u447-th::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%,#F4F3FA,#D6D3E6 65%,#B9B5CF);
-  box-shadow: inset -3px -4px 6px rgba(70,64,110,.35), inset 3px 3px 5px rgba(255,255,255,.6);
+  background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #E8E5F3 45%, #C2BED9 80%, #9E99BA 100%);
+  box-shadow: 
+    inset -3px -4px 7px rgba(60, 54, 100, 0.45),
+    inset 3px 3px 6px rgba(255, 255, 255, 0.75),
+    0 0 14px rgba(230, 240, 255, 0.6);
   opacity: 0;
-  transition: opacity .45s .1s;
+  transition: opacity 0.45s 0.1s;
 }
 .u447-th svg {
   position: absolute;
@@ -1242,22 +1320,31 @@ select option {
   height: 62px;
 }
 .u447-th circle {
-  fill: #A9A4C4;
+  fill: #8E88AB;
+  filter: drop-shadow(inset 1px 1px 1.5px rgba(45, 38, 75, 0.6));
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
   transform: scale(0);
-  transition: opacity .3s, transform .5s cubic-bezier(.34,1.45,.64,1);
+  transition: opacity 0.3s, transform 0.5s cubic-bezier(0.34, 1.45, 0.64, 1);
 }
-.u447-th circle:nth-child(2) { transition-delay: .06s; }
-.u447-th circle:nth-child(3) { transition-delay: .12s; }
-.u447-b[aria-checked="true"] .u447-ngt { opacity: 1; }
-.u447-b[aria-checked="true"] .u447-halo { transform: translateX(102px); }
-.u447-b[aria-checked="true"] .u447-th { transform: translateX(102px) rotate(200deg); }
-.u447-b[aria-checked="true"] .u447-th::before { opacity: 1; }
-.u447-b[aria-checked="true"] .u447-th circle { opacity: 1; transform: none; transition-delay: .25s; }
-.u447-b[aria-checked="true"] .u447-cl { transform: translateY(56px); transition-delay: 0s; }
-.u447-b[aria-checked="true"] .u447-sr { opacity: 1; transform: none; transition-delay: .15s; }
+.u447-th circle:nth-child(2) { transition-delay: 0.06s; }
+.u447-th circle:nth-child(3) { transition-delay: 0.12s; }
+
+.u447-b[aria-checked="true"] .u447-th {
+  transform: translateX(102px) rotate(200deg);
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(186, 215, 255, 0.45);
+}
+.u447-b[aria-checked="true"] .u447-th::before {
+  opacity: 1;
+}
+.u447-b[aria-checked="true"] .u447-th circle {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.25s;
+}
 
 /* ==============================================================================
    COMPONENT: INTERACTIVE FILE MOTION (Lucian UX/UI #432)
