@@ -6,6 +6,7 @@
 import { state, getActivityReportStatus, toggleActivityReportStatus } from '../state.js';
 import { getSportBadge } from '../utils/sportBadges.js';
 import { getAvailableYears, sortActivitiesByLatest, extractYearFromDate, formatVNCurrency } from '../utils/formatters.js';
+import { renderPaginationHTML, initPagination } from './pagination.js';
 
 export function getFilteredTournamentsList() {
   const f = state.tournamentsFilter;
@@ -190,9 +191,31 @@ export function renderTournaments() {
 
 function renderActiveTournamentsView(acts) {
   const mode = state.tournamentsFilter.viewMode || 'table';
-  if (mode === 'kanban') return renderTournamentsKanban(acts);
-  if (mode === 'cards') return renderTournamentsGrid(acts);
-  return renderTournamentsTable(acts);
+  const pageSize = 10;
+  const totalPages = Math.ceil(acts.length / pageSize) || 1;
+  const curPage = Math.min(totalPages, Math.max(1, state.tournamentsFilter.page || 1));
+  const start = (curPage - 1) * pageSize;
+  const paginatedActs = (mode !== 'kanban') ? acts.slice(start, start + pageSize) : acts;
+
+  let viewHtml = '';
+  if (mode === 'kanban') viewHtml = renderTournamentsKanban(acts);
+  else if (mode === 'cards') viewHtml = renderTournamentsGrid(paginatedActs);
+  else viewHtml = renderTournamentsTable(paginatedActs);
+
+  const paginationHtml = (mode !== 'kanban' && totalPages > 1) 
+    ? renderPaginationHTML(totalPages, curPage)
+    : '';
+
+  setTimeout(() => {
+    if (mode !== 'kanban' && totalPages > 1) {
+      initPagination('u449PaginationBox', totalPages, curPage, (newPage) => {
+        state.tournamentsFilter.page = newPage;
+        updateTournamentsOnly(false);
+      });
+    }
+  }, 40);
+
+  return viewHtml + paginationHtml;
 }
 
 export function handleTournamentSearchInput(val) {
@@ -366,10 +389,13 @@ export function renderTournamentsTable(acts) {
                 <!-- 10. Thao tác -->
                 <td class="py-3 px-2 text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800">
                   <div class="flex items-center justify-center gap-1">
-                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-700 transition-colors btn-press">
+                    <button onclick="window.openQrShareModal('${(a.title || '').replace(/'/g, "\\'")}', window.location.href)" title="Chia sẻ mã QR giải đấu" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-700 transition-colors btn-press cursor-pointer">
+                      <span class="material-symbols-outlined text-[17px]">qr_code_2</span>
+                    </button>
+                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-700 transition-colors btn-press cursor-pointer">
                       <span class="material-symbols-outlined text-[17px]">edit</span>
                     </button>
-                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press">
+                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press cursor-pointer">
                       <span class="material-symbols-outlined text-[17px]">delete</span>
                     </button>
                   </div>
@@ -511,10 +537,13 @@ export function renderTournamentsGrid(acts) {
               </span>
 
               <div class="flex items-center gap-1">
-                <button onclick="openActivityModal('${a.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors btn-press" title="Chỉnh sửa giải đấu">
+                <button onclick="window.openQrShareModal('${(a.title || '').replace(/'/g, "\\'")}', window.location.href)" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors btn-press cursor-pointer" title="Chia sẻ mã QR giải đấu">
+                  <span class="material-symbols-outlined text-[19px]">qr_code_2</span>
+                </button>
+                <button onclick="openActivityModal('${a.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors btn-press cursor-pointer" title="Chỉnh sửa giải đấu">
                   <span class="material-symbols-outlined text-[19px]">edit</span>
                 </button>
-                <button onclick="confirmDeleteActivity('${a.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors btn-press" title="Xóa giải đấu">
+                <button onclick="confirmDeleteActivity('${a.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors btn-press cursor-pointer" title="Xóa giải đấu">
                   <span class="material-symbols-outlined text-[19px]">delete</span>
                 </button>
               </div>

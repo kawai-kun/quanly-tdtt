@@ -7,6 +7,7 @@ import { SPREADSHEET_ID } from '../data/constants.js';
 import { normalizeTitle, normalizeCode, normalizeDate, extractYearFromDate, extractQuarterFromDate, autoDetectSport, sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { animateModalOpen, animateModalClose } from '../utils/animations.js';
+import { triggerSafeDelete } from '../utils/undoToast.js';
 
     export function openActivityModal(actId = null) {
       const act = actId ? state.activities.find(a => a.id === actId) : null;
@@ -228,12 +229,28 @@ import { animateModalOpen, animateModalClose } from '../utils/animations.js';
     }
 
     export function confirmDeleteActivity(id) {
-      if (confirm('Bạn có chắc muốn xóa giải đấu này?')) {
-        state.activities = state.activities.filter(a => a.id !== id);
-        saveAll();
-        showToast('Đã xóa', 'Giải đấu đã được xóa khỏi hệ thống.');
-        window.renderApp();
-      }
+      const item = state.activities.find(a => a.id === id);
+      if (!item) return;
+
+      const removedIndex = state.activities.findIndex(a => a.id === id);
+      state.activities = state.activities.filter(a => a.id !== id);
+      saveAll();
+      window.renderApp();
+
+      triggerSafeDelete({
+        itemName: item.title,
+        duration: 5000,
+        onUndo: () => {
+          state.activities.splice(removedIndex, 0, item);
+          saveAll();
+          showToast('Đã phục hồi', `Đã khôi phục giải đấu "${item.title}".`);
+          window.renderApp();
+        },
+        onCommit: () => {
+          saveAll();
+          showToast('Đã xóa vĩnh viễn', `Đã hoàn tất xóa giải đấu "${item.title}".`, 'info');
+        }
+      });
     }
 
     export function openSyncModal() {

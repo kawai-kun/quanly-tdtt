@@ -6,6 +6,7 @@ import { normalizeTitle } from '../utils/formatters.js';
 import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
 import { getSportBadge } from '../utils/sportBadges.js';
+import { triggerSafeDelete } from '../utils/undoToast.js';
 
     export function renderClubs() {
       return `
@@ -189,12 +190,27 @@ import { getSportBadge } from '../utils/sportBadges.js';
 
     export function confirmDeleteClub(id) {
       const c = state.clubs.find(item => item.id === id);
-      if (confirm(`Bạn có chắc chắn muốn xóa "${c ? c.name : 'CLB này'}"?`)) {
-        state.clubs = state.clubs.filter(item => item.id !== id);
-        saveAll();
-        showToast('Đã xóa CLB', 'Câu lạc bộ đã được xóa khỏi hệ thống.');
-        window.renderApp();
-      }
+      if (!c) return;
+
+      const removedIndex = state.clubs.findIndex(item => item.id === id);
+      state.clubs = state.clubs.filter(item => item.id !== id);
+      saveAll();
+      window.renderApp();
+
+      triggerSafeDelete({
+        itemName: c.name || 'Câu lạc bộ',
+        duration: 5000,
+        onUndo: () => {
+          state.clubs.splice(removedIndex, 0, c);
+          saveAll();
+          showToast('Đã phục hồi', `Đã khôi phục CLB "${c.name}".`);
+          window.renderApp();
+        },
+        onCommit: () => {
+          saveAll();
+          showToast('Đã xóa vĩnh viễn', `Đã xóa câu lạc bộ "${c.name}".`, 'info');
+        }
+      });
     }
 
 

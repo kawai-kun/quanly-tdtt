@@ -5,6 +5,7 @@
 import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
 import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
+import { triggerSafeDelete } from '../utils/undoToast.js';
 
     export function renderBudget() {
       const items = state.budgetItems;
@@ -231,12 +232,28 @@ import { formatVNCurrency, normalizeTitle } from '../utils/formatters.js';
     }
 
     export function confirmDeleteBudgetItem(id) {
-      if (confirm('Bạn có chắc chắn muốn xóa mục kinh phí này?')) {
-        state.budgetItems = state.budgetItems.filter(b => b.id !== id);
-        saveAll();
-        showToast('Đã xóa', 'Hạng mục kinh phí đã được xóa.');
-        window.renderApp();
-      }
+      const b = state.budgetItems.find(item => item.id === id);
+      if (!b) return;
+
+      const removedIndex = state.budgetItems.findIndex(item => item.id === id);
+      state.budgetItems = state.budgetItems.filter(item => item.id !== id);
+      saveAll();
+      window.renderApp();
+
+      triggerSafeDelete({
+        itemName: b.tournamentName || 'Mục kinh phí',
+        duration: 5000,
+        onUndo: () => {
+          state.budgetItems.splice(removedIndex, 0, b);
+          saveAll();
+          showToast('Đã phục hồi', `Đã khôi phục hạng mục kinh phí "${b.tournamentName}".`);
+          window.renderApp();
+        },
+        onCommit: () => {
+          saveAll();
+          showToast('Đã xóa vĩnh viễn', `Đã xóa hạng mục kinh phí "${b.tournamentName}".`, 'info');
+        }
+      });
     }
 
 

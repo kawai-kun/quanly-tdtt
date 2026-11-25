@@ -5,6 +5,7 @@ import { normalizeTitle } from '../utils/formatters.js';
 
 import { state, saveAll } from '../state.js';
 import { showToast } from '../utils/toast.js';
+import { triggerSafeDelete } from '../utils/undoToast.js';
 
     export function renderFacilities() {
       return `
@@ -183,11 +184,27 @@ import { showToast } from '../utils/toast.js';
     }
 
     export function confirmDeleteFacility(id) {
-      if (confirm('Bạn có chắc chắn muốn xóa cơ sở vật chất này?')) {
-        state.facilities = state.facilities.filter(f => f.id !== id);
-        saveAll();
-        showToast('Đã xóa', 'Cơ sở vật chất đã được xóa khỏi danh sách.');
-        window.renderApp();
-      }
+      const f = state.facilities.find(item => item.id === id);
+      if (!f) return;
+
+      const removedIndex = state.facilities.findIndex(item => item.id === id);
+      state.facilities = state.facilities.filter(item => item.id !== id);
+      saveAll();
+      window.renderApp();
+
+      triggerSafeDelete({
+        itemName: f.name || 'Cơ sở vật chất',
+        duration: 5000,
+        onUndo: () => {
+          state.facilities.splice(removedIndex, 0, f);
+          saveAll();
+          showToast('Đã phục hồi', `Đã khôi phục cơ sở "${f.name}".`);
+          window.renderApp();
+        },
+        onCommit: () => {
+          saveAll();
+          showToast('Đã xóa vĩnh viễn', `Đã xóa cơ sở "${f.name}".`, 'info');
+        }
+      });
     }
 

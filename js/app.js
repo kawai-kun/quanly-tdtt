@@ -132,7 +132,23 @@ import {
   isCommandPaletteOpen
 } from './components/commandPalette.js';
 
-import { renderLogin, togglePassVisibility, handleLoginSubmit, handleLogout } from './components/auth.js';
+import {
+  renderLogin,
+  togglePassVisibility,
+  handleLoginSubmit,
+  handleLogout,
+  initAuthInteractions,
+  handleAuthEyeToggle,
+  handleAuthFormSubmit,
+  fastLoginOfficer
+} from './components/auth.js';
+
+import { openQrShareModal, closeQrShareModal } from './components/qrShare.js';
+import { openFullscreenMenu, closeFullscreenMenu, handleFullscreenNav } from './components/fullscreenMenu.js';
+import { triggerSafeDelete, commitSafeDelete, cancelSafeDelete } from './utils/undoToast.js';
+import { openPinVerifyModal, closePinVerifyModal } from './components/pinVerify.js';
+import { renderPaginationHTML, initPagination } from './components/pagination.js';
+import { toggleAccountMenu, closeAccountMenu, showOfficerProfileModal, handleCommandKClick } from './components/header.js';
 
 // ==============================================================================
 // 5. GẮN TẤT CẢ HANDLER VÀO WINDOW CHO CÁC SỰ KIỆN INLINE HTML
@@ -147,11 +163,37 @@ const globalBindings = {
   renderSyncPill,
   renderApp,
 
-  // Auth
+  // Auth (#403)
   renderLogin,
   togglePassVisibility,
   handleLoginSubmit,
   handleLogout,
+  initAuthInteractions,
+  handleAuthEyeToggle,
+  handleAuthFormSubmit,
+  fastLoginOfficer,
+  openLoginModal: () => {
+    state.isAuthenticated = false;
+    renderApp();
+  },
+
+  // Lucian UX/UI Suite (#408, #471, #470, #449, #478, #045, #406)
+  openQrShareModal,
+  closeQrShareModal,
+  openFullscreenMenu,
+  closeFullscreenMenu,
+  handleFullscreenNav,
+  triggerSafeDelete,
+  commitSafeDelete,
+  cancelSafeDelete,
+  openPinVerifyModal,
+  closePinVerifyModal,
+  renderPaginationHTML,
+  initPagination,
+  toggleAccountMenu,
+  closeAccountMenu,
+  showOfficerProfileModal,
+  handleCommandKClick,
 
   // Tournaments
   renderTournaments,
@@ -255,6 +297,7 @@ export function renderApp() {
 
   if (!state.isAuthenticated) {
     app.innerHTML = renderLogin();
+    setTimeout(initAuthInteractions, 40);
     return;
   }
 
