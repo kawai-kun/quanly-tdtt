@@ -77,7 +77,7 @@ Hệ thống Quản lý & Điều hành Thể dục Thể thao Phường Tân Kh
 ## 📋 4. Hướng dẫn sử dụng & Triển khai
 
 1. **Chạy trực tiếp trên trình duyệt hoặc GitHub Pages:**
-   * Web đã triển khai tại: `https://kawai-kun.github.io/quanly-tdtt/`
+   * Web đã triển khai tại: `https://ttdvth-tankhai.github.io/quanly-tdtt/`
 2. **Cập nhật tính năng sau này:**
    * Muốn sửa bảng giải đấu: Chỉ cần mở file `js/components/tournaments.js`.
    * Muốn sửa biểu đồ hoặc chỉ tiêu KPI: Chỉ cần mở `js/components/dashboard.js`.
