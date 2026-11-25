@@ -8,6 +8,7 @@ import { DEFAULT_API_URL } from '../data/constants.js';
 import { sortActivitiesByLatest } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { animateSpin } from '../utils/animations.js';
+import { triggerDownloadWithMotion } from '../utils/fileMotion.js';
 
 export function mergeActivitiesSmartly(localActs, remoteActs) {
   if (!Array.isArray(localActs)) localActs = [];
@@ -195,63 +196,73 @@ export function exportAllExcel() {
     showToast('Lỗi xuất file', 'Thư viện SheetJS chưa được tải.', 'error');
     return;
   }
-  try {
-    const wb = XLSX.utils.book_new();
+  const fileName = `So_Lieu_TDTT_Phuong_Tan_Khai_${new Date().getFullYear()}.xlsx`;
 
-    // 1. Sheet Hoạt động
-    const wsActs = XLSX.utils.json_to_sheet(state.activities.map((a, i) => ({
-      'STT': i + 1,
-      'Mã giải': a.code,
-      'Tên giải đấu': a.title,
-      'Bộ môn': a.sport,
-      'Cấp độ': a.category,
-      'Ngày tổ chức': a.date,
-      'Số VĐV': a.participants,
-      'Địa điểm': a.location,
-      'Vàng': a.goldMedals || 0,
-      'Bạc': a.silverMedals || 0,
-      'Đồng': a.bronzeMedals || 0,
-      'Tổng HC': a.totalMedals || 0,
-      'Tổng kinh phí': a.budgetTotal || 0,
-      'Trạng thái BC': a.isReported ? 'Đã báo cáo' : 'Chưa báo cáo',
-      'Ghi chú': a.achievementNote || ''
-    })));
-    XLSX.utils.book_append_sheet(wb, wsActs, 'Hoạt động TDTT');
+  triggerDownloadWithMotion({
+    filename: fileName,
+    ext: 'xlsx',
+    title: 'Xuất Sổ Bộ Thể Thao (Excel)',
+    subtitle: 'Đang trích xuất toàn bộ 30 giải đấu, danh sách CLB và kinh phí...',
+    estimatedSize: '45 KB',
+    onExecute: () => {
+      try {
+        const wb = XLSX.utils.book_new();
 
-    // 2. Sheet CLB
-    const wsClubs = XLSX.utils.json_to_sheet(state.clubs.map((c, i) => ({
-      'STT': i + 1,
-      'Mã CLB': c.code,
-      'Tên câu lạc bộ': c.name,
-      'Bộ môn': c.sport,
-      'Chủ nhiệm': c.leader,
-      'Số điện thoại': c.phone,
-      'Số hội viên': c.membersCount,
-      'Địa điểm': c.location,
-      'Năm thành lập': c.establishedYear,
-      'Trạng thái': c.status === 'active' ? 'Đang hoạt động' : 'Tạm dừng'
-    })));
-    XLSX.utils.book_append_sheet(wb, wsClubs, 'Câu lạc bộ');
+        // 1. Sheet Hoạt động
+        const wsActs = XLSX.utils.json_to_sheet(state.activities.map((a, i) => ({
+          'STT': i + 1,
+          'Mã giải': a.code,
+          'Tên giải đấu': a.title,
+          'Bộ môn': a.sport,
+          'Cấp độ': a.category,
+          'Ngày tổ chức': a.date,
+          'Số VĐV': a.participants,
+          'Địa điểm': a.location,
+          'Vàng': a.goldMedals || 0,
+          'Bạc': a.silverMedals || 0,
+          'Đồng': a.bronzeMedals || 0,
+          'Tổng HC': a.totalMedals || 0,
+          'Tổng kinh phí': a.budgetTotal || 0,
+          'Trạng thái BC': a.isReported ? 'Đã báo cáo' : 'Chưa báo cáo',
+          'Ghi chú': a.achievementNote || ''
+        })));
+        XLSX.utils.book_append_sheet(wb, wsActs, 'Hoạt động TDTT');
 
-    // 3. Sheet Kinh phí
-    const wsBudget = XLSX.utils.json_to_sheet(state.budgetItems.map((b, i) => ({
-      'STT': i + 1,
-      'Mã KP': b.code,
-      'Nội dung chi': b.title,
-      'Năm': b.year,
-      'Nguồn': b.source,
-      'Dự toán': b.budgetEstimated,
-      'Thực chi': b.budgetActual,
-      'Căn cứ': b.refDoc,
-      'Trạng thái': b.status,
-      'Ghi chú': b.note || ''
-    })));
-    XLSX.utils.book_append_sheet(wb, wsBudget, 'Kinh phí TDTT');
+        // 2. Sheet CLB
+        const wsClubs = XLSX.utils.json_to_sheet(state.clubs.map((c, i) => ({
+          'STT': i + 1,
+          'Mã CLB': c.code,
+          'Tên câu lạc bộ': c.name,
+          'Bộ môn': c.sport,
+          'Chủ nhiệm': c.leader,
+          'Số điện thoại': c.phone,
+          'Số hội viên': c.membersCount,
+          'Địa điểm': c.location,
+          'Năm thành lập': c.establishedYear,
+          'Trạng thái': c.status === 'active' ? 'Đang hoạt động' : 'Tạm dừng'
+        })));
+        XLSX.utils.book_append_sheet(wb, wsClubs, 'Câu lạc bộ');
 
-    const fileName = `So_Lieu_TDTT_Phuong_Tan_Khai_${new Date().getFullYear()}.xlsx`;
-    XLSX.writeFile(wb, fileName);
-    showToast('Xuất Excel thành công', `Đã lưu file: ${fileName}`);
-  } catch (err) {
-    showToast('Lỗi xuất file', err.message, 'error');
-  }
+        // 3. Sheet Kinh phí
+        const wsBudget = XLSX.utils.json_to_sheet(state.budgetItems.map((b, i) => ({
+          'STT': i + 1,
+          'Mã KP': b.code,
+          'Nội dung chi': b.title,
+          'Năm': b.year,
+          'Nguồn': b.source,
+          'Dự toán': b.budgetEstimated,
+          'Thực chi': b.budgetActual,
+          'Căn cứ': b.refDoc,
+          'Trạng thái': b.status,
+          'Ghi chú': b.note || ''
+        })));
+        XLSX.utils.book_append_sheet(wb, wsBudget, 'Kinh phí TDTT');
+
+        XLSX.writeFile(wb, fileName);
+        showToast('Xuất Excel thành công', `Đã lưu file: ${fileName}`);
+      } catch (err) {
+        showToast('Lỗi xuất file', err.message, 'error');
+      }
+    }
+  });
 }

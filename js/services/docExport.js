@@ -6,6 +6,7 @@
 import { state } from '../state.js';
 import { parseDateVN, sortActivitiesByLatest, formatDateVN } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
+import { triggerDownloadWithMotion } from '../utils/fileMotion.js';
 
 export     function getReportMonths(opts = {}) {
       const p = opts.period || state.reportPeriod || 'month';
@@ -313,19 +314,34 @@ export     function buildReportHTMLForWord(opts = {}) {
 
 
 
-export     function exportDocxFile() {
-      const html = buildReportHTMLForWord();
-      const blob = new Blob(['\ufeff', html], { type: 'application/msword;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      const modeName = state.reportMode === 'party' ? 'ChiBo' : 'NhaNuoc';
-      const cleanPeriod = getPeriodTitle().replace(/\s+/g, '_');
-      link.download = `BaoCao_${modeName}_${cleanPeriod}.doc`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showToast('Đã xuất file Word', `Báo cáo ${getPeriodTitle()} đã được tải về máy.`);
+export function exportDocxFile() {
+  const modeName = state.reportMode === 'party' ? 'ChiBo' : 'NhaNuoc';
+  const cleanPeriod = getPeriodTitle().replace(/\s+/g, '_');
+  const fileName = `BaoCao_${modeName}_${cleanPeriod}.doc`;
+
+  triggerDownloadWithMotion({
+    filename: fileName,
+    ext: 'doc',
+    title: 'Xuất Báo Cáo Văn Bản (Word)',
+    subtitle: `Đang định dạng thể thức ${state.reportMode === 'party' ? 'Chi bộ Đảng' : 'Hành chính NĐ 30/2020/NĐ-CP'}...`,
+    estimatedSize: '68 KB',
+    onExecute: () => {
+      try {
+        const html = buildReportHTMLForWord();
+        const blob = new Blob(['\ufeff', html], { type: 'application/msword;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('Đã xuất file Word', `Báo cáo ${getPeriodTitle()} đã được tải về máy.`);
+      } catch (err) {
+        showToast('Lỗi xuất file', err.message, 'error');
+      }
     }
+  });
+}
 

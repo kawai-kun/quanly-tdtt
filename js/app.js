@@ -18,6 +18,7 @@ import {
 // 2. UTILS
 import { showToast, toggleDarkMode, initTheme, setColorTheme } from './utils/toast.js';
 import { anime, animateStagger } from './utils/animations.js';
+import { triggerDownloadWithMotion } from './utils/fileMotion.js';
 import {
   formatVNCurrency,
   formatDateVN,
@@ -230,6 +231,7 @@ const globalBindings = {
   // Modals & Notifications
   closeModal,
   showToast,
+  triggerDownloadWithMotion,
   anime,
   initTournamentsAnimations,
 

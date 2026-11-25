@@ -46,6 +46,8 @@ import { animateToastIn, animateToastOut } from './animations.js';
     export function toggleDarkMode() {
       state.darkMode = !state.darkMode;
       lsSet('tk_dark', state.darkMode);
+      const sw = document.getElementById('dayNightSwitch');
+      if (sw) sw.setAttribute('aria-checked', state.darkMode ? 'true' : 'false');
       initTheme();
       window.renderApp();
     }
@@ -62,5 +64,8 @@ import { animateToastIn, animateToastOut } from './animations.js';
       } else {
         document.documentElement.classList.remove('dark');
       }
+
+      const sw = document.getElementById('dayNightSwitch');
+      if (sw) sw.setAttribute('aria-checked', state.darkMode ? 'true' : 'false');
     }
 
