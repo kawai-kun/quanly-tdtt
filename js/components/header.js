@@ -41,7 +41,7 @@ export function renderHeader() {
     <header class="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b-2 border-emerald-800 shadow-md select-none">
       
       <!-- Top Red Strip: Tiêu đề hệ thống to rõ ràng căn giữa + Nút Day-Night Switch (176px x 74px) + Tài khoản cán bộ Trần Quốc Được -->
-      <div class="bg-[#b91c1c] text-white px-4 sm:px-6 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-4 shadow-md border-b border-red-800 relative">
+      <div class="bg-[#b91c1c] text-white px-4 sm:px-6 py-2 flex flex-wrap md:flex-nowrap items-center justify-between gap-4 shadow-md border-b border-red-800 relative">
         
         <!-- Left: Cổng điều hành số -->
         <div class="hidden lg:flex items-center gap-3 shrink-0 min-w-[190px]">

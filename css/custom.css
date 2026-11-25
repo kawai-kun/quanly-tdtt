@@ -1117,11 +1117,13 @@ select option {
    ============================================================================== */
 .u447-wrapper {
   position: relative;
+  width: 122px;
+  height: 52px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.22));
 }
 .u447-b {
   position: relative;
@@ -1138,15 +1140,17 @@ select option {
     inset 0 -1px 3px rgba(255, 255, 255, 0.35),
     0 0 0 1.5px rgba(255, 255, 255, 0.15),
     0 10px 24px -10px rgba(10, 20, 50, 0.6);
+  transform: scale(0.68);
+  transform-origin: center center;
   transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1), box-shadow 0.5s ease;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 .u447-b:hover {
-  transform: scale(1.02);
+  transform: scale(0.71);
 }
 .u447-b:active {
-  transform: scale(0.97);
+  transform: scale(0.65);
 }
 .u447-b:focus-visible {
   outline: 2px solid #fbbf24;
