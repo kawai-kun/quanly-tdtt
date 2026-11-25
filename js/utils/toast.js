@@ -48,8 +48,19 @@ import { animateToastIn, animateToastOut } from './animations.js';
       lsSet('tk_dark', state.darkMode);
       const sw = document.getElementById('dayNightSwitch');
       if (sw) sw.setAttribute('aria-checked', state.darkMode ? 'true' : 'false');
-      initTheme();
-      window.renderApp();
+      
+      if (state.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      // Giữ nguyên DOM để chuyển động CSS mượt mà 100%, không bị giật hay re-render lại
+      if (state.currentTab === 'bang-dieu-khien' && typeof window.initDashboardCharts === 'function') {
+        setTimeout(() => {
+          try { window.initDashboardCharts(); } catch (e) {}
+        }, 350);
+      }
     }
 
     export function initTheme() {

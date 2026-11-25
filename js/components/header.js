@@ -165,8 +165,6 @@ export function renderHeader() {
           </button>
 
           <div id="syncPillBox">${renderSyncPillHTML()}</div>
-          
-          </div>
         </div>
 
       </div>
