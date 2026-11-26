@@ -62,8 +62,8 @@ function getPaletteItems(query = '') {
 
   const tournamentItems = (state.activities || []).map(a => ({
     type: 'tournament',
-    title: a.name,
-    subtitle: `${a.sport || 'Thể thao'} • ${a.level || 'Cấp phường'} • Ngày: ${a.date || 'Chưa rõ'} • Kinh phí: ${formatVNCurrency(a.budgetTotal || 0)}`,
+    title: a.title || a.name || 'Giải đấu',
+    subtitle: `${a.sport || 'Thể thao'} • ${a.category || a.level || 'Cấp phường'} • Ngày: ${a.date || 'Chưa rõ'} • Kinh phí: ${formatVNCurrency(a.budgetTotal || 0)}`,
     icon: 'emoji_events',
     action: `window.closeCommandPalette(); window.switchTab('quan-ly-giai-dau'); window.openActivityModal('${a.id}');`,
     category: 'Giải đấu'
