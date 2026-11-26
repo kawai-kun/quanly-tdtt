@@ -1607,3 +1607,525 @@
 .u406-row.is-merge + .u406-ck path {
   stroke-dashoffset: 0;
 }
+
+/* ==============================================================================
+   LUCIAN UX/UI #438: LOADING TO DONE BUTTON (MIT License 2026 Seokwoooo)
+   ============================================================================== */
+.u438-b {
+  --w: auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w);
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ux-surface-2);
+  color: var(--ux-ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 2px var(--ux-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+  cursor: pointer;
+  transform: scale(var(--k, 1));
+  transition: width 0.46s cubic-bezier(0.65, 0, 0.35, 1), background-color 0.35s var(--ux-ease), box-shadow 0.3s var(--ux-ease), transform 0.5s cubic-bezier(0.34, 1.7, 0.5, 1);
+  overflow: visible;
+  border: 1px solid var(--ux-line-2);
+}
+.u438-b:hover {
+  --k: 1.02;
+  background: var(--ux-surface-3);
+}
+.u438-b.is-down {
+  --k: 0.94;
+  transition: width 0.46s cubic-bezier(0.65, 0, 0.35, 1), background-color 0.35s var(--ux-ease), transform 0.12s var(--ux-ease);
+}
+.u438-b.is-grow {
+  transition: width 0.62s cubic-bezier(0.34, 1.32, 0.5, 1), background-color 0.35s var(--ux-ease), transform 0.5s cubic-bezier(0.34, 1.7, 0.5, 1);
+}
+.u438-b:focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: 2px;
+}
+.u438-l {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  white-space: nowrap;
+  transition: opacity 0.22s var(--ux-ease), filter 0.22s var(--ux-ease), transform 0.3s var(--ux-ease);
+}
+.u438-b[data-s="busy"] .u438-l,
+.u438-b[data-s="ok"] .u438-l {
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.85);
+}
+.u438-b[data-s="idle"].is-grow .u438-l {
+  transition-delay: 0.16s;
+}
+.u438-sp,
+.u438-ck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.2s var(--ux-ease), transform 0.4s cubic-bezier(0.34, 1.6, 0.5, 1);
+  pointer-events: none;
+}
+.u438-sp {
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-top-color: currentColor;
+  animation: u438-spin 0.75s linear infinite;
+}
+@keyframes u438-spin {
+  to { transform: rotate(360deg); }
+}
+.u438-b[data-s="busy"] .u438-sp {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.22s;
+}
+.u438-ck {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.u438-ck path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.38s var(--ux-ease) 0.12s;
+}
+.u438-b[data-s="ok"] {
+  background: var(--ux-mint) !important;
+  color: #ffffff !important;
+  border-color: var(--ux-mint) !important;
+  box-shadow: 0 10px 24px -10px var(--ux-mint), 0 2px 4px -2px var(--ux-shadow);
+  animation: u438-pop 0.5s cubic-bezier(0.34, 1.7, 0.5, 1);
+}
+@keyframes u438-pop {
+  40% { transform: scale(1.12); }
+}
+.u438-b[data-s="ok"] .u438-ck {
+  opacity: 1;
+  transform: none;
+}
+.u438-b[data-s="ok"] .u438-ck path {
+  stroke-dashoffset: 0;
+}
+.u438-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px var(--ux-mint);
+  opacity: 0;
+  pointer-events: none;
+}
+.u438-b[data-s="ok"] .u438-ring {
+  animation: u438-ring 0.7s var(--ux-ease) 0.1s;
+}
+@keyframes u438-ring {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+
+/* ==============================================================================
+   LUCIAN UX/UI #097: DONUT THAT RE-SPLITS (MIT License 2026 Seokwoooo)
+   ============================================================================== */
+.u097-card {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--ux-surface);
+  box-shadow: 0 0 0 1px var(--ux-line);
+  overflow: hidden;
+}
+.u097-dn {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  margin: 10px auto 4px;
+}
+.u097-dn svg {
+  width: 190px;
+  height: 190px;
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+.u097-trk {
+  fill: none;
+  stroke: var(--ux-surface-2);
+  stroke-width: 24;
+}
+.u097-sg {
+  fill: none;
+  stroke-width: 24;
+  pointer-events: stroke;
+  cursor: pointer;
+  transition: transform 0.45s var(--ux-spring), stroke-width 0.45s var(--ux-spring), opacity 0.25s;
+}
+.u097-card.has .u097-sg:not(.on) {
+  opacity: 0.32;
+}
+.u097-sg.on {
+  stroke-width: 32;
+}
+.u097-c {
+  position: absolute;
+  inset: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.u097-c small {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ux-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.u097-c b {
+  margin-top: 2px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ux-ink);
+}
+.u097-c span {
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ux-accent);
+  font-variant-numeric: tabular-nums;
+}
+.u097-c.sw > * {
+  animation: u097-sw 0.32s var(--ux-ease);
+}
+@keyframes u097-sw {
+  from { opacity: 0; transform: translateY(5px); }
+}
+.u097-lg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+.u097-it {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ux-surface-2);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ux-ink);
+  text-align: left;
+  transition: background-color 0.2s, opacity 0.25s, transform 0.3s var(--ux-spring);
+  cursor: pointer;
+}
+.u097-it:hover, .u097-it.on {
+  background: var(--ux-surface-3);
+}
+.u097-it:active {
+  transform: scale(0.96);
+}
+.u097-it i {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 3px;
+  background: var(--c);
+  box-shadow: inset 0 0 0 1.5px var(--c);
+  transition: background-color 0.25s;
+}
+.u097-it span {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.u097-it small {
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--ux-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.u097-it[aria-pressed="false"] {
+  opacity: 0.45;
+}
+.u097-it[aria-pressed="false"] i {
+  background: transparent;
+}
+.u097-it[aria-pressed="false"] span {
+  text-decoration: line-through;
+}
+
+/* ==============================================================================
+   LUCIAN UX/UI #095: BAR CHART THAT CHANGES SHAPE (MIT License 2026 Seokwoooo)
+   ============================================================================== */
+.u095-card {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px 14px;
+  border-radius: 20px;
+  background: var(--ux-surface);
+  box-shadow: 0 0 0 1px var(--ux-line);
+  overflow: hidden;
+}
+.u095-h {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.u095-h small {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ux-ink-3);
+}
+.u095-v {
+  margin-top: 2px;
+}
+.u095-v b {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ux-ink);
+}
+.u095-top {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.u095-dl {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ux-mint);
+  white-space: nowrap;
+}
+.u095-dl.dn {
+  color: var(--ux-danger);
+}
+.u095-seg {
+  position: relative;
+  display: flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--ux-surface-2);
+}
+.u095-seg::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: 32px;
+  border-radius: 8px;
+  background: var(--ux-surface);
+  box-shadow: 0 1px 4px -1px var(--ux-shadow-strong);
+  transform: translateX(calc(var(--k, 0) * 32px));
+  transition: transform 0.45s var(--ux-spring);
+}
+.u095-seg button {
+  position: relative;
+  width: 32px;
+  height: 26px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ux-ink-3);
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.u095-seg button[aria-pressed="true"] {
+  color: var(--ux-ink);
+}
+.u095-ch {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+  margin-top: 16px;
+  padding-right: 44px;
+}
+.u095-grid {
+  position: absolute;
+  inset: 0 0 24px 0;
+}
+.u095-gl {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px dashed var(--ux-line-2);
+}
+.u095-gl span {
+  position: absolute;
+  right: 0;
+  top: -7px;
+  transition: opacity 0.3s;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ux-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.u095-gl:first-child {
+  border-top-style: solid;
+}
+.u095-avg {
+  position: absolute;
+  left: 0;
+  right: 40px;
+  bottom: calc(24px + var(--a, 0) * (100% - 24px));
+  height: 0;
+  border-top: 1.5px dashed var(--ux-accent);
+  transition: bottom 0.6s var(--ux-spring);
+  z-index: 2;
+  pointer-events: none;
+}
+.u095-avg span {
+  position: absolute;
+  right: -44px;
+  top: -9px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
+  background: var(--ux-accent);
+  color: var(--ux-accent-ink);
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.u095-bars {
+  position: absolute;
+  left: 0;
+  right: 44px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+}
+.u095-b {
+  position: relative;
+  flex: var(--on, 1) 1 0;
+  min-width: 0;
+  padding: 0 var(--pad, 4px);
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: flex-grow 0.55s var(--ux-ease), padding 0.55s var(--ux-ease), opacity 0.3s;
+  cursor: pointer;
+}
+.u095-b.off {
+  --on: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.u095-b i {
+  display: block;
+  height: calc(var(--h, 0) * (100% - 24px));
+  margin-bottom: 24px;
+  border-radius: 6px 6px 3px 3px;
+  background: var(--ux-surface-3);
+  transition: height 0.65s var(--ux-spring), background-color 0.25s, opacity 0.25s;
+  transition-delay: calc(var(--d, 0) * 25ms), 0s, 0s;
+}
+.u095-b.last i {
+  background: var(--ux-grad);
+}
+.u095-b em {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  bottom: 4px;
+  font-style: normal;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ux-ink-3);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.u095-card.has .u095-b:not(.on) i {
+  opacity: 0.45;
+}
+.u095-b.on i {
+  background: var(--ux-accent);
+  opacity: 1;
+}
+.u095-b.on em {
+  color: var(--ux-ink);
+}
+.u095-b.pin i {
+  box-shadow: 0 0 0 2px var(--ux-surface), 0 0 0 4px var(--ux-accent);
+}
+.u095-b:focus-visible {
+  outline: none;
+}
+.u095-b:focus-visible i {
+  box-shadow: 0 0 0 2px var(--ux-surface), 0 0 0 4px var(--ux-accent);
+}
+.u095-tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--ux-ink);
+  color: var(--ux-page);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(var(--tx, 0px), var(--ty, 0px));
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.3s var(--ux-ease);
+}
+.u095-card.has .u095-tip {
+  opacity: 1;
+}
+.u095-tip small {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--ux-mint);
+}
+.u095-tip small.dn {
+  color: #ff8f92;
+}
+

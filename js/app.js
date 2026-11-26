@@ -96,6 +96,7 @@ import {
   handleDashboardSearch,
   initDashboardCharts
 } from './components/dashboard.js';
+import { setShapeBarPeriod } from './components/shapeBarChart.js';
 
 import {
   renderTournaments,
@@ -107,7 +108,8 @@ import {
   toggleTournamentsView,
   renderTournamentsGrid,
   renderTournamentsTable,
-  initTournamentsAnimations
+  initTournamentsAnimations,
+  handleSyncWithLoadingButton
 } from './components/tournaments.js';
 
 import { renderClubs, openClubModal, handleSaveClub, confirmDeleteClub } from './components/clubs.js';
@@ -246,6 +248,7 @@ const globalBindings = {
   switchActivityFormMode,
   openPlanScannerModal,
   closePlanScannerModal,
+  handleSyncWithLoadingButton,
 
   // Dashboard & Views
   renderDashboard,
@@ -261,6 +264,7 @@ const globalBindings = {
   openKpiTargetsModal,
   handleSaveKpiTargets,
   handleDashboardSearch,
+  setShapeBarPeriod,
 
   // Clubs
   openClubModal,

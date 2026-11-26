@@ -9,6 +9,8 @@ import { formatVNCurrency, extractYearFromDate, extractQuarterFromDate, getAvail
 import { showToast } from '../utils/toast.js';
 import { getSportBadge } from '../utils/sportBadges.js';
 import { animateCounter } from '../utils/animations.js';
+import { renderResplitDonutHTML, initResplitDonut } from './resplitDonutChart.js';
+import { renderShapeBarHTML, initShapeBarChart } from './shapeBarChart.js';
 
 export function renderDashboard() {
   const availableYears = getAvailableYears();
@@ -270,26 +272,13 @@ export function renderDashboard() {
 
       </div>
 
-      <!-- 4. CHARTS: PHÂN BỔ MÔN & TIẾN ĐỘ THÁNG -->
+      <!-- 4. CHARTS: LUCIAN UX/UI #097 & #095 (TỶ TRỌNG BỘ MÔN & TIẾN ĐỘ HUY ĐỘNG VĐV) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
-          <h3 class="text-xs font-semibold text-slate-800 dark:text-white tracking-wider uppercase mb-1">
-            Cơ cấu bộ môn thi đấu
-          </h3>
-          <p class="text-[11px] text-slate-500 mb-4 font-normal">Tỷ trọng giải đấu theo từng môn thể thao</p>
-          <div class="relative h-64 flex items-center justify-center">
-            <canvas id="sportsDonutChart"></canvas>
-          </div>
+        <div class="w-full">
+          ${renderResplitDonutHTML()}
         </div>
-
-        <div class="lg:col-span-2 p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
-          <h3 class="text-xs font-semibold text-slate-800 dark:text-white tracking-wider uppercase mb-1">
-            Tiến độ huy động vận động viên năm
-          </h3>
-          <p class="text-[11px] text-slate-500 mb-4 font-normal">Số lượng người dân và học sinh tham gia thi đấu theo từng tháng</p>
-          <div class="relative h-64">
-            <canvas id="timelineBarChart"></canvas>
-          </div>
+        <div class="lg:col-span-2 w-full">
+          ${renderShapeBarHTML()}
         </div>
       </div>
 
@@ -494,101 +483,18 @@ export function initDashboardCharts() {
     ? state.activities
     : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
 
-  // 1. Group by Sport
-  const sportCounts = {};
-  filteredActs.forEach(a => {
-    const s = a.sport || 'Khác';
-    sportCounts[s] = (sportCounts[s] || 0) + 1;
-  });
-
-  const donutEl = document.getElementById('sportsDonutChart');
-  if (donutEl) {
-    if (donutChartInstance) donutChartInstance.destroy();
-    donutChartInstance = new Chart(donutEl, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(sportCounts),
-        datasets: [{
-          data: Object.values(sportCounts),
-          backgroundColor: [
-            '#2563eb', '#10b981', '#f59e0b', '#dc2626', '#8b5cf6',
-            '#06b6d4', '#ec4899', '#64748b', '#84cc16', '#d97706'
-          ],
-          borderWidth: 2,
-          borderColor: state.darkMode ? '#0f172a' : '#ffffff'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              boxWidth: 10,
-              font: { size: 11, family: '"Barlow Condensed", sans-serif', weight: 'bold' },
-              color: state.darkMode ? '#cbd5e1' : '#475569'
-            }
-          }
-        },
-        cutout: '68%'
-      }
-    });
+  // 1. Lucian UX/UI #097: Donut That Re-splits (Cơ cấu bộ môn thi đấu tương tác cao)
+  try {
+    initResplitDonut(filteredActs);
+  } catch (err) {
+    console.error('Error initializing Resplit Donut chart:', err);
   }
 
-  // 2. Group by Month for Timeline Bar Chart
-  const monthData = Array(12).fill(0);
-  filteredActs.forEach(a => {
-    if (a.date) {
-      const parts = a.date.split('/');
-      if (parts.length >= 2) {
-        const m = parseInt(parts[1], 10);
-        if (m >= 1 && m <= 12) {
-          monthData[m - 1] += (parseInt(a.participants, 10) || 0);
-        }
-      }
-    }
-  });
-
-  const barEl = document.getElementById('timelineBarChart');
-  if (barEl) {
-    if (barChartInstance) barChartInstance.destroy();
-    barChartInstance = new Chart(barEl, {
-      type: 'bar',
-      data: {
-        labels: ['THÁNG 1', 'THÁNG 2', 'THÁNG 3', 'THÁNG 4', 'THÁNG 5', 'THÁNG 6', 'THÁNG 7', 'THÁNG 8', 'THÁNG 9', 'THÁNG 10', 'THÁNG 11', 'THÁNG 12'],
-        datasets: [{
-          label: 'Lượt VĐV tham gia',
-          data: monthData,
-          backgroundColor: '#2563eb',
-          borderRadius: 4,
-          hoverBackgroundColor: '#1d4ed8'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: {
-              color: state.darkMode ? '#94a3b8' : '#64748b',
-              font: { size: 10, family: '"Barlow Condensed", sans-serif', weight: 'bold' }
-            }
-          },
-          y: {
-            grid: { color: state.darkMode ? '#1e293b' : '#f1f5f9' },
-            ticks: {
-              color: state.darkMode ? '#94a3b8' : '#64748b',
-              font: { size: 10, family: '"JetBrains Mono", monospace' }
-            }
-          }
-        },
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
+  // 2. Lucian UX/UI #095: Bar Chart That Changes Shape (Tiến độ huy động VĐV)
+  try {
+    initShapeBarChart(filteredActs);
+  } catch (err) {
+    console.error('Error initializing Shape Bar chart:', err);
   }
 
   // 3. Scoreboard Animated Numbers (Stadium LED Counter)

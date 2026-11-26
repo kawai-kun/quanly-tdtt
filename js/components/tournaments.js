@@ -101,10 +101,25 @@ export function renderTournaments() {
             <span class="material-symbols-outlined text-[17px] text-sky-600 dark:text-sky-400">document_scanner</span>
             <span>Quét Kế hoạch năm</span>
           </button>
-          <button onclick="pullFromGoogleSheet(false)" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-medium text-xs rounded-lg flex items-center gap-1.5 shadow-2xs">
-            <span class="material-symbols-outlined text-[16px]">sync</span>
-            <span>Đồng bộ Drive</span>
+          
+          <!-- Lucian UX/UI #438: Loading to Done Cloud Sync Button -->
+          <button 
+            type="button"
+            id="btnSyncDriveLucian" 
+            onclick="window.handleSyncWithLoadingButton(this, event)" 
+            class="u438-b" 
+            data-s="idle" 
+            title="Đồng bộ dữ liệu trực tiếp với Google Sheet / Drive"
+          >
+            <span class="u438-l">
+              <span class="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">sync</span>
+              <span>Đồng bộ Drive</span>
+            </span>
+            <i class="u438-sp" aria-hidden="true"></i>
+            <svg class="u438-ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 12.5 4.5 4.5 8.5-9.5"/></svg>
+            <i class="u438-ring" aria-hidden="true"></i>
           </button>
+
           <button onclick="openActivityModal()" class="btn-top-tier px-3.5 py-1.5 font-medium text-xs rounded-lg flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[17px]">add</span>
             <span>Thêm giải đấu (N)</span>
@@ -299,29 +314,29 @@ export function renderTournamentsTable(acts) {
     <div class="overflow-x-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs w-full">
       <table class="referee-table w-full text-left text-sm border-collapse" style="table-layout: fixed; min-width: 1100px;">
         <colgroup>
-          <col style="width: 5%;">
-          <col style="width: 7%;">
-          <col style="width: 27%;">
-          <col style="width: 12%;">
-          <col style="width: 12%;">
+          <col style="width: 3.5%;">
+          <col style="width: 5.5%;">
+          <col style="width: 26%;">
+          <col style="width: 11%;">
           <col style="width: 10%;">
-          <col style="width: 10%;">
-          <col style="width: 7%;">
-          <col style="width: 10%;">
+          <col style="width: 8.5%;">
           <col style="width: 9%;">
+          <col style="width: 4.5%;">
+          <col style="width: 16%;">
+          <col style="width: 6%;">
         </colgroup>
         <thead class="bg-slate-900 text-white select-none border-b border-slate-800">
           <tr>
-            <th class="py-3 px-2 text-center">STT</th>
-            <th class="py-3 px-2 text-center">MÃ SỐ</th>
-            <th class="py-3 px-3 text-left">TÊN GIẢI THI ĐẤU</th>
-            <th class="py-3 px-2 text-center">BÁO CÁO</th>
-            <th class="py-3 px-2 text-center">BỘ MÔN</th>
-            <th class="py-3 px-2 text-center">CẤP ĐỘ</th>
-            <th class="py-3 px-2 text-center">NGÀY THI ĐẤU</th>
-            <th class="py-3 px-2 text-center">VĐV</th>
-            <th class="py-3 px-2 text-center">HUY CHƯƠNG</th>
-            <th class="py-3 px-2 text-center sticky right-0 z-20 bg-slate-900 border-l border-slate-800">THAO TÁC</th>
+            <th class="py-3 px-1 text-center font-bold text-xs">STT</th>
+            <th class="py-3 px-1 text-center font-bold text-xs">MÃ SỐ</th>
+            <th class="py-3 px-3 text-left font-bold text-xs">TÊN GIẢI THI ĐẤU</th>
+            <th class="py-3 px-1.5 text-center font-bold text-xs">BÁO CÁO</th>
+            <th class="py-3 px-1.5 text-center font-bold text-xs">BỘ MÔN</th>
+            <th class="py-3 px-1 text-center font-bold text-xs">CẤP ĐỘ</th>
+            <th class="py-3 px-1 text-center font-bold text-xs">NGÀY THI ĐẤU</th>
+            <th class="py-3 px-1 text-center font-bold text-xs">VĐV</th>
+            <th class="py-3 px-2 text-center font-bold text-xs tracking-wider">HUY CHƯƠNG</th>
+            <th class="py-3 px-1 text-center sticky right-0 z-20 bg-slate-900 border-l border-slate-800 text-[11px] font-bold">THAO TÁC</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
@@ -402,39 +417,39 @@ export function renderTournamentsTable(acts) {
                   ${a.date}
                 </td>
 
-                <!-- 8. VĐV -->
-                <td class="py-3 px-2 text-center font-mono font-bold text-sm text-slate-900 dark:text-white tabular-nums">
+                <!-- 8. VĐV (Thu nhỏ chiều rộng vừa khít) -->
+                <td class="py-3 px-1 text-center font-mono font-bold text-xs sm:text-sm text-slate-900 dark:text-white tabular-nums">
                   ${a.participants}
                 </td>
 
-                <!-- 9. Huy chương Olympic -->
+                <!-- 9. Huy chương Olympic (Mở rộng thoải mái, hiển thị trọn vẹn) -->
                 <td class="py-3 px-2 text-center font-mono text-xs font-semibold whitespace-nowrap">
-                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-2xs">
-                    <span class="inline-flex items-center gap-0.5 text-amber-600 font-bold" title="Huy chương Vàng">
-                      <span>🥇</span><span>${a.goldMedals || 0}</span>
+                  <div class="inline-flex items-center justify-center gap-2 px-2.5 py-1 rounded-lg bg-amber-500/10 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 shadow-2xs whitespace-nowrap">
+                    <span class="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold" title="Huy chương Vàng">
+                      <span class="text-sm">🥇</span><span class="font-bold">${a.goldMedals || 0}</span>
                     </span>
-                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                    <span class="inline-flex items-center gap-0.5 text-slate-500 font-bold" title="Huy chương Bạc">
-                      <span>🥈</span><span>${a.silverMedals || 0}</span>
+                    <span class="text-slate-300 dark:text-slate-600 font-light">|</span>
+                    <span class="inline-flex items-center gap-1 text-slate-500 dark:text-slate-300 font-bold" title="Huy chương Bạc">
+                      <span class="text-sm">🥈</span><span class="font-bold">${a.silverMedals || 0}</span>
                     </span>
-                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                    <span class="inline-flex items-center gap-0.5 text-amber-700 dark:text-amber-500 font-bold" title="Huy chương Đồng">
-                      <span>🥉</span><span>${a.bronzeMedals || 0}</span>
+                    <span class="text-slate-300 dark:text-slate-600 font-light">|</span>
+                    <span class="inline-flex items-center gap-1 text-amber-700 dark:text-amber-500 font-bold" title="Huy chương Đồng">
+                      <span class="text-sm">🥉</span><span class="font-bold">${a.bronzeMedals || 0}</span>
                     </span>
                   </div>
                 </td>
 
-                <!-- 10. Thao tác -->
-                <td class="py-3 px-2 text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800">
-                  <div class="flex items-center justify-center gap-1">
-                    <button onclick="window.openQrShareModal('${(a.title || '').replace(/'/g, "\\'")}', window.location.href)" title="Chia sẻ mã QR giải đấu" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-700 transition-colors btn-press cursor-pointer">
-                      <span class="material-symbols-outlined text-[17px]">qr_code_2</span>
+                <!-- 10. Thao tác (Thu nhỏ gọn gàng, vừa đủ 3 nút) -->
+                <td class="py-3 px-1 text-center sticky right-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800">
+                  <div class="flex items-center justify-center gap-0.5">
+                    <button onclick="window.openQrShareModal('${(a.title || '').replace(/'/g, "\\'")}', window.location.href)" title="Chia sẻ mã QR giải đấu" class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-emerald-600 transition-colors btn-press cursor-pointer">
+                      <span class="material-symbols-outlined text-[16px]">qr_code_2</span>
                     </button>
-                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-700 transition-colors btn-press cursor-pointer">
-                      <span class="material-symbols-outlined text-[17px]">edit</span>
+                    <button onclick="openActivityModal('${a.id}')" title="Sửa" class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-blue-600 transition-colors btn-press cursor-pointer">
+                      <span class="material-symbols-outlined text-[16px]">edit</span>
                     </button>
-                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press cursor-pointer">
-                      <span class="material-symbols-outlined text-[17px]">delete</span>
+                    <button onclick="confirmDeleteActivity('${a.id}')" title="Xóa" class="p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition-colors btn-press cursor-pointer">
+                      <span class="material-symbols-outlined text-[16px]">delete</span>
                     </button>
                   </div>
                 </td>
@@ -452,19 +467,21 @@ export function renderTournamentsTable(acts) {
             <td colspan="4" class="py-3 px-2 text-center text-slate-600 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700">
               <span class="text-emerald-700 dark:text-emerald-400 font-semibold">${totalReported} đã báo cáo</span> • <span class="text-amber-700 font-semibold">${acts.length - totalReported} chờ báo cáo</span>
             </td>
-            <td class="py-3 px-2 text-center font-mono text-sm text-emerald-700 dark:text-emerald-400 font-bold border-r border-slate-300 dark:border-slate-700 bg-emerald-50/70 dark:bg-emerald-950/40 tabular-nums">
+            <td class="py-3 px-1 text-center font-mono text-sm text-emerald-700 dark:text-emerald-400 font-bold border-r border-slate-300 dark:border-slate-700 bg-emerald-50/70 dark:bg-emerald-950/40 tabular-nums">
               ${totalTableVdv.toLocaleString('vi-VN')}
             </td>
             <td class="py-3 px-2 text-center font-mono text-xs border-r border-slate-300 dark:border-slate-700 bg-amber-50/60 dark:bg-amber-950/30 whitespace-nowrap">
-              <div class="inline-flex items-center gap-1.5 font-bold">
-                <span class="text-amber-600 font-bold">🥇${totalGold}</span>
-                <span class="text-slate-300 dark:text-slate-600">|</span>
-                <span class="text-slate-500 font-bold">🥈${totalSilver}</span>
-                <span class="text-slate-300 dark:text-slate-600">|</span>
-                <span class="text-amber-700 dark:text-amber-500 font-bold">🥉${totalBronze}</span>
+              <div class="inline-flex items-center justify-center gap-2 font-bold">
+                <span class="text-amber-600 font-bold">🥇 ${totalGold}</span>
+                <span class="text-slate-300 dark:text-slate-600 font-light">|</span>
+                <span class="text-slate-500 font-bold">🥈 ${totalSilver}</span>
+                <span class="text-slate-300 dark:text-slate-600 font-light">|</span>
+                <span class="text-amber-700 font-bold">🥉 ${totalBronze}</span>
               </div>
             </td>
-            <td class="py-3 px-2 sticky right-0 z-10 bg-slate-100 dark:bg-slate-800"></td>
+            <td class="py-3 px-1 sticky right-0 z-10 bg-slate-100 dark:bg-slate-800 border-l border-slate-300 dark:border-slate-700 text-center font-mono text-[10px] text-slate-400">
+              OK
+            </td>
           </tr>
         </tfoot>
       </table>
@@ -661,3 +678,29 @@ export function renderTournamentsKanban(acts) {
     </div>
   `;
 }
+
+// ==============================================================================
+// LUCIAN UX/UI #438: LOADING TO DONE SYNC BUTTON HANDLER
+// ==============================================================================
+export function handleSyncWithLoadingButton(btn, event) {
+  if (event) event.preventDefault();
+  if (!btn || btn.dataset.s === 'busy') return;
+
+  btn.dataset.s = 'busy';
+  btn.style.setProperty('--w', '34px');
+
+  setTimeout(() => {
+    if (window.pullFromGoogleSheet) {
+      window.pullFromGoogleSheet(false);
+    }
+    btn.dataset.s = 'ok';
+    
+    setTimeout(() => {
+      btn.classList.add('is-grow');
+      btn.dataset.s = 'idle';
+      btn.style.removeProperty('--w');
+      setTimeout(() => btn.classList.remove('is-grow'), 500);
+    }, 1200);
+  }, 1000);
+}
+window.handleSyncWithLoadingButton = handleSyncWithLoadingButton;
