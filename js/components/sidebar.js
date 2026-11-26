@@ -9,33 +9,29 @@ import { state } from '../state.js';
       state.currentTab = t;
       state.mobileDrawerOpen = false;
 
-      const mainArea = document.getElementById('mainContentArea');
-      if (mainArea && typeof window.renderDashboard === 'function') {
-        // Chuyển Tab siêu mượt: Giữ nguyên Header, áp dụng hiệu ứng mượt mà và hoán đổi nội dung
-        let contentHTML = '';
-        if (t === 'bang-dieu-khien') contentHTML = window.renderDashboard();
-        else if (t === 'quan-ly-giai-dau' && window.renderTournaments) contentHTML = window.renderTournaments();
-        else if (t === 'quan-ly-clb' && window.renderClubs) contentHTML = window.renderClubs();
-        else if (t === 'lich-sinh-hoat' && window.renderSchedules) contentHTML = window.renderSchedules();
-        else if (t === 'co-so-vat-chat' && window.renderFacilities) contentHTML = window.renderFacilities();
-        else if (t === 'kinh-phi' && window.renderBudget) contentHTML = window.renderBudget();
-        else if (t === 'bao-cao' && window.renderReports) contentHTML = window.renderReports();
+      const allPanes = document.querySelectorAll('.tab-pane-frame');
+      if (allPanes.length > 0) {
+        // 1. Chuyển đổi khung tab nhanh tức thì, không phá hủy DOM, không giật màn hình
+        allPanes.forEach(pane => {
+          if (pane.id === `tabPane_${t}`) {
+            pane.classList.remove('hidden');
+            pane.classList.add('active');
+          } else {
+            pane.classList.remove('active');
+            pane.classList.add('hidden');
+          }
+        });
 
-        mainArea.classList.remove('tab-transition-active');
-        void mainArea.offsetWidth; // force reflow for animation
-        mainArea.innerHTML = contentHTML;
-        mainArea.classList.add('tab-transition-active');
-
-        // Cập nhật trạng thái active trên thanh điều hướng Top Dock (Giữ nguyên kích thước tuyệt đối, không rung lắc)
+        // 2. Cập nhật nút điều hướng trên thanh cố định (Kích thước và vị trí giữ nguyên 100%)
         const topNav = document.getElementById('topNavDock');
         if (topNav) {
           topNav.querySelectorAll('button').forEach(btn => {
             const btnOnClick = btn.getAttribute('onclick') || '';
             const isCurrent = btnOnClick.includes(`'${t}'`);
             if (isCurrent) {
-              btn.className = 'px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border bg-white text-emerald-950 shadow-md border-white/90 ring-2 ring-emerald-300';
+              btn.className = 'w-full h-10 px-2 py-1 rounded-lg font-semibold text-xs xl:text-sm tracking-wide flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border bg-white text-emerald-950 shadow-md border-white/90 ring-2 ring-emerald-300';
             } else {
-              btn.className = 'px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border text-emerald-100 hover:bg-emerald-800/80 hover:text-white border-transparent';
+              btn.className = 'w-full h-10 px-2 py-1 rounded-lg font-semibold text-xs xl:text-sm tracking-wide flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border text-emerald-100 hover:bg-emerald-800/80 hover:text-white border-transparent';
             }
             const badgeEl = btn.querySelector('span.font-mono');
             if (badgeEl) {
@@ -46,12 +42,12 @@ import { state } from '../state.js';
           });
         }
 
-        // Kích hoạt biểu đồ / phân trang theo từng tab
+        // 3. Khởi tạo lazy / resize các biểu đồ nếu cần
         if (t === 'bang-dieu-khien' && typeof window.initDashboardCharts === 'function') {
-          setTimeout(window.initDashboardCharts, 50);
+          setTimeout(window.initDashboardCharts, 30);
         } else if (t === 'quan-ly-giai-dau') {
-          if (typeof window.initTournamentsAnimations === 'function') setTimeout(window.initTournamentsAnimations, 50);
-          if (typeof window.initPagination === 'function') setTimeout(window.initPagination, 50);
+          if (typeof window.initTournamentsAnimations === 'function') setTimeout(window.initTournamentsAnimations, 30);
+          if (typeof window.initPagination === 'function') setTimeout(window.initPagination, 30);
         }
 
         if (window.scrollY > 120) {

@@ -1467,20 +1467,34 @@ html {
   flex-shrink: 0;
 }
 
-/* Hiệu ứng chuyển động mượt mà khi bấm giữa các Tab */
-@keyframes tabFadeSlide {
+/* ==============================================================================
+   PERSISTENT TAB PANE FRAMES (Khung cố định độc lập cho từng Tab)
+   Khắc phục triệt để 100% giật lag khi chuyển Tab
+   ============================================================================== */
+.tab-pane-frame {
+  width: 100%;
+}
+
+.tab-pane-frame.hidden {
+  display: none !important;
+}
+
+.tab-pane-frame.active {
+  display: block !important;
+  animation: tabPaneFade 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabPaneFade {
   from {
-    opacity: 0;
-    transform: translateY(3px);
+    opacity: 0.85;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .tab-transition-active {
-  animation: tabFadeSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabPaneFade 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ==============================================================================

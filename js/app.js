@@ -321,21 +321,42 @@ export function renderApp() {
     return;
   }
 
-  let contentHTML = '';
-  if (state.currentTab === 'bang-dieu-khien') contentHTML = renderDashboard();
-  else if (state.currentTab === 'quan-ly-giai-dau') contentHTML = renderTournaments();
-  else if (state.currentTab === 'quan-ly-clb') contentHTML = renderClubs();
-  else if (state.currentTab === 'lich-sinh-hoat') contentHTML = renderSchedules();
-  else if (state.currentTab === 'co-so-vat-chat') contentHTML = renderFacilities();
-  else if (state.currentTab === 'kinh-phi') contentHTML = renderBudget();
-  else if (state.currentTab === 'bao-cao') contentHTML = renderReports();
-
   // BẢN 4 DUY NHẤT: CHÍNH QUYỀN SỐ & SỔ BỘ HÀNH CHÍNH PHƯỜNG TÂN KHAI
+  // Kiến trúc 7 Khung cố định (Persistent Tab Pane Frames) - Không giật lag, chuyển tab tức thì 60fps
   app.innerHTML = `
     <div class="min-h-screen flex flex-col w-full text-slate-800 dark:text-slate-100">
       ${renderHeader()}
-      <main id="mainContentArea" class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto tab-transition-active">
-        ${contentHTML}
+      <main id="mainContentArea" class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
+        <div id="tabContainer" class="w-full">
+          <!-- Khung 1: Tổng quan -->
+          <div id="tabPane_bang-dieu-khien" class="tab-pane-frame ${state.currentTab === 'bang-dieu-khien' ? 'active' : 'hidden'}">
+            ${renderDashboard()}
+          </div>
+          <!-- Khung 2: Giải đấu -->
+          <div id="tabPane_quan-ly-giai-dau" class="tab-pane-frame ${state.currentTab === 'quan-ly-giai-dau' ? 'active' : 'hidden'}">
+            ${renderTournaments()}
+          </div>
+          <!-- Khung 3: Câu lạc bộ thể thao -->
+          <div id="tabPane_quan-ly-clb" class="tab-pane-frame ${state.currentTab === 'quan-ly-clb' ? 'active' : 'hidden'}">
+            ${renderClubs()}
+          </div>
+          <!-- Khung 4: Lịch tập luyện -->
+          <div id="tabPane_lich-sinh-hoat" class="tab-pane-frame ${state.currentTab === 'lich-sinh-hoat' ? 'active' : 'hidden'}">
+            ${renderSchedules()}
+          </div>
+          <!-- Khung 5: Cơ sở vật chất & sân bãi -->
+          <div id="tabPane_co-so-vat-chat" class="tab-pane-frame ${state.currentTab === 'co-so-vat-chat' ? 'active' : 'hidden'}">
+            ${renderFacilities()}
+          </div>
+          <!-- Khung 6: Kinh phí quyết toán -->
+          <div id="tabPane_kinh-phi" class="tab-pane-frame ${state.currentTab === 'kinh-phi' ? 'active' : 'hidden'}">
+            ${renderBudget()}
+          </div>
+          <!-- Khung 7: Báo cáo công văn -->
+          <div id="tabPane_bao-cao" class="tab-pane-frame ${state.currentTab === 'bao-cao' ? 'active' : 'hidden'}">
+            ${renderReports()}
+          </div>
+        </div>
       </main>
     </div>
     ${renderBottomNav()}

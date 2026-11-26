@@ -252,23 +252,24 @@ export function renderHeader() {
 
       </div>
 
-      <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Deep Emerald #064e3b) -->
-      <div class="hidden lg:flex w-full bg-[#064e3b] border-b border-emerald-600/80 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar shadow-inner">
-        <nav id="topNavDock" class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto select-none">
+      <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Deep Emerald #064e3b) - 7 Khung cố định từng Tab -->
+      <div class="hidden lg:flex w-full bg-[#064e3b] border-b border-emerald-600/80 px-4 sm:px-6 py-2 shadow-inner">
+        <nav id="topNavDock" class="grid grid-cols-7 gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto select-none">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
               <button 
+                type="button"
                 onclick="switchTab('${item.id}')" 
-                class="px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border ${
+                class="w-full h-10 px-2 py-1 rounded-lg font-semibold text-xs xl:text-sm tracking-wide flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border ${
                   isActive 
                     ? 'bg-white text-emerald-950 shadow-md border-white/90 ring-2 ring-emerald-300' 
                     : 'text-emerald-100 hover:bg-emerald-800/80 hover:text-white border-transparent'
                 }"
                 title="${item.label}"
               >
-                <span class="material-symbols-outlined text-[18px]">${item.icon}</span>
-                <span>${item.label}</span>
+                <span class="material-symbols-outlined text-[18px] shrink-0">${item.icon}</span>
+                <span class="truncate">${item.label}</span>
                 ${item.badge !== undefined ? `
                   <span class="ml-1 min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-mono font-bold inline-flex items-center justify-center shrink-0 ${
                     isActive ? 'bg-emerald-100 text-emerald-900' : 'bg-emerald-950/80 text-emerald-200'
