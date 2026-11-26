@@ -26,16 +26,22 @@ import { state } from '../state.js';
         mainArea.innerHTML = contentHTML;
         mainArea.classList.add('tab-transition-active');
 
-        // Cập nhật trạng thái active trên thanh điều hướng Top Dock
+        // Cập nhật trạng thái active trên thanh điều hướng Top Dock (Giữ nguyên kích thước tuyệt đối, không rung lắc)
         const topNav = document.getElementById('topNavDock');
         if (topNav) {
           topNav.querySelectorAll('button').forEach(btn => {
             const btnOnClick = btn.getAttribute('onclick') || '';
             const isCurrent = btnOnClick.includes(`'${t}'`);
             if (isCurrent) {
-              btn.className = 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer bg-white text-emerald-950 shadow-md font-semibold ring-2 ring-emerald-300 scale-102';
+              btn.className = 'px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border bg-white text-emerald-950 shadow-md border-white/90 ring-2 ring-emerald-300';
             } else {
-              btn.className = 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer text-emerald-100 hover:bg-emerald-800/80 hover:text-white font-medium';
+              btn.className = 'px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border text-emerald-100 hover:bg-emerald-800/80 hover:text-white border-transparent';
+            }
+            const badgeEl = btn.querySelector('span.font-mono');
+            if (badgeEl) {
+              badgeEl.className = isCurrent 
+                ? 'ml-1 min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-mono font-bold inline-flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-900'
+                : 'ml-1 min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-mono font-bold inline-flex items-center justify-center shrink-0 bg-emerald-950/80 text-emerald-200';
             }
           });
         }
@@ -48,10 +54,14 @@ import { state } from '../state.js';
           if (typeof window.initPagination === 'function') setTimeout(window.initPagination, 50);
         }
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.scrollY > 120) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       } else {
         window.renderApp();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.scrollY > 120) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     }
 

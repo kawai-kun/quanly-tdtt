@@ -39,7 +39,7 @@ export function renderHeader() {
         
         <!-- Left: Cổng điều hành số -->
         <div class="hidden lg:flex items-center gap-3 shrink-0 min-w-[190px]">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#10b981]"></span>
+          <span class="neon-dot-green"></span>
           <div class="flex flex-col text-left leading-tight">
             <span class="text-xs font-bold text-amber-200 uppercase tracking-widest">CỔNG ĐIỀU HÀNH SỐ</span>
             <span class="text-[10px] text-red-200 font-medium">UBND PHƯỜNG TÂN KHAI</span>
@@ -254,24 +254,24 @@ export function renderHeader() {
 
       <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Deep Emerald #064e3b) -->
       <div class="hidden lg:flex w-full bg-[#064e3b] border-b border-emerald-600/80 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar shadow-inner">
-        <nav id="topNavDock" class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto">
+        <nav id="topNavDock" class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto select-none">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
               <button 
                 onclick="switchTab('${item.id}')" 
-                class="px-3.5 py-1.5 rounded-lg font-medium text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
+                class="px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer border ${
                   isActive 
-                    ? 'bg-white text-emerald-950 shadow-md font-semibold ring-2 ring-emerald-300 scale-102' 
-                    : 'text-emerald-100 hover:bg-emerald-800/80 hover:text-white'
+                    ? 'bg-white text-emerald-950 shadow-md border-white/90 ring-2 ring-emerald-300' 
+                    : 'text-emerald-100 hover:bg-emerald-800/80 hover:text-white border-transparent'
                 }"
                 title="${item.label}"
               >
                 <span class="material-symbols-outlined text-[18px]">${item.icon}</span>
                 <span>${item.label}</span>
                 ${item.badge !== undefined ? `
-                  <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium ${
-                    isActive ? 'bg-emerald-100 text-emerald-900 font-semibold' : 'bg-emerald-950 text-emerald-200'
+                  <span class="ml-1 min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-mono font-bold inline-flex items-center justify-center shrink-0 ${
+                    isActive ? 'bg-emerald-100 text-emerald-900' : 'bg-emerald-950/80 text-emerald-200'
                   }">
                     ${item.badge}
                   </span>

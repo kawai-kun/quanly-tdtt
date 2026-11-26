@@ -42,7 +42,7 @@ import { getAvailableYears, formatDateVN } from '../utils/formatters.js';
               <button onclick="openTelegramConfigModal('list')" class="btn-glass-tactile px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 ${activeSchedCount > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-400'}" title="Quản lý các cấu hình tự động gửi báo cáo qua Telegram">
                 <span class="material-symbols-outlined text-[16px] text-sky-500">schedule_send</span>
                 <span>Lịch Telegram (${activeSchedCount}/${totalSchedCount})</span>
-                ${activeSchedCount > 0 ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>` : ''}
+                ${activeSchedCount > 0 ? `<span class="neon-dot-green-sm"></span>` : ''}
               </button>
 
               <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-inner">

@@ -37,7 +37,7 @@ export function renderDashboard() {
         <div class="px-5 py-3.5 bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800">
           <div class="flex items-center gap-3">
             <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold tracking-wider uppercase">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="neon-dot-green"></span>
               TRUNG TÂM CHỈ HUY THỂ THAO
             </span>
             <span class="text-xs text-slate-300 font-normal">
@@ -148,7 +148,7 @@ export function renderDashboard() {
         <div class="lg:col-span-2 space-y-3">
           <div class="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
+              <span class="neon-dot-red"></span>
               <h2 class="text-sm sm:text-base font-semibold tracking-wide uppercase text-slate-800 dark:text-white">
                 Hoạt động thể thao trọng điểm
               </h2>
@@ -227,7 +227,7 @@ export function renderDashboard() {
                   <p class="text-[10px] text-slate-500 font-normal">${f.type || 'Sân bãi thể thao'}</p>
                 </div>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/50 flex items-center gap-1.5 shrink-0 shadow-xs">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+                  <span class="neon-dot-green-sm"></span>
                   <span>Sẵn sàng</span>
                 </span>
               </div>

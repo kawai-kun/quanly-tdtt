@@ -1135,6 +1135,7 @@ select option {
   overflow: hidden;
   isolation: isolate;
   background: #4FA8F7;
+  flex-shrink: 0 !important;
   box-shadow: 
     inset 0 3px 8px rgba(0, 0, 0, 0.32),
     inset 0 -1px 3px rgba(255, 255, 255, 0.35),
@@ -1393,11 +1394,84 @@ select option {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* ==============================================================================
+   LAYOUT STABILIZATION & ROCK-SOLID ANTI-JITTER
+   Loại bỏ 100% rung lắc, giật layout khi chuyển trang / chuyển tab
+   ============================================================================== */
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
+#mainContentArea {
+  min-height: calc(100vh - 170px);
+}
+
+/* ==============================================================================
+   HIGH-VOLTAGE NEON PULSE EFFECTS (Xanh lá & Đỏ tươi rực rỡ, phát sáng Cyberpunk/IOC)
+   ============================================================================== */
+@keyframes neonPulseGreen {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #00ff66, 0 0 12px #00ff66, 0 0 20px rgba(0, 255, 102, 0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 10px #00ff88, 0 0 22px #00ff88, 0 0 35px rgba(0, 255, 136, 0.95);
+    opacity: 0.9;
+  }
+}
+
+.neon-dot-green {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background-color: #00ff66 !important;
+  animation: neonPulseGreen 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.neon-dot-green-sm {
+  display: inline-block;
+  width: 7.5px;
+  height: 7.5px;
+  border-radius: 9999px;
+  background-color: #00ff66 !important;
+  box-shadow: 0 0 6px #00ff66, 0 0 12px rgba(0, 255, 102, 0.85);
+  animation: neonPulseGreen 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes neonPulseRed {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #ff0055, 0 0 12px #ff0055, 0 0 20px rgba(255, 0, 85, 0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.18);
+    box-shadow: 0 0 10px #ff1744, 0 0 22px #ff1744, 0 0 35px rgba(255, 23, 68, 0.95);
+    opacity: 0.9;
+  }
+}
+
+.neon-dot-red {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background-color: #ff0055 !important;
+  animation: neonPulseRed 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
 /* Hiệu ứng chuyển động mượt mà khi bấm giữa các Tab */
 @keyframes tabFadeSlide {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(3px);
   }
   to {
     opacity: 1;
@@ -1406,7 +1480,7 @@ select option {
 }
 
 .tab-transition-active {
-  animation: tabFadeSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabFadeSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ==============================================================================
