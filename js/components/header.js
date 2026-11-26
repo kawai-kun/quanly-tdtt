@@ -39,19 +39,19 @@ export function renderHeader() {
         
         <!-- Left: Cổng điều hành số -->
         <div class="hidden lg:flex items-center gap-3 shrink-0 min-w-[190px]">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-xs"></span>
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#10b981]"></span>
           <div class="flex flex-col text-left leading-tight">
             <span class="text-xs font-bold text-amber-200 uppercase tracking-widest">CỔNG ĐIỀU HÀNH SỐ</span>
             <span class="text-[10px] text-red-200 font-medium">UBND PHƯỜNG TÂN KHAI</span>
           </div>
         </div>
 
-        <!-- Center: HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO • PHƯỜNG TÂN KHAI (TO, RÕ, CĂN GIỮA) -->
+        <!-- Center: HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO • PHƯỜNG TÂN KHAI (TO, RÕ, CĂN GIỮA, CHUẨN CÔNG VĂN) -->
         <div class="flex-1 text-center px-2 py-0.5">
-          <h1 class="text-sm sm:text-base md:text-lg lg:text-xl font-bold uppercase tracking-wider text-amber-200 drop-shadow-sm leading-tight">
-            ★ HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO • PHƯỜNG TÂN KHAI ★
+          <h1 class="text-sm sm:text-base md:text-lg lg:text-xl font-extrabold uppercase tracking-widest text-amber-300 drop-shadow-sm leading-tight">
+            HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO • PHƯỜNG TÂN KHAI
           </h1>
-          <p class="text-[10.5px] sm:text-[11.5px] text-red-100 font-medium tracking-wide mt-0.5 hidden sm:block opacity-90">
+          <p class="text-[10.5px] sm:text-[11.5px] text-red-100 font-medium tracking-wider mt-0.5 hidden sm:block uppercase opacity-95">
             TRUNG TÂM DỊCH VỤ TỔNG HỢP • BỘ PHẬN THỂ DỤC THỂ THAO
           </p>
         </div>
@@ -59,7 +59,7 @@ export function renderHeader() {
         <!-- Right: Nút Day-Night Switch (#447) + Menu Cán bộ (#408) -->
         <div class="flex items-center justify-end gap-3 sm:gap-4 shrink-0">
           
-          <!-- Day–Night Sky Switch (Lucian UX/UI #447 - Kích thước thu gọn tinh tế 122px x 52px) -->
+          <!-- Day–Night Sky Switch (Lucian UX/UI #447 - Chiều ngang mở rộng gấp đôi: 200px x 42px) -->
           <div class="u447-wrapper" title="Chuyển chế độ Sáng / Tối (Ngày & Đêm)">
             <button 
               type="button" 
@@ -73,26 +73,32 @@ export function renderHeader() {
               <span class="u447-sky"></span>
               <span class="u447-ngt"></span>
               <span class="u447-meteor"></span>
-              <svg class="u447-sr" viewBox="0 0 90 58" aria-hidden="true">
+              <svg class="u447-sr" viewBox="0 0 250 58" aria-hidden="true">
                 <path d="M14 9Q14 14 19 14Q14 14 14 19Q14 14 9 14Z"/>
                 <path d="M42 6Q42 10 46 10Q42 10 42 14Q42 10 38 10Q42 10 42 6Z"/>
                 <path d="M28 31Q28 35 32 35Q28 35 28 39Q28 35 24 35Q28 35 28 31Z"/>
-                <path d="M60 23Q60 26 63 26Q60 26 60 29Q60 26 57 26Q60 26 60 23Z"/>
+                <path d="M72 18Q72 22 76 22Q72 22 72 26Q72 22 68 22Q72 22 72 18Z"/>
+                <path d="M115 12Q115 16 119 16Q115 16 115 20Q115 16 111 16Q115 16 115 12Z"/>
+                <path d="M160 28Q160 32 164 32Q160 32 160 36Q160 32 156 32Q160 32 160 28Z"/>
+                <path d="M205 14Q205 17 208 17Q205 17 205 20Q205 17 202 17Q205 17 205 14Z"/>
                 <circle cx="7" cy="31" r="1.3"/>
                 <circle cx="50" cy="42" r="1.1"/>
-                <circle cx="68" cy="10" r="1.3"/>
-                <circle cx="36" cy="51" r="1"/>
-                <circle cx="76" cy="38" r="1"/>
+                <circle cx="95" cy="38" r="1.2"/>
+                <circle cx="138" cy="45" r="1.3"/>
+                <circle cx="180" cy="20" r="1.1"/>
+                <circle cx="225" cy="36" r="1.2"/>
               </svg>
               <span class="u447-halo"><i></i><i></i><i></i></span>
-              <svg class="u447-cl" viewBox="0 0 136 68" aria-hidden="true">
+              <svg class="u447-cl" viewBox="0 0 210 68" aria-hidden="true">
                 <g fill="#CFE7FF">
                   <circle cx="34" cy="46" r="18"/><circle cx="58" cy="36" r="20"/>
                   <circle cx="86" cy="40" r="18"/><circle cx="110" cy="28" r="21"/><circle cx="132" cy="40" r="18"/>
+                  <circle cx="160" cy="32" r="20"/><circle cx="188" cy="42" r="18"/>
                 </g>
                 <g fill="#FFFFFF">
                   <circle cx="22" cy="60" r="16"/><circle cx="46" cy="52" r="18"/>
                   <circle cx="74" cy="56" r="18"/><circle cx="98" cy="46" r="19"/><circle cx="124" cy="54" r="19"/>
+                  <circle cx="150" cy="48" r="18"/><circle cx="178" cy="56" r="19"/>
                 </g>
               </svg>
               <span class="u447-th">
@@ -132,8 +138,16 @@ export function renderHeader() {
                 <!-- #408 Spring Dropdown Menu -->
                 <div class="u408-m" id="accountMenuDropdown" role="menu" aria-label="Menu tài khoản">
                   <div class="u408-hd" style="--i:0">
-                    <b>Trần Quốc Được</b>
-                    <span>canbotdtt.tankhai@binhphuoc.gov.vn</span>
+                    <div class="flex items-center justify-between gap-2">
+                      <b>Trần Quốc Được</b>
+                      <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-red-950 uppercase tracking-wider">Cán bộ TDTT</span>
+                    </div>
+                    <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Bộ phận TDTT • UBND Phường Tân Khai</span>
+                    ${state.isAdminElevated ? `
+                      <span class="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Đã xác thực Quản trị tối cao
+                      </span>
+                    ` : ''}
                   </div>
                   
                   <button type="button" class="u408-it" role="menuitem" style="--i:1" onclick="window.showOfficerProfileModal && window.showOfficerProfileModal()">
@@ -146,9 +160,9 @@ export function renderHeader() {
                     <span>Cấu hình Drive & Telegram</span>
                   </button>
 
-                  <button type="button" class="u408-it" role="menuitem" style="--i:3" onclick="window.openPinVerifyModal && window.openPinVerifyModal()">
-                    <span class="material-symbols-outlined">pin</span>
-                    <span>Mã PIN xác thực (6 số)</span>
+                  <button type="button" class="u408-it" role="menuitem" style="--i:3" onclick="window.openAdminElevationModal && window.openAdminElevationModal()">
+                    <span class="material-symbols-outlined text-amber-500">verified_user</span>
+                    <span>${state.isAdminElevated ? 'Quản trị viên (Đã mở khóa)' : 'Xác thực Quản trị tối cao (Mã PIN)'}</span>
                   </button>
 
                   <button type="button" class="u408-it" role="menuitem" style="--i:4" onclick="window.openQrShareModal && window.openQrShareModal()">
@@ -448,7 +462,32 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+export function openAdminElevationModal() {
+  if (state.isAdminElevated) {
+    import('../utils/toast.js').then(({ showToast }) => {
+      showToast('Đã xác thực Quản trị', 'Đồng chí đang giữ quyền Quản trị viên tối cao trong phiên làm việc này.');
+    });
+    return;
+  }
+  if (typeof window.openPinVerifyModal === 'function') {
+    window.openPinVerifyModal({
+      title: 'XÁC THỰC QUYỀN QUẢN TRỊ TỐI CAO',
+      subtitle: 'Nhập mã PIN 6 chữ số để mở khóa cấu hình hệ thống & phê duyệt ngân sách',
+      expectedPin: '123123',
+      onSuccess: () => {
+        state.isAdminElevated = true;
+        lsSet('tk_admin_elevated', true);
+        import('../utils/toast.js').then(({ showToast }) => {
+          showToast('Xác thực Quản trị thành công', 'Đã cấp quyền Quản trị tối cao cho phiên làm việc.');
+        });
+        if (typeof window.renderApp === 'function') window.renderApp();
+      }
+    });
+  }
+}
+
 window.toggleAccountMenu = toggleAccountMenu;
 window.closeAccountMenu = closeAccountMenu;
 window.showOfficerProfileModal = showOfficerProfileModal;
 window.handleCommandKClick = handleCommandKClick;
+window.openAdminElevationModal = openAdminElevationModal;

@@ -140,7 +140,11 @@ import {
   initAuthInteractions,
   handleAuthEyeToggle,
   handleAuthFormSubmit,
-  fastLoginOfficer
+  handleQuickPinLogin,
+  fastLoginOfficer,
+  showLogoutConfirmModal,
+  closeLogoutModal,
+  confirmLogoutAction
 } from './components/auth.js';
 
 import { openQrShareModal, closeQrShareModal } from './components/qrShare.js';
@@ -148,7 +152,7 @@ import { openFullscreenMenu, closeFullscreenMenu, handleFullscreenNav } from './
 import { triggerSafeDelete, commitSafeDelete, cancelSafeDelete } from './utils/undoToast.js';
 import { openPinVerifyModal, closePinVerifyModal } from './components/pinVerify.js';
 import { renderPaginationHTML, initPagination } from './components/pagination.js';
-import { toggleAccountMenu, closeAccountMenu, showOfficerProfileModal, handleCommandKClick } from './components/header.js';
+import { toggleAccountMenu, closeAccountMenu, showOfficerProfileModal, handleCommandKClick, openAdminElevationModal } from './components/header.js';
 
 // ==============================================================================
 // 5. GẮN TẤT CẢ HANDLER VÀO WINDOW CHO CÁC SỰ KIỆN INLINE HTML
@@ -163,7 +167,7 @@ const globalBindings = {
   renderSyncPill,
   renderApp,
 
-  // Auth (#403)
+  // Auth (#403 & #406)
   renderLogin,
   togglePassVisibility,
   handleLoginSubmit,
@@ -171,7 +175,11 @@ const globalBindings = {
   initAuthInteractions,
   handleAuthEyeToggle,
   handleAuthFormSubmit,
+  handleQuickPinLogin,
   fastLoginOfficer,
+  showLogoutConfirmModal,
+  closeLogoutModal,
+  confirmLogoutAction,
   openLoginModal: () => {
     state.isAuthenticated = false;
     renderApp();
@@ -194,6 +202,7 @@ const globalBindings = {
   closeAccountMenu,
   showOfficerProfileModal,
   handleCommandKClick,
+  openAdminElevationModal,
 
   // Tournaments
   renderTournaments,

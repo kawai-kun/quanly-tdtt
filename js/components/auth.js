@@ -34,15 +34,15 @@ export function renderLogin() {
         <!-- Lucian UX/UI #403: Adapted for Username & Password -->
         <div class="ux u403" id="authFormRoot">
           <form class="u403-form" novalidate onsubmit="handleAuthFormSubmit(event)">
-            <!-- Field 1: Username (Tên đăng nhập) -->
+            <!-- Field 1: Username (Tên đăng nhập: admin) -->
             <div class="u403-f" id="f_user">
-              <input class="u403-in" id="auth_user" type="text" autocomplete="username" spellcheck="false" value="tran_quoc_duoc">
-              <label for="auth_user">Tài khoản cán bộ</label>
+              <input class="u403-in" id="auth_user" type="text" autocomplete="username" spellcheck="false" value="admin">
+              <label for="auth_user">Tên đăng nhập</label>
             </div>
 
             <!-- Field 2: Password with Animated Eyelid (#403) -->
             <div class="u403-f u403-pw" id="f_pass">
-              <input class="u403-in" id="auth_pass" type="password" autocomplete="current-password">
+              <input class="u403-in" id="auth_pass" type="password" autocomplete="current-password" placeholder=" ">
               <label for="auth_pass">Mật khẩu</label>
               <button type="button" class="u403-eye" id="auth_eye_btn" aria-label="Hiện mật khẩu" aria-pressed="false" onclick="handleAuthEyeToggle()">
                 <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -70,17 +70,17 @@ export function renderLogin() {
             </button>
           </form>
 
-          <!-- Direct 1-Click Fast Login for Officer Trần Quốc Được -->
+          <!-- Direct Quick PIN Login (#406) -->
           <div class="w-full mt-3 space-y-2">
-            <button type="button" onclick="window.fastLoginOfficer()" class="w-full py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold text-xs rounded-xl border border-emerald-200 dark:border-emerald-800 transition-all flex items-center justify-center gap-2 btn-press cursor-pointer">
-              <span class="material-symbols-outlined text-[16px]">verified_user</span>
-              <span>Vào xem trực tiếp (Cán bộ Trần Quốc Được)</span>
+            <button type="button" onclick="window.handleQuickPinLogin()" class="w-full py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold text-xs rounded-xl border border-emerald-200 dark:border-emerald-800 transition-all flex items-center justify-center gap-2 btn-press cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">dialpad</span>
+              <span>Đăng nhập nhanh bằng Mã PIN bảo mật</span>
             </button>
           </div>
 
           <div class="flex items-center justify-between text-xs w-full pt-3 mt-2 border-t border-slate-100 dark:border-slate-800/80">
             <span class="text-slate-400 text-[11px]">Bảo mật chính quyền số</span>
-            <button type="button" onclick="toggleDarkMode()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center gap-1">
+            <button type="button" onclick="toggleDarkMode()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center gap-1 cursor-pointer">
               <span class="material-symbols-outlined text-[16px]">${state.darkMode ? 'light_mode' : 'dark_mode'}</span>
               <span class="text-[11px]">${state.darkMode ? 'Sáng' : 'Tối'}</span>
             </button>
@@ -162,19 +162,19 @@ export function handleAuthFormSubmit(e) {
     goBtn.classList.remove('is-busy');
     goBtn.removeAttribute('aria-busy');
 
-    // Standard valid check (user has value and password >= 3 chars, or admin/D123@ or tranquocduoc)
-    const isValid = (u && (p.length >= 3 || p === 'lucian2026' || p === 'D123@'));
+    // Chấp nhận tài khoản: admin / mật khẩu: Tk2026@ hoặc tran_quoc_duoc / Tk2026@
+    const isValid = (u === 'admin' && p === 'Tk2026@') || (u === 'tran_quoc_duoc' && p === 'Tk2026@');
 
     if (isValid) {
       goBtn.classList.add('is-ok');
       if (live) live.textContent = 'Đăng nhập thành công';
-      showToast('Đăng nhập thành công', 'Chào mừng Cán bộ Trần Quốc Được.');
+      showToast('Đăng nhập thành công', 'Chào mừng Quản trị viên - Cán bộ Trần Quốc Được.');
 
       setTimeout(() => {
         state.isAuthenticated = true;
         lsSet('tk_auth', true);
         window.renderApp();
-      }, 900);
+      }, 800);
     } else {
       // Wrong credentials -> shake field + red underline sweep
       const targetF = !u ? fUser : fPass;
@@ -185,12 +185,33 @@ export function handleAuthFormSubmit(e) {
       targetF.classList.add('is-err', 'is-shake');
 
       if (msg) {
-        msg.textContent = !u ? 'Vui lòng nhập tài khoản cán bộ' : 'Mật khẩu chưa chính xác';
+        msg.textContent = !u ? 'Vui lòng nhập tên đăng nhập' : 'Tài khoản hoặc mật khẩu chưa chính xác';
         msg.classList.add('is-on');
       }
       targetIn.focus();
     }
-  }, 500);
+  }, 450);
+}
+
+// Đăng nhập nhanh bằng Mã PIN 6 chữ số (#406)
+export function handleQuickPinLogin() {
+  if (typeof window.openPinVerifyModal === 'function') {
+    window.openPinVerifyModal({
+      title: 'ĐĂNG NHẬP NHANH BẰNG MÃ PIN',
+      subtitle: 'Nhập mã PIN an ninh 6 chữ số để truy cập trực tiếp',
+      expectedPin: '123123',
+      onSuccess: () => {
+        state.isAuthenticated = true;
+        lsSet('tk_auth', true);
+        showToast('Đăng nhập thành công', 'Chào mừng Cán bộ Trần Quốc Được.');
+        setTimeout(() => {
+          window.renderApp();
+        }, 350);
+      }
+    });
+  } else {
+    fastLoginOfficer();
+  }
 }
 
 export function fastLoginOfficer() {
@@ -200,12 +221,61 @@ export function fastLoginOfficer() {
   window.renderApp();
 }
 
+// Lucian UX/UI: Dialog xác nhận đăng xuất chuyên nghiệp (không dùng browser confirm() thô sơ)
 export function handleLogout() {
-  if (confirm('Đồng chí có chắc chắn muốn đăng xuất khỏi hệ thống quản lý TDTT?')) {
-    state.isAuthenticated = false;
-    lsSet('tk_auth', false);
-    window.renderApp();
-  }
+  showLogoutConfirmModal();
+}
+
+export function showLogoutConfirmModal() {
+  const existing = document.getElementById('logoutConfirmModal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'logoutConfirmModal';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-fade-in';
+  modal.innerHTML = `
+    <div class="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-center transform transition-all animate-spring-up">
+      <div class="w-14 h-14 rounded-full bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3 shadow-inner ring-4 ring-red-500/10">
+        <span class="material-symbols-outlined text-[28px]">logout</span>
+      </div>
+      
+      <h3 class="text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider">Xác Nhận Đăng Xuất</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+        Đồng chí có chắc chắn muốn đăng xuất khỏi <br/>
+        <strong class="text-slate-800 dark:text-slate-200 font-semibold">Hệ thống Quản lý TDTT Phường Tân Khai</strong>?
+      </p>
+
+      <div class="flex items-center gap-3 mt-6">
+        <button type="button" onclick="window.closeLogoutModal()" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-all cursor-pointer">
+          Hủy bỏ
+        </button>
+        <button type="button" onclick="window.confirmLogoutAction()" class="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 btn-press">
+          <span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+          <span>Đăng xuất</span>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeLogoutModal();
+  });
+}
+
+export function closeLogoutModal() {
+  const modal = document.getElementById('logoutConfirmModal');
+  if (modal) modal.remove();
+}
+
+export function confirmLogoutAction() {
+  closeLogoutModal();
+  state.isAuthenticated = false;
+  state.isAdminElevated = false;
+  lsSet('tk_auth', false);
+  lsSet('tk_admin_elevated', false);
+  showToast('Đã đăng xuất', 'Đã kết thúc phiên làm việc an toàn.');
+  window.renderApp();
 }
 
 export const handleLoginSubmit = handleAuthFormSubmit;
@@ -215,6 +285,10 @@ window.handleAuthEyeToggle = handleAuthEyeToggle;
 window.handleAuthFormSubmit = handleAuthFormSubmit;
 window.handleLoginSubmit = handleLoginSubmit;
 window.togglePassVisibility = togglePassVisibility;
+window.handleQuickPinLogin = handleQuickPinLogin;
 window.fastLoginOfficer = fastLoginOfficer;
 window.handleLogout = handleLogout;
+window.showLogoutConfirmModal = showLogoutConfirmModal;
+window.closeLogoutModal = closeLogoutModal;
+window.confirmLogoutAction = confirmLogoutAction;
 window.initAuthInteractions = initAuthInteractions;

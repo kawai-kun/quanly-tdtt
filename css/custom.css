@@ -1111,23 +1111,23 @@ select option {
 }
 
 /* ==============================================================================
-   COMPONENT: DAY-NIGHT SKY SWITCH (Lucian UX/UI #447 - KÍCH THƯỚC CHUẨN GỐC 176px x 74px)
+   COMPONENT: DAY-NIGHT SKY SWITCH (Lucian UX/UI #447 - CHIỀU NGANG DÀI GẤP ĐÔI: 200px x 42px)
    Chế độ Ngày/Đêm nghệ thuật: Mặt trời halo xoay chuyển thành Mặt trăng miệng núi lửa 3D,
-   Bầu trời đêm huyền ảo đa sắc, sao lấp lánh lung linh và sao băng (meteor) lướt qua.
+   Bầu trời đêm huyền ảo đa sắc rộng mở, sao lấp lánh lung linh và sao băng (meteor) lướt qua.
    ============================================================================== */
 .u447-wrapper {
   position: relative;
-  width: 100px;
+  width: 200px;
   height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
 }
 .u447-b {
   position: relative;
-  width: 176px;
+  width: 352px;
   height: 74px;
   padding: 0;
   border: 0;
@@ -1172,7 +1172,7 @@ select option {
 .u447-ngt {
   inset: 0;
   opacity: 0;
-  background: radial-gradient(circle at 75% 50%, #222765 0%, #101438 55%, #060718 100%);
+  background: radial-gradient(circle at 80% 50%, #222765 0%, #101438 55%, #060718 100%);
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .u447-b[aria-checked="true"] {
@@ -1188,12 +1188,12 @@ select option {
   opacity: 1;
 }
 
-/* Vệt sao băng (Shooting Star) lướt qua bầu trời đêm */
+/* Vệt sao băng (Shooting Star) lướt qua bầu trời đêm trên đường băng rộng */
 .u447-meteor {
   position: absolute;
   top: 18px;
-  right: 120px;
-  width: 48px;
+  right: 180px;
+  width: 68px;
   height: 2px;
   background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.4) 60%, transparent);
   border-radius: 999px;
@@ -1207,8 +1207,8 @@ select option {
 @keyframes u447-shooting-star {
   0% { transform: translate(0, 0) rotate(-35deg) scaleX(0); opacity: 0; }
   4% { opacity: 1; transform: translate(0, 0) rotate(-35deg) scaleX(1); }
-  10% { transform: translate(-38px, 24px) rotate(-35deg) scaleX(0); opacity: 0; }
-  100% { opacity: 0; transform: translate(-38px, 24px) rotate(-35deg) scaleX(0); }
+  10% { transform: translate(-65px, 38px) rotate(-35deg) scaleX(0); opacity: 0; }
+  100% { transform: translate(-65px, 38px) rotate(-35deg) scaleX(0); opacity: 0; }
 }
 
 /* Quầng sáng mặt trời / ánh trăng đa tầng */
@@ -1232,18 +1232,18 @@ select option {
 .u447-halo i:nth-child(2) { width: 132px; height: 132px; background: rgba(255, 255, 255, 0.1); }
 .u447-halo i:nth-child(3) { width: 170px; height: 170px; background: rgba(255, 255, 255, 0.06); }
 .u447-b[aria-checked="true"] .u447-halo {
-  transform: translateX(102px);
+  transform: translateX(278px);
 }
 .u447-b[aria-checked="true"] .u447-halo i {
   background: rgba(216, 235, 255, 0.12);
   box-shadow: 0 0 16px rgba(165, 204, 255, 0.15);
 }
 
-/* Các tầng mây cuộn ban ngày */
+/* Các tầng mây cuộn ban ngày trải dài */
 .u447-cl {
-  right: -14px;
+  right: -10px;
   bottom: -16px;
-  width: 136px;
+  width: 210px;
   height: 68px;
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s;
 }
@@ -1254,18 +1254,18 @@ select option {
   animation-duration: 5.5s;
 }
 @keyframes u447-drift {
-  to { transform: translateX(-6px); }
+  to { transform: translateX(-8px); }
 }
 .u447-b[aria-checked="true"] .u447-cl {
-  transform: translateY(64px);
+  transform: translateY(72px);
   transition-delay: 0s;
 }
 
-/* Các ngôi sao lấp lánh ban đêm có độ sâu */
+/* Các ngôi sao lấp lánh ban đêm có độ sâu trải rộng khắp bầu trời */
 .u447-sr {
   left: 14px;
   top: 8px;
-  width: 90px;
+  width: 250px;
   height: 58px;
   opacity: 0;
   transform: translateY(-36px);
@@ -1336,8 +1336,12 @@ select option {
 .u447-th circle:nth-child(3) { transition-delay: 0.12s; }
 
 .u447-b[aria-checked="true"] .u447-th {
-  transform: translateX(102px) rotate(200deg);
+  transform: translateX(278px) rotate(200deg);
   box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.6),
+    inset -3px -4px 7px rgba(60, 54, 100, 0.4),
+    inset 3px 3px 6px rgba(255, 255, 255, 0.7);
+} 
     0 4px 14px rgba(0, 0, 0, 0.6),
     0 0 20px rgba(186, 215, 255, 0.45);
 }

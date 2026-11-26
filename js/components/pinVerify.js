@@ -8,8 +8,8 @@ import { showToast } from '../utils/toast.js';
 
 export function openPinVerifyModal({
   title = 'XÁC THỰC BẢO MẬT CÁN BỘ',
-  subtitle = 'Nhập mã PIN 6 chữ số (Mặc định: 482915) để xác thực quyền quản trị',
-  expectedPin = '482915',
+  subtitle = 'Nhập mã PIN 6 chữ số để xác thực quyền quản trị',
+  expectedPin = '123123',
   onSuccess
 } = {}) {
   const existing = document.getElementById('pinVerifyModal');
@@ -21,16 +21,16 @@ export function openPinVerifyModal({
   overlay.innerHTML = `
     <div class="ux u406">
       <!-- Close button -->
-      <button type="button" onclick="window.closePinVerifyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-full transition-colors" title="Đóng">
+      <button type="button" onclick="window.closePinVerifyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-full transition-colors cursor-pointer" title="Đóng">
         <span class="material-symbols-outlined text-[20px]">close</span>
       </button>
 
-      <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-2 mx-auto">
+      <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-3 mx-auto shadow-inner ring-4 ring-emerald-500/10">
         <span class="material-symbols-outlined text-[26px]">lock</span>
       </div>
 
-      <h3 class="text-sm sm:text-base font-bold uppercase tracking-wide text-slate-900 dark:text-white">${title}</h3>
-      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[280px]">${subtitle}</p>
+      <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider text-slate-900 dark:text-white">${title}</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[340px] leading-relaxed">${subtitle}</p>
 
       <div class="u406-wrap">
         <div class="u406-row" role="group" aria-label="Mã PIN 6 số"></div>
@@ -40,7 +40,6 @@ export function openPinVerifyModal({
         </svg>
       </div>
 
-      <p class="text-[11px] text-slate-400 dark:text-slate-500">Mã PIN cán bộ: <strong class="font-mono text-emerald-600 dark:text-emerald-400">${expectedPin}</strong></p>
       <p class="u406-live" role="status" aria-live="polite"></p>
     </div>
   `;

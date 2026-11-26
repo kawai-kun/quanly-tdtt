@@ -34,6 +34,7 @@ export function lsSet(k, v) {
 
 export const state = {
   isAuthenticated: lsGet('tk_auth', true),
+  isAdminElevated: lsGet('tk_admin_elevated', false),
   currentTab: 'bang-dieu-khien',
   darkMode: lsGet('tk_dark', false),
   colorTheme: 'titanium',

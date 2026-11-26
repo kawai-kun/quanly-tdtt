@@ -226,8 +226,8 @@ export function renderDashboard() {
                   <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">${f.name}</p>
                   <p class="text-[10px] text-slate-500 font-normal">${f.type || 'Sân bãi thể thao'}</p>
                 </div>
-                <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1 shrink-0">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/50 flex items-center gap-1.5 shrink-0 shadow-xs">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
                   <span>Sẵn sàng</span>
                 </span>
               </div>
