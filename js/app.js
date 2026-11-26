@@ -136,8 +136,14 @@ import {
   openActivityModal,
   handleSaveActivity,
   confirmDeleteActivity,
-  openSyncModal
+  openSyncModal,
+  switchActivityFormMode
 } from './components/modals.js';
+
+import {
+  openPlanScannerModal,
+  closePlanScannerModal
+} from './components/planScanner.js';
 
 import {
   openCommandPalette,
@@ -237,6 +243,9 @@ const globalBindings = {
   openActivityModal,
   handleSaveActivity,
   confirmDeleteActivity,
+  switchActivityFormMode,
+  openPlanScannerModal,
+  closePlanScannerModal,
 
   // Dashboard & Views
   renderDashboard,

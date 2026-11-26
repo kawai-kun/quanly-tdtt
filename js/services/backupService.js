@@ -226,7 +226,7 @@ export function exportPartyMemberReviewDoc() {
         <p class="no-indent"><b>Chức vụ chính quyền, đoàn thể:</b> Cán bộ Trung tâm Dịch vụ Tổng hợp • Phụ trách Thể dục Thể thao & Chuyển đổi số</p>
         <p class="no-indent"><b>Đơn vị công tác:</b> Trung tâm Dịch vụ Tổng hợp UBND Phường Tân Khai</p>
         <p class="no-indent"><b>Chi bộ sinh hoạt:</b> Chi bộ Trung tâm Dịch vụ Tổng hợp</p>
-        <p class="no-indent"><b>Căn cứ phân công nhiệm vụ:</b> Quyết định số 01/QĐ-TT.DVTH ngày 05/01/2026 của Giám đốc Trung tâm DVTH (Mục 8: Phụ trách TDTT, TDTT thanh thiếu nhi, Công nghệ thông tin & chuyển đổi số); Quyết định số 161/QĐ-UBND ngày 28/01/2026 của UBND Phường Tân Khai về kế hoạch hoạt động năm 2026.</p>
+        <p class="no-indent"><b>Căn cứ phân công nhiệm vụ:</b> Quyết định phân công nhiệm vụ của Giám đốc Trung tâm DVTH (Mục 8: Phụ trách TDTT, TDTT thanh thiếu nhi, Công nghệ thông tin & chuyển đổi số); Kế hoạch hoạt động công tác năm được UBND Phường phê duyệt.</p>
       </div>
 
       <h3 class="font-bold">I. ƯU ĐIỂM, KẾT QUẢ ĐẠT ĐƯỢC</h3>
@@ -238,8 +238,8 @@ export function exportPartyMemberReviewDoc() {
       <p><b>3. Về thực hiện chức trách, nhiệm vụ được giao (Kết quả cụ thể):</b></p>
       <p>Trong năm 2026, bản thân được phân công phụ trách mảng Thể dục thể thao, TDTT thanh thiếu nhi và Công nghệ thông tin - Chuyển đổi số. Bản thân đã chủ động tham mưu và tổ chức thực hiện thắng lợi toàn diện các mục tiêu, nhiệm vụ được giao:</p>
 
-      <p><b>a) Kết quả thực hiện nhiệm vụ theo Kế hoạch năm (QĐ 161/QĐ-UBND):</b></p>
-      <p>Đã chủ trì tham mưu, tổ chức và hoàn thành <b>${planActs.length}/8 hoạt động TDTT nòng cốt</b> theo đúng kế hoạch được phê duyệt (Đạt 100% chỉ tiêu năm): Tổ chức thành công Lễ phát động Tháng hoạt động TDTT & Ngày chạy Olympic vì sức khỏe toàn dân; Đại hội TDTT Phường Tân Khai lần thứ I với 06 môn thi đấu (Bóng đá, Cờ tướng, Cầu lông, Bóng chuyền, Pickleball, Điền kinh); Giải bóng đá thiếu niên hè và Giải bóng đá mừng Đảng mừng Xuân Bính Ngọ.</p>
+      <p><b>a) Kết quả thực hiện nhiệm vụ theo Kế hoạch năm:</b></p>
+      <p>Đã chủ trì tham mưu, tổ chức và hoàn thành <b>${planActs.length} hoạt động TDTT nòng cốt</b> theo đúng kế hoạch được phê duyệt (Đạt 100% chỉ tiêu giao): Tổ chức thành công Lễ phát động Tháng hoạt động TDTT & Ngày chạy Olympic vì sức khỏe toàn dân; Đại hội TDTT Phường Tân Khai lần thứ I với các môn thi đấu (Bóng đá, Cờ tướng, Cầu lông, Bóng chuyền, Pickleball, Điền kinh); Giải bóng đá thiếu niên hè và Giải bóng đá mừng Đảng mừng Xuân.</p>
 
       <table>
         <thead>
@@ -258,7 +258,7 @@ export function exportPartyMemberReviewDoc() {
               <td class="text-center">${a.code || ''}</td>
               <td><b>${a.title}</b></td>
               <td class="text-center">${a.participants || 0} VĐV</td>
-              <td>${a.refPlan || 'QĐ 161/QĐ-UBND'}<br/>${a.achievementNote ? '<i>' + a.achievementNote + '</i>' : 'Hoàn thành xuất sắc'}</td>
+              <td>${a.refPlan || 'Kế hoạch năm'}<br/>${a.achievementNote ? '<i>' + a.achievementNote + '</i>' : 'Hoàn thành xuất sắc'}</td>
             </tr>
           `).join('')}
         </tbody>

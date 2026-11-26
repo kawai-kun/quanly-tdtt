@@ -53,7 +53,7 @@ export function getTournamentsCountsHtml(acts) {
       Tổng cộng: <b class="font-mono text-sm text-slate-900 dark:text-white font-semibold">${total}</b> giải
     </span>
     <span class="text-slate-300 dark:text-slate-700">|</span>
-    <span class="inline-flex items-center gap-1 font-medium text-xs tracking-wide text-sky-700 dark:text-sky-400" title="Trong Kế hoạch năm (QĐ 161)">
+    <span class="inline-flex items-center gap-1 font-medium text-xs tracking-wide text-sky-700 dark:text-sky-400" title="Nhiệm vụ trong Kế hoạch năm">
       <span class="material-symbols-outlined text-[14px]">assignment</span>Trong KH: ${planCount}
     </span>
     <span class="text-slate-300 dark:text-slate-700">|</span>
@@ -96,7 +96,11 @@ export function renderTournaments() {
           </p>
         </div>
 
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <button onclick="window.openPlanScannerModal && window.openPlanScannerModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900 border border-sky-300 dark:border-sky-800 flex items-center gap-1.5 shadow-2xs btn-press cursor-pointer" title="Quét văn bản Kế hoạch để tự động trích xuất các giải đấu cần tổ chức trong năm">
+            <span class="material-symbols-outlined text-[17px] text-sky-600 dark:text-sky-400">document_scanner</span>
+            <span>Quét Kế hoạch năm</span>
+          </button>
           <button onclick="pullFromGoogleSheet(false)" class="btn-glass-tactile px-3 py-1.5 text-slate-700 dark:text-slate-200 font-medium text-xs rounded-lg flex items-center gap-1.5 shadow-2xs">
             <span class="material-symbols-outlined text-[16px]">sync</span>
             <span>Đồng bộ Drive</span>
@@ -146,7 +150,7 @@ export function renderTournaments() {
             <div class="h-9 flex items-center px-2 rounded bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-xs font-sport font-bold text-slate-700 dark:text-slate-200">
               <select onchange="setTournamentsFilter('planType', this.value)" class="bg-transparent tracking-wider focus:outline-none cursor-pointer">
                 <option value="all" ${f.planType === 'all' ? 'selected' : ''}>TẤT CẢ NGUỒN VIỆC</option>
-                <option value="plan" ${f.planType === 'plan' ? 'selected' : ''}>TRONG KẾ HOẠCH NĂM (QĐ 161)</option>
+                <option value="plan" ${f.planType === 'plan' ? 'selected' : ''}>TRONG KẾ HOẠCH NĂM</option>
                 <option value="extra" ${f.planType === 'extra' ? 'selected' : ''}>PHÁT SINH NGOÀI KH</option>
               </select>
             </div>
@@ -348,7 +352,7 @@ export function renderTournamentsTable(acts) {
                   </div>
                   <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                     ${a.planType === 'plan' ? `
-                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800" title="${a.refPlan || 'Nhiệm vụ theo Kế hoạch năm (QĐ 161)'}">
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800" title="${a.refPlan || 'Nhiệm vụ theo Kế hoạch năm'}">
                         <span class="material-symbols-outlined text-[11px]">assignment</span>Trong KH
                       </span>
                     ` : `
@@ -506,7 +510,7 @@ export function renderTournamentsGrid(acts) {
                     <span>${badge.label}</span>
                   </span>
                   ${a.planType === 'plan' ? `
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800" title="${a.refPlan || 'Nhiệm vụ theo Kế hoạch năm (QĐ 161)'}">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800" title="${a.refPlan || 'Nhiệm vụ theo Kế hoạch năm'}">
                       <span class="material-symbols-outlined text-[12px]">assignment</span>Trong KH
                     </span>
                   ` : `

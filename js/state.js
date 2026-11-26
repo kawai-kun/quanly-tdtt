@@ -49,7 +49,7 @@ export const state = {
     if (!a.planType) {
       const init = INITIAL_ACTIVITIES.find(ia => ia.id === a.id || (ia.title && a.title && ia.title.trim().toLowerCase() === a.title.trim().toLowerCase()));
       a.planType = init?.planType || (a.category === 'Cấp phường' ? 'plan' : 'extra');
-      a.refPlan = a.refPlan || init?.refPlan || (a.planType === 'plan' ? 'QĐ 161/QĐ-UBND' : 'Phát sinh ngoài kế hoạch');
+      a.refPlan = a.refPlan || init?.refPlan || (a.planType === 'plan' ? 'Kế hoạch năm' : 'Phát sinh ngoài kế hoạch');
     }
     return a;
   }),

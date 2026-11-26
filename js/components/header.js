@@ -432,10 +432,10 @@ export function showOfficerProfileModal(activeTab = currentOfficerTab) {
               </p>
               <div class="flex items-center gap-2 mt-1 flex-wrap text-[10.5px]">
                 <span class="inline-flex items-center gap-1 text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/60" title="Quyết định phân công nhiệm vụ">
-                  <span class="material-symbols-outlined text-[13px]">gavel</span>QĐ 01/QĐ-TT.DVTH (Mục 8)
+                  <span class="material-symbols-outlined text-[13px]">gavel</span>Phân công nhiệm vụ (Mục 8)
                 </span>
-                <span class="inline-flex items-center gap-1 text-sky-300 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-700/60" title="Kế hoạch năm 2026">
-                  <span class="material-symbols-outlined text-[13px]">assignment</span>QĐ 161/QĐ-UBND (KH 2026)
+                <span class="inline-flex items-center gap-1 text-sky-300 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-700/60" title="Kế hoạch năm">
+                  <span class="material-symbols-outlined text-[13px]">assignment</span>Kế hoạch năm (Giao chỉ tiêu)
                 </span>
               </div>
             </div>
@@ -448,7 +448,7 @@ export function showOfficerProfileModal(activeTab = currentOfficerTab) {
         <!-- KPI 4-Tile Strip -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-white/15 text-center">
           <div class="p-2 rounded-xl bg-black/20 border border-white/10">
-            <span class="text-[10px] text-emerald-300 uppercase font-semibold block">Kế hoạch giao (QĐ 161)</span>
+            <span class="text-[10px] text-emerald-300 uppercase font-semibold block">Kế hoạch năm giao</span>
             <span class="text-base sm:text-lg font-black text-white">${planActs.length}/8 <span class="text-xs font-bold text-emerald-400">(100%)</span></span>
           </div>
           <div class="p-2 rounded-xl bg-black/20 border border-white/10">
@@ -494,16 +494,16 @@ export function showOfficerProfileModal(activeTab = currentOfficerTab) {
       <!-- Tab Content Area (Scrollable) -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
         
-        <!-- SUBTAB 1: TRONG KẾ HOẠCH NĂM (QĐ 161) -->
+        <!-- SUBTAB 1: TRONG KẾ HOẠCH NĂM -->
         ${activeTab === 'plan' ? `
           <div class="space-y-3">
             <div class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div>
-                <b class="text-sky-900 dark:text-sky-200 block text-xs">Căn cứ: Quyết định 161/QĐ-UBND ngày 28/01/2026 của UBND Phường Tân Khai</b>
-                <span class="text-slate-600 dark:text-slate-400 mt-0.5 block">Phụ trách tổ chức 8 hoạt động TDTT nòng cốt và Đại hội TDTT phường lần thứ I.</span>
+                <b class="text-sky-900 dark:text-sky-200 block text-xs">Căn cứ: Kế hoạch công tác năm được UBND Phường phê duyệt</b>
+                <span class="text-slate-600 dark:text-slate-400 mt-0.5 block">Nhiệm vụ tổ chức các hoạt động TDTT nòng cốt và Đại hội TDTT phường.</span>
               </div>
               <span class="px-2.5 py-1 rounded-lg font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 shrink-0 self-start sm:self-auto">
-                Hoàn thành 100%
+                Chỉ tiêu giao: ${planActs.length} hoạt động
               </span>
             </div>
 
@@ -515,7 +515,7 @@ export function showOfficerProfileModal(activeTab = currentOfficerTab) {
                     <th class="py-2.5 px-3">Hoạt động trong Kế hoạch</th>
                     <th class="py-2.5 px-3 text-center">VĐV</th>
                     <th class="py-2.5 px-3">Căn cứ kế hoạch</th>
-                    <th class="py-2.5 px-3 text-center">Kết quả</th>
+                    <th class="py-2.5 px-3 text-center">Trạng thái</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
@@ -533,11 +533,11 @@ export function showOfficerProfileModal(activeTab = currentOfficerTab) {
                         ${a.participants} VĐV
                       </td>
                       <td class="py-2.5 px-3 text-slate-600 dark:text-slate-300 text-[11px] whitespace-nowrap">
-                        ${a.refPlan || 'QĐ 161/QĐ-UBND'}
+                        ${a.refPlan || 'Kế hoạch năm'}
                       </td>
                       <td class="py-2.5 px-3 text-center whitespace-nowrap">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
-                          Đã hoàn thành
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${a.status === 'Đã hoàn thành' ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-300 border border-sky-300 dark:border-sky-700'}">
+                          ${a.status || 'Đã hoàn thành'}
                         </span>
                       </td>
                     </tr>
@@ -671,7 +671,7 @@ export function showOfficerProfileModal(activeTab = currentOfficerTab) {
               <div>
                 <h5 class="font-bold text-slate-900 dark:text-white uppercase text-[11px] mb-1">2. Kết quả thực hiện nhiệm vụ chính trị được giao</h5>
                 <p class="text-slate-600 dark:text-slate-300">
-                  • <b>Kế hoạch năm (QĐ 161):</b> Hoàn thành 100% (8/8 hoạt động được giao, tổ chức thành công Đại hội TDTT phường lần thứ I).<br/>
+                  • <b>Kế hoạch năm:</b> Hoàn thành 100% các hoạt động được giao theo Kế hoạch công tác năm của UBND Phường.<br/>
                   • <b>Khối lượng vượt kế hoạch:</b> Tham mưu tổ chức và đưa đoàn tham gia 22 giải thi đấu cấp thành phố và giải phong trào (vượt 280% chỉ tiêu).<br/>
                   • <b>Thành tích thể thao:</b> Đạt 168 Huy chương (54 Vàng, 56 Bạc, 58 Đồng), xếp thứ hạng cao toàn đoàn.<br/>
                   • <b>Chuyển đổi số & CNTT:</b> Xây dựng và vận hành Cổng điều hành số TDTT, số hóa 100% hồ sơ dữ liệu giải đấu và sân bãi.

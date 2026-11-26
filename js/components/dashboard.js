@@ -30,7 +30,7 @@ export function renderDashboard() {
   return `
     <div class="space-y-6 tab-pane-animate text-left">
       
-      <!-- Executive Priority Milestone Notice (QĐ 161/QĐ-UBND) -->
+      <!-- Executive Priority Milestone Notice (Kế hoạch công tác năm) -->
       <div class="px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-transparent border border-emerald-500/30 dark:border-emerald-500/20 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-amber-400 text-red-950 flex items-center justify-center shrink-0 shadow-sm font-bold">
@@ -39,7 +39,7 @@ export function renderDashboard() {
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white uppercase tracking-wide">
-                Nhiệm vụ trọng điểm Quý I/2026 (Kế hoạch QĐ 161/QĐ-UBND)
+                Nhiệm vụ trọng điểm theo Kế hoạch năm
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Đang triển khai đúng tiến độ

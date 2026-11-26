@@ -18,32 +18,68 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
         );
       }
       const act = actId ? state.activities.find(a => a.id === actId) : null;
+      // Nếu là giải mới hoặc giải đang ở trạng thái 'Sắp diễn ra'/'Đang diễn ra' -> Mặc định mở ở chế độ Kế hoạch (Tối giản)
+      const initialMode = (!act || act.status !== 'Đã hoàn thành') ? 'plan' : 'completed';
+
       const modal = document.createElement('div');
       modal.id = 'modalContainer';
-      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm';
       modal.innerHTML = `
-        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[90vh] overflow-y-auto modal-animate text-left">
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 max-h-[92vh] overflow-y-auto modal-animate text-left">
+          
+          <!-- Header -->
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h3 class="text-base font-bold text-slate-900 dark:text-white">${act ? 'Chỉnh Sửa Giải Đấu' : 'Thêm Giải Đấu Mới'}</h3>
-              <p class="text-[11px] text-slate-400">Hệ thống tự động chuẩn hóa chữ hoa/thường, bộ môn và mã giải</p>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                ${act ? 'Chỉnh Sửa Giải Đấu' : 'Thêm Giải Đấu Mới'}
+                <span id="badgeFormMode" class="text-[11px] font-bold px-2 py-0.5 rounded-full ${initialMode === 'plan' ? 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800' : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800'}">
+                  ${initialMode === 'plan' ? 'Kế hoạch / Sắp diễn ra' : 'Đã hoàn thành'}
+                </span>
+              </h3>
+              <p class="text-[11px] text-slate-400">Tự động chuẩn hóa chữ hoa/thường, bộ môn và mã giải</p>
             </div>
-            <button onclick="window.closeModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            <button onclick="window.closeModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-[20px]">close</span></button>
+          </div>
+
+          <!-- Mode Selector Segmented Tabs -->
+          <div class="mt-3.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl grid grid-cols-2 gap-1 border border-slate-200 dark:border-slate-700">
+            <button 
+              type="button" 
+              id="btnModePlan" 
+              onclick="window.switchActivityFormMode('plan')" 
+              class="py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${initialMode === 'plan' ? 'bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-300 shadow-xs border border-sky-200 dark:border-sky-800' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}"
+            >
+              <span class="material-symbols-outlined text-[16px]">assignment</span>
+              <span>Lên Kế hoạch / Sắp diễn ra (Tối giản)</span>
+            </button>
+            <button 
+              type="button" 
+              id="btnModeCompleted" 
+              onclick="window.switchActivityFormMode('completed')" 
+              class="py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${initialMode === 'completed' ? 'bg-white dark:bg-slate-900 text-amber-700 dark:text-amber-400 shadow-xs border border-amber-200 dark:border-amber-800' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}"
+            >
+              <span class="material-symbols-outlined text-[16px]">military_tech</span>
+              <span>Đã hoàn thành (Nhập kết quả & Huy chương)</span>
+            </button>
           </div>
 
           <form onsubmit="handleSaveActivity(event)" class="mt-4 space-y-3.5">
             <input type="hidden" id="act_id" value="${act ? act.id : ''}" />
+            <input type="hidden" id="act_formMode" value="${initialMode}" />
+
+            <!-- Row 1: Mã & Tên giải -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label class="block text-xs font-bold mb-1">Mã giải <span class="text-rose-500">*</span></label>
                 <input id="act_code" type="text" required value="${act ? act.code : 'T-' + String(state.activities.length + 1).padStart(2, '0')}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-bold" />
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-xs font-bold mb-1">Tên giải đấu <span class="text-rose-500">*</span></label>
-                <input id="act_title" type="text" required value="${act ? act.title : ''}" placeholder="Nhập tên giải (hệ thống tự động viết hoa chuẩn)..." class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                <label class="block text-xs font-bold mb-1">Tên giải đấu / Hoạt động <span class="text-rose-500">*</span></label>
+                <input id="act_title" type="text" required value="${act ? act.title : ''}" placeholder="Nhập tên giải (VD: Giải Bóng đá mừng Đảng mừng Xuân, Đại hội TDTT...)" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium" />
               </div>
             </div>
 
+            <!-- Row 2: Bộ môn, Cấp độ, Thời gian -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label class="block text-xs font-bold mb-1">Bộ môn (tự nhận diện)</label>
@@ -51,21 +87,22 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
               </div>
               <div>
                 <label class="block text-xs font-bold mb-1">Cấp độ</label>
-                <select id="act_category" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <select id="act_category" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium">
                   <option value="Cấp phường" ${act && act.category === 'Cấp phường' ? 'selected' : ''}>Cấp phường</option>
                   <option value="Cấp thành phố" ${act && act.category === 'Cấp thành phố' ? 'selected' : ''}>Cấp thành phố</option>
                   <option value="Hành chính" ${act && act.category === 'Hành chính' ? 'selected' : ''}>Hành chính</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-bold mb-1">Ngày tổ chức</label>
-                <input id="act_date" type="text" value="${act ? act.date : '15/10/' + new Date().getFullYear()}" placeholder="DD/MM/YYYY" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+                <label class="block text-xs font-bold mb-1">Thời gian (Dự kiến hoặc chính thức)</label>
+                <input id="act_date" type="text" value="${act ? act.date : 'Tháng ' + (new Date().getMonth() + 1) + '/' + new Date().getFullYear()}" placeholder="VD: Tháng 03/2026 hoặc 15/03/2026" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono font-medium" />
               </div>
             </div>
 
+            <!-- Row 3: VĐV & Địa điểm -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-bold mb-1">Số lượng VĐV / Người tham gia</label>
+                <label class="block text-xs font-bold mb-1">Số lượng VĐV / Người tham gia (dự kiến)</label>
                 <input id="act_participants" type="number" min="1" value="${act ? act.participants : 60}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
               </div>
               <div>
@@ -74,74 +111,84 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
               </div>
             </div>
 
-            <!-- Nguồn nhiệm vụ & Căn cứ văn bản -->
+            <!-- Row 4: Nguồn nhiệm vụ & Căn cứ văn bản -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-2xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-800/50">
               <div>
                 <label class="block text-xs font-bold mb-1 text-sky-900 dark:text-sky-200">Phân loại nguồn việc</label>
                 <select id="act_planType" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-700 font-semibold text-slate-800 dark:text-slate-100">
-                  <option value="plan" ${act && act.planType === 'plan' ? 'selected' : ''}>📋 Trong Kế hoạch năm (QĐ 161)</option>
-                  <option value="extra" ${!act || act.planType !== 'plan' ? 'selected' : ''}>⚡ Phát sinh ngoài KH (Xã hội hóa / Triệu tập)</option>
+                  <option value="plan" ${!act || act.planType === 'plan' ? 'selected' : ''}>📋 Trong Kế hoạch năm</option>
+                  <option value="extra" ${act && act.planType === 'extra' ? 'selected' : ''}>⚡ Phát sinh ngoài KH (Xã hội hóa / Triệu tập)</option>
                 </select>
               </div>
               <div>
                 <label class="block text-xs font-bold mb-1 text-sky-900 dark:text-sky-200">Căn cứ văn bản / Chỉ đạo</label>
-                <input id="act_refPlan" type="text" value="${act && act.refPlan ? act.refPlan : ''}" placeholder="VD: QĐ 161 (Mục IV.3) hoặc Triệu tập cấp TP" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-700" />
+                <input id="act_refPlan" type="text" value="${act && act.refPlan ? act.refPlan : ''}" placeholder="VD: Kế hoạch TDTT năm hoặc Triệu tập cấp TP" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-700" />
               </div>
             </div>
 
-            <!-- Field: Ghi chú / Thành tích bổ sung -->
-            <div>
-              <label class="block text-xs font-bold mb-1 flex items-center justify-between">
-                <span>Ghi chú / Thành tích bổ sung</span>
-                <span class="text-[10px] text-slate-400 font-normal">Tùy chọn: Giải Khuyến khích, Hạng Nhì toàn đoàn, Giải Phong cách...</span>
-              </label>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-amber-500">military_tech</span>
-                <input id="act_note" type="text" value="${act && act.achievementNote ? act.achievementNote : ''}" placeholder="Nhập ghi chú thành tích bổ sung nếu có (VD: Giải Khuyến khích, Cúp Phong cách toàn đoàn...)" class="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-amber-700 dark:text-amber-400 focus:ring-2 focus:ring-amber-500/20" />
-              </div>
-            </div>
-
-            <div class="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-2">
-              <div class="flex justify-between items-center">
-                <label class="text-xs font-bold text-amber-700 dark:text-amber-400">Kết quả huy chương</label>
-                <span id="act_total_medals_badge" class="text-[11px] font-bold text-amber-600 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-lg">Tổng: ${act ? act.totalMedals : 0} HC</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2 sm:gap-3">
-                <div><span class="text-[11px] text-slate-500 font-semibold">HCV (Vàng)</span><input id="act_gold" type="number" min="0" value="${act ? act.goldMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-amber-600 bg-white dark:bg-slate-800" /></div>
-                <div><span class="text-[11px] text-slate-500 font-semibold">HCB (Bạc)</span><input id="act_silver" type="number" min="0" value="${act ? act.silverMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-slate-400 bg-white dark:bg-slate-800" /></div>
-                <div><span class="text-[11px] text-slate-500 font-semibold">HCĐ (Đồng)</span><input id="act_bronze" type="number" min="0" value="${act ? act.bronzeMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-orange-600 bg-white dark:bg-slate-800" /></div>
-              </div>
-            </div>
-
+            <!-- Row 5: Kinh phí dự toán / Phường cấp -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-bold mb-1">Kinh phí Phường cấp (VNĐ)</label>
+                <label class="block text-xs font-bold mb-1">Kinh phí Phường cấp (Dự toán VNĐ)</label>
                 <input id="act_budgetWard" type="number" min="0" value="${act ? act.budgetWard : 15000000}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
               </div>
-              <div>
+              <div id="field_budgetPrize_wrapper" class="${initialMode === 'plan' ? 'hidden' : ''}">
                 <label class="block text-xs font-bold mb-1">Kinh phí khen thưởng (VNĐ)</label>
-                <input id="act_budgetPrize" type="number" min="0" value="${act ? act.budgetPrize : 5000000}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                <input id="act_budgetPrize" type="number" min="0" value="${act ? act.budgetPrize : 0}" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
               </div>
             </div>
 
-            <!-- Tình trạng đưa vào Báo cáo định kỳ -->
-            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <!-- SECTION BỔ SUNG: CHỈ HIỂN THỊ KHI Ở CHẾ ĐỘ "ĐÃ HOÀN THÀNH" -->
+            <div id="section_results_medals" class="${initialMode === 'plan' ? 'hidden' : ''} space-y-3 pt-1 border-t border-dashed border-amber-300 dark:border-amber-800">
+              
+              <!-- Field: Ghi chú / Thành tích bổ sung -->
               <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[16px] text-brand-600">assignment_turned_in</span>
-                  <span class="text-xs font-bold text-slate-800 dark:text-slate-100">Tình trạng báo cáo định kỳ</span>
+                <label class="block text-xs font-bold mb-1 flex items-center justify-between">
+                  <span>Ghi chú / Thành tích bổ sung</span>
+                  <span class="text-[10px] text-slate-400 font-normal">Tùy chọn: Giải Khuyến khích, Cúp Phong cách, Hạng Nhì toàn đoàn...</span>
+                </label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-amber-500">military_tech</span>
+                  <input id="act_note" type="text" value="${act && act.achievementNote ? act.achievementNote : ''}" placeholder="Nhập ghi chú thành tích bổ sung nếu có..." class="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-amber-700 dark:text-amber-400 focus:ring-2 focus:ring-amber-500/20" />
                 </div>
-                <p class="text-[11px] text-slate-500 mt-0.5">Đánh dấu nếu giải đấu này đã được tổng hợp gửi văn phòng/chi bộ</p>
               </div>
-              <label class="inline-flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                <input type="checkbox" id="act_isReported" ${act && getActivityReportStatus(act).isReported ? 'checked' : ''} class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
-                <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Đã báo cáo</span>
-              </label>
+
+              <!-- Kết quả huy chương -->
+              <div class="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-2">
+                <div class="flex justify-between items-center">
+                  <label class="text-xs font-bold text-amber-700 dark:text-amber-400">Kết quả huy chương thực tế</label>
+                  <span id="act_total_medals_badge" class="text-[11px] font-bold text-amber-600 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-lg">Tổng: ${act ? act.totalMedals : 0} HC</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                  <div><span class="text-[11px] text-slate-500 font-semibold">HCV (Vàng)</span><input id="act_gold" type="number" min="0" value="${act ? act.goldMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-amber-600 bg-white dark:bg-slate-800" /></div>
+                  <div><span class="text-[11px] text-slate-500 font-semibold">HCB (Bạc)</span><input id="act_silver" type="number" min="0" value="${act ? act.silverMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-slate-400 bg-white dark:bg-slate-800" /></div>
+                  <div><span class="text-[11px] text-slate-500 font-semibold">HCĐ (Đồng)</span><input id="act_bronze" type="number" min="0" value="${act ? act.bronzeMedals : 0}" class="w-full px-2 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 font-bold text-orange-600 bg-white dark:bg-slate-800" /></div>
+                </div>
+              </div>
+
+              <!-- Tình trạng đưa vào Báo cáo định kỳ -->
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-brand-600">assignment_turned_in</span>
+                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100">Tình trạng báo cáo định kỳ</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-0.5">Đánh dấu nếu giải đấu này đã được tổng hợp gửi văn phòng/chi bộ</p>
+                </div>
+                <label class="inline-flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <input type="checkbox" id="act_isReported" ${act && getActivityReportStatus(act).isReported ? 'checked' : ''} class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Đã báo cáo</span>
+                </label>
+              </div>
+
             </div>
 
+            <!-- Submit Buttons -->
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Hủy</button>
-              <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">Lưu giải đấu</button>
+              <button type="button" onclick="window.closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
+              <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 shadow-sm btn-press">
+                ${act ? 'Cập nhật giải đấu' : 'Lưu giải đấu'}
+              </button>
             </div>
           </form>
         </div>
@@ -169,7 +216,7 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
       });
 
       function updateMedalsCalc() {
-        const total = (parseInt(gInput.value) || 0) + (parseInt(sInput.value) || 0) + (parseInt(bInput.value) || 0);
+        const total = (parseInt(gInput?.value) || 0) + (parseInt(sInput?.value) || 0) + (parseInt(bInput?.value) || 0);
         if (totalBadge) totalBadge.textContent = `Tổng: ${total} HC`;
       }
       gInput?.addEventListener('input', updateMedalsCalc);
@@ -177,14 +224,58 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
       bInput?.addEventListener('input', updateMedalsCalc);
     }
 
+    // Chuyển đổi qua lại giữa chế độ Lên Kế hoạch và Đã Hoàn thành trong Form
+    export function switchActivityFormMode(mode) {
+      const modeInput = document.getElementById('act_formMode');
+      const badge = document.getElementById('badgeFormMode');
+      const btnPlan = document.getElementById('btnModePlan');
+      const btnCompleted = document.getElementById('btnModeCompleted');
+      const resultsSection = document.getElementById('section_results_medals');
+      const prizeWrapper = document.getElementById('field_budgetPrize_wrapper');
+
+      if (!modeInput) return;
+      modeInput.value = mode;
+
+      if (mode === 'plan') {
+        if (badge) {
+          badge.textContent = 'Kế hoạch / Sắp diễn ra';
+          badge.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800';
+        }
+        if (btnPlan) {
+          btnPlan.className = 'py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-300 shadow-xs border border-sky-200 dark:border-sky-800';
+        }
+        if (btnCompleted) {
+          btnCompleted.className = 'py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200';
+        }
+        if (resultsSection) resultsSection.classList.add('hidden');
+        if (prizeWrapper) prizeWrapper.classList.add('hidden');
+      } else {
+        if (badge) {
+          badge.textContent = 'Đã hoàn thành';
+          badge.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800';
+        }
+        if (btnCompleted) {
+          btnCompleted.className = 'py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-amber-700 dark:text-amber-400 shadow-xs border border-amber-200 dark:border-amber-800';
+        }
+        if (btnPlan) {
+          btnPlan.className = 'py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200';
+        }
+        if (resultsSection) resultsSection.classList.remove('hidden');
+        if (prizeWrapper) prizeWrapper.classList.remove('hidden');
+      }
+    }
+    window.switchActivityFormMode = switchActivityFormMode;
+
     export function handleSaveActivity(e) {
       e.preventDefault();
       const id = document.getElementById('act_id').value;
-      const g = parseInt(document.getElementById('act_gold').value) || 0;
-      const s = parseInt(document.getElementById('act_silver').value) || 0;
-      const b = parseInt(document.getElementById('act_bronze').value) || 0;
-      const bWard = parseInt(document.getElementById('act_budgetWard').value) || 0;
-      const bPrize = parseInt(document.getElementById('act_budgetPrize').value) || 0;
+      const formMode = document.getElementById('act_formMode') ? document.getElementById('act_formMode').value : 'plan';
+
+      const g = (formMode === 'completed') ? (parseInt(document.getElementById('act_gold')?.value) || 0) : 0;
+      const s = (formMode === 'completed') ? (parseInt(document.getElementById('act_silver')?.value) || 0) : 0;
+      const b = (formMode === 'completed') ? (parseInt(document.getElementById('act_bronze')?.value) || 0) : 0;
+      const bWard = parseInt(document.getElementById('act_budgetWard')?.value) || 0;
+      const bPrize = (formMode === 'completed') ? (parseInt(document.getElementById('act_budgetPrize')?.value) || 0) : 0;
 
       const rawTitle = document.getElementById('act_title').value;
       const cleanTitle = normalizeTitle(rawTitle);
@@ -200,10 +291,10 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
       const rawSport = document.getElementById('act_sport').value;
       const sport = rawSport.trim() ? normalizeTitle(rawSport) : autoDetectSport(cleanTitle);
 
-      const rawNote = document.getElementById('act_note') ? document.getElementById('act_note').value.trim() : '';
+      const rawNote = (formMode === 'completed' && document.getElementById('act_note')) ? document.getElementById('act_note').value.trim() : '';
       const planTypeVal = document.getElementById('act_planType') ? document.getElementById('act_planType').value : 'plan';
       const refPlanVal = document.getElementById('act_refPlan') ? document.getElementById('act_refPlan').value.trim() : '';
-      const isReportedChecked = document.getElementById('act_isReported') ? document.getElementById('act_isReported').checked : false;
+      const isReportedChecked = (formMode === 'completed' && document.getElementById('act_isReported')) ? document.getElementById('act_isReported').checked : false;
       const prevAct = id ? state.activities.find(a => a.id === id) : null;
       let reportedInReport = prevAct ? prevAct.reportedInReport : null;
       if (isReportedChecked && !reportedInReport) {
@@ -212,6 +303,10 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
         reportedInReport = null;
       }
 
+      const isCompleted = (formMode === 'completed');
+      const statusVal = isCompleted ? 'Đã hoàn thành' : (prevAct && prevAct.status === 'Đang diễn ra' ? 'Đang diễn ra' : 'Sắp diễn ra');
+      const budgetStatusVal = isCompleted ? 'Đã quyết toán' : 'Dự toán';
+
       const item = {
         id: id || 'act-' + Date.now(),
         code: cleanCode,
@@ -219,7 +314,7 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
         sport: sport,
         category: document.getElementById('act_category').value,
         planType: planTypeVal,
-        refPlan: refPlanVal || (planTypeVal === 'plan' ? 'QĐ 161/QĐ-UBND' : 'Phát sinh ngoài kế hoạch'),
+        refPlan: refPlanVal || (planTypeVal === 'plan' ? 'Kế hoạch năm' : 'Phát sinh ngoài kế hoạch'),
         date: cleanDate,
         year: year,
         quarter: quarter,
@@ -230,7 +325,7 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
         achievementNote: rawNote,
         isReported: isReportedChecked,
         reportedInReport: reportedInReport,
-        status: 'Đã hoàn thành',
+        status: statusVal,
         goldMedals: g,
         silverMedals: s,
         bronzeMedals: b,
@@ -238,7 +333,7 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
         budgetWard: bWard,
         budgetPrize: bPrize,
         budgetTotal: bWard + bPrize,
-        budgetStatus: 'Đã quyết toán'
+        budgetStatus: budgetStatusVal
       };
 
       if (id) {
@@ -250,7 +345,7 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
       state.activities = sortActivitiesByLatest(state.activities);
       saveAll();
       window.closeModal();
-      showToast('Đã lưu thành công', `Giải đấu "${item.title}" đã được chuẩn hóa và lưu trữ.`);
+      showToast('Đã lưu thành công', `Giải đấu "${item.title}" (${item.status}) đã được lưu trữ.`);
       window.renderApp();
     }
 
