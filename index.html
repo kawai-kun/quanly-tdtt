@@ -78,19 +78,30 @@
   </script>
 
   <!-- Modular CSS Styling -->
-  <link rel="stylesheet" href="css/custom.css" />
-  <link rel="stylesheet" href="css/uxui-components.css" />
+  <link rel="stylesheet" href="css/custom.css?v=20261126.1542" />
+  <link rel="stylesheet" href="css/uxui-components.css?v=20261126.1542" />
 </head>
 
 <body class="text-slate-800 dark:text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-600 selection:text-white transition-colors duration-200 overflow-x-hidden w-full">
 
   <!-- APP ROOT MOUNT -->
-  <div id="appContainer" class="min-h-screen w-full"></div>
+  <div id="appContainer" class="min-h-screen w-full">
+    <!-- Initial Loading State -->
+    <div id="initialAppLoader" class="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-900 text-white select-none">
+      <div class="w-16 h-16 rounded-full bg-emerald-600/20 border-2 border-emerald-500 flex items-center justify-center shadow-lg mb-4 animate-pulse">
+        <span class="material-symbols-outlined text-[32px] text-emerald-400">sports_score</span>
+      </div>
+      <h2 class="text-sm sm:text-base md:text-lg font-bold text-amber-300 tracking-wider uppercase text-center">
+        HỆ THỐNG QUẢN LÝ THỂ DỤC THỂ THAO • PHƯỜNG TÂN KHAI
+      </h2>
+      <p class="text-xs text-slate-400 mt-1">Đang kết nối trung tâm chỉ huy...</p>
+    </div>
+  </div>
 
   <!-- TOAST NOTIFICATION CONTAINER (Góc dưới cùng bên phải, không che khuất thanh công cụ và nút đổi giao diện) -->
   <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col-reverse gap-2 pointer-events-none"></div>
 
   <!-- APPLICATION ROOT ES6 MODULE -->
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/app.js?v=20261126.1542"></script>
 </body>
 </html>
