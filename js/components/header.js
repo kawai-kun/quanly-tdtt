@@ -7,8 +7,9 @@
 // - Lucian UX/UI #045: Full-screen circular expand menu on mobile
 // ==============================================================================
 
-import { state, lsSet } from '../state.js';
-import { toggleDarkMode } from '../utils/toast.js';
+import { state, lsSet, saveAll } from '../state.js';
+import { toggleDarkMode, showToast } from '../utils/toast.js';
+import { exportBackupJSON, triggerRestoreSystemData, exportPartyMemberReviewDoc } from '../services/backupService.js';
 
 export function setGlobalYear(year) {
   state.selectedYear = year;
@@ -151,33 +152,50 @@ export function renderHeader() {
                   </div>
                   
                   <button type="button" class="u408-it" role="menuitem" style="--i:1" onclick="window.showOfficerProfileModal && window.showOfficerProfileModal()">
-                    <span class="material-symbols-outlined">badge</span>
-                    <span>Hồ sơ & Nhiệm vụ cán bộ</span>
+                    <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">badge</span>
+                    <span>Hồ sơ, KPI & Nhiệm vụ cán bộ</span>
                   </button>
 
-                  <button type="button" class="u408-it" role="menuitem" style="--i:2" onclick="window.openTelegramConfigModal && window.openTelegramConfigModal()">
+                  <button type="button" class="u408-it" role="menuitem" style="--i:2" onclick="window.backupSystemData && window.backupSystemData()">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">download</span>
+                    <span>Sao lưu dữ liệu hệ thống (JSON)</span>
+                  </button>
+
+                  <button type="button" class="u408-it" role="menuitem" style="--i:3" onclick="window.triggerRestoreSystemData && window.triggerRestoreSystemData()">
+                    <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400">upload</span>
+                    <span>Phục hồi dữ liệu từ JSON</span>
+                  </button>
+
+                  <button type="button" class="u408-it" role="menuitem" style="--i:4" onclick="window.exportPartyMemberReviewDoc && window.exportPartyMemberReviewDoc()">
+                    <span class="material-symbols-outlined text-rose-600 dark:text-rose-400">description</span>
+                    <span>Xuất bản Kiểm điểm Đảng viên (.doc)</span>
+                  </button>
+
+                  <div class="u408-hr" role="separator" style="--i:5"></div>
+
+                  <button type="button" class="u408-it" role="menuitem" style="--i:6" onclick="window.openTelegramConfigModal && window.openTelegramConfigModal()">
                     <span class="material-symbols-outlined">settings_suggest</span>
                     <span>Cấu hình Drive & Telegram</span>
                   </button>
 
-                  <button type="button" class="u408-it" role="menuitem" style="--i:3" onclick="window.openAdminElevationModal && window.openAdminElevationModal()">
+                  <button type="button" class="u408-it" role="menuitem" style="--i:7" onclick="window.openAdminElevationModal && window.openAdminElevationModal()">
                     <span class="material-symbols-outlined text-amber-500">verified_user</span>
                     <span>${state.isAdminElevated ? 'Quản trị viên (Đã mở khóa)' : 'Xác thực Quản trị tối cao (Mã PIN)'}</span>
                   </button>
 
-                  <button type="button" class="u408-it" role="menuitem" style="--i:4" onclick="window.openQrShareModal && window.openQrShareModal()">
+                  <button type="button" class="u408-it" role="menuitem" style="--i:8" onclick="window.openQrShareModal && window.openQrShareModal()">
                     <span class="material-symbols-outlined">qr_code_2</span>
                     <span>Chia sẻ mã QR trang</span>
                   </button>
 
-                  <button type="button" class="u408-it" role="menuitem" style="--i:5" onclick="window.lockAdminScreen && window.lockAdminScreen()">
+                  <button type="button" class="u408-it" role="menuitem" style="--i:9" onclick="window.lockAdminScreen && window.lockAdminScreen()">
                     <span class="material-symbols-outlined text-amber-500">lock_clock</span>
                     <span>Khóa màn hình (Mã PIN)</span>
                   </button>
 
-                  <div class="u408-hr" role="separator" style="--i:6"></div>
+                  <div class="u408-hr" role="separator" style="--i:10"></div>
 
-                  <button type="button" class="u408-it is-out" role="menuitem" style="--i:7" onclick="window.handleLogout && window.handleLogout()">
+                  <button type="button" class="u408-it is-out" role="menuitem" style="--i:11" onclick="window.handleLogout && window.handleLogout()">
                     <span class="material-symbols-outlined">logout</span>
                     <span>Đăng xuất hệ thống</span>
                   </button>
@@ -365,67 +383,439 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Officer Profile Modal
-export function showOfficerProfileModal() {
+// ==============================================================================
+// HỒ SƠ & BẢN ĐỒ NHIỆM VỤ CÁN BỘ (CHUẨN QĐ 01 & QĐ 161 - KPI & ĐẢNG VIÊN)
+// ==============================================================================
+let currentOfficerTab = 'plan';
+
+export function setOfficerProfileTab(tab) {
+  currentOfficerTab = tab;
+  showOfficerProfileModal(tab);
+}
+
+export function showOfficerProfileModal(activeTab = currentOfficerTab) {
+  currentOfficerTab = activeTab;
   closeAccountMenu();
   const existing = document.getElementById('officerProfileModal');
   if (existing) existing.remove();
 
+  const planActs = state.activities.filter(a => a.planType === 'plan');
+  const extraActs = state.activities.filter(a => a.planType !== 'plan');
+  const extraTasks = state.extraTasks || [];
+
+  const totalParticipants = state.activities.reduce((acc, a) => acc + (parseInt(a.participants) || 0), 0);
+  const totalMedals = state.activities.reduce((acc, a) => acc + (parseInt(a.totalMedals) || 0), 0);
+  const totalGold = state.activities.reduce((acc, a) => acc + (parseInt(a.goldMedals) || 0), 0);
+  const totalSilver = state.activities.reduce((acc, a) => acc + (parseInt(a.silverMedals) || 0), 0);
+  const totalBronze = state.activities.reduce((acc, a) => acc + (parseInt(a.bronzeMedals) || 0), 0);
+
   const modal = document.createElement('div');
   modal.id = 'officerProfileModal';
-  modal.className = 'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4';
+  modal.className = 'fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4';
   modal.innerHTML = `
-    <div class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 modal-animate text-slate-800 dark:text-slate-100">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full bg-amber-400 text-red-950 font-black text-base flex items-center justify-center shadow-md">
-            TQD
+    <div class="w-full max-w-3xl max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 modal-animate text-slate-800 dark:text-slate-100 overflow-hidden text-left">
+      
+      <!-- Modal Header -->
+      <div class="p-5 bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 text-white shrink-0 relative">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3.5">
+            <div class="w-13 h-13 rounded-full bg-amber-400 text-red-950 font-black text-lg flex items-center justify-center shadow-lg ring-2 ring-white/80 shrink-0">
+              TQD
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-lg font-bold text-white tracking-wide">Trần Quốc Được</h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-red-950 uppercase tracking-wider">Đảng viên • Cán bộ TDTT</span>
+              </div>
+              <p class="text-xs text-emerald-200 font-medium mt-0.5">
+                UBND Phường Tân Khai • Trung tâm Dịch vụ Tổng hợp
+              </p>
+              <div class="flex items-center gap-2 mt-1 flex-wrap text-[10.5px]">
+                <span class="inline-flex items-center gap-1 text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/60" title="Quyết định phân công nhiệm vụ">
+                  <span class="material-symbols-outlined text-[13px]">gavel</span>QĐ 01/QĐ-TT.DVTH (Mục 8)
+                </span>
+                <span class="inline-flex items-center gap-1 text-sky-300 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-700/60" title="Kế hoạch năm 2026">
+                  <span class="material-symbols-outlined text-[13px]">assignment</span>QĐ 161/QĐ-UBND (KH 2026)
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 class="text-base font-bold text-slate-900 dark:text-white">Trần Quốc Được</h3>
-            <span class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold uppercase">Cán bộ phụ trách Thể dục Thể thao</span>
+          <button onclick="document.getElementById('officerProfileModal').remove()" class="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="Đóng">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <!-- KPI 4-Tile Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-white/15 text-center">
+          <div class="p-2 rounded-xl bg-black/20 border border-white/10">
+            <span class="text-[10px] text-emerald-300 uppercase font-semibold block">Kế hoạch giao (QĐ 161)</span>
+            <span class="text-base sm:text-lg font-black text-white">${planActs.length}/8 <span class="text-xs font-bold text-emerald-400">(100%)</span></span>
+          </div>
+          <div class="p-2 rounded-xl bg-black/20 border border-white/10">
+            <span class="text-[10px] text-purple-300 uppercase font-semibold block">Phát sinh ngoài KH</span>
+            <span class="text-base sm:text-lg font-black text-white">${extraActs.length} giải <span class="text-xs font-bold text-purple-300">(+250%)</span></span>
+          </div>
+          <div class="p-2 rounded-xl bg-black/20 border border-white/10">
+            <span class="text-[10px] text-amber-300 uppercase font-semibold block">Huy chương đạt được</span>
+            <span class="text-base sm:text-lg font-black text-amber-300">${totalMedals} <span class="text-[10.5px] font-bold text-white">(${totalGold}🥇 ${totalSilver}🥈 ${totalBronze}🥉)</span></span>
+          </div>
+          <div class="p-2 rounded-xl bg-black/20 border border-white/10">
+            <span class="text-[10px] text-sky-300 uppercase font-semibold block">Xếp loại thi đua</span>
+            <span class="text-xs sm:text-sm font-black text-amber-300 tracking-wide uppercase mt-1 block">HOÀN THÀNH XUẤT SẮC</span>
           </div>
         </div>
-        <button onclick="document.getElementById('officerProfileModal').remove()" class="p-1 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white">
-          <span class="material-symbols-outlined text-[20px]">close</span>
+      </div>
+
+      <!-- Navigation Subtabs -->
+      <div class="flex items-center border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 px-4 shrink-0 overflow-x-auto">
+        <button 
+          onclick="window.setOfficerProfileTab('plan')" 
+          class="px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${activeTab === 'plan' ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-white dark:bg-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}"
+        >
+          <span class="material-symbols-outlined text-[16px]">assignment</span>
+          <span>Nhiệm vụ trong Kế hoạch (${planActs.length})</span>
+        </button>
+        <button 
+          onclick="window.setOfficerProfileTab('extra')" 
+          class="px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${activeTab === 'extra' ? 'border-purple-600 text-purple-700 dark:text-purple-400 bg-white dark:bg-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}"
+        >
+          <span class="material-symbols-outlined text-[16px]">bolt</span>
+          <span>Phát sinh & Đột xuất (${extraActs.length + extraTasks.length})</span>
+        </button>
+        <button 
+          onclick="window.setOfficerProfileTab('party')" 
+          class="px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${activeTab === 'party' ? 'border-amber-600 text-amber-700 dark:text-amber-400 bg-white dark:bg-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'}"
+        >
+          <span class="material-symbols-outlined text-[16px]">verified</span>
+          <span>Đánh giá Đảng viên & Bản kiểm điểm</span>
         </button>
       </div>
 
-      <div class="py-4 space-y-3 text-xs leading-relaxed">
-        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-          <span class="font-bold text-slate-500 dark:text-slate-400 block mb-1 uppercase tracking-wider text-[10px]">Cơ quan công tác</span>
-          <p class="font-semibold text-slate-800 dark:text-slate-200">Ủy ban nhân dân Phường Tân Khai • Trung tâm Dịch vụ Tổng hợp</p>
-          <p class="text-slate-500 dark:text-slate-400 mt-0.5">Bộ phận chuyên trách: Thể dục Thể thao & Phong trào Quần chúng</p>
-        </div>
+      <!-- Tab Content Area (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+        
+        <!-- SUBTAB 1: TRONG KẾ HOẠCH NĂM (QĐ 161) -->
+        ${activeTab === 'plan' ? `
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div>
+                <b class="text-sky-900 dark:text-sky-200 block text-xs">Căn cứ: Quyết định 161/QĐ-UBND ngày 28/01/2026 của UBND Phường Tân Khai</b>
+                <span class="text-slate-600 dark:text-slate-400 mt-0.5 block">Phụ trách tổ chức 8 hoạt động TDTT nòng cốt và Đại hội TDTT phường lần thứ I.</span>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 shrink-0 self-start sm:self-auto">
+                Hoàn thành 100%
+              </span>
+            </div>
 
-        <div class="grid grid-cols-2 gap-2 text-center">
-          <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/40">
-            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase block">Giải đấu quản lý</span>
-            <span class="text-lg font-black text-emerald-800 dark:text-emerald-300">${state.activities.length} giải</span>
+            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase text-[11px]">
+                  <tr>
+                    <th class="py-2.5 px-3">Mã & Thời gian</th>
+                    <th class="py-2.5 px-3">Hoạt động trong Kế hoạch</th>
+                    <th class="py-2.5 px-3 text-center">VĐV</th>
+                    <th class="py-2.5 px-3">Căn cứ kế hoạch</th>
+                    <th class="py-2.5 px-3 text-center">Kết quả</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                  ${planActs.map((a, i) => `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                      <td class="py-2.5 px-3 whitespace-nowrap">
+                        <span class="font-mono font-bold text-slate-900 dark:text-white">${a.code}</span>
+                        <div class="text-[10.5px] text-slate-400">${a.date}</div>
+                      </td>
+                      <td class="py-2.5 px-3">
+                        <span class="font-semibold text-slate-900 dark:text-white">${a.title}</span>
+                        ${a.achievementNote ? `<div class="text-[10.5px] text-amber-600 dark:text-amber-400 font-bold mt-0.5">🏆 ${a.achievementNote}</div>` : ''}
+                      </td>
+                      <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+                        ${a.participants} VĐV
+                      </td>
+                      <td class="py-2.5 px-3 text-slate-600 dark:text-slate-300 text-[11px] whitespace-nowrap">
+                        ${a.refPlan || 'QĐ 161/QĐ-UBND'}
+                      </td>
+                      <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                          Đã hoàn thành
+                        </span>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/40">
-            <span class="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase block">CLB Thể thao</span>
-            <span class="text-lg font-black text-amber-800 dark:text-amber-300">${state.clubs.length} CLB</span>
-          </div>
-        </div>
+        ` : ''}
 
-        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
-          <span class="font-bold text-slate-500 dark:text-slate-400 block uppercase tracking-wider text-[10px]">Quyền hạn & Bảo mật</span>
-          <p>• Quản trị toàn quyền dữ liệu thi đua, khen thưởng & vận động viên TDTT.</p>
-          <p>• Phê duyệt dự toán & quyết toán kinh phí các giải đấu trên địa bàn.</p>
-          <p>• Xuất báo cáo công văn chuẩn thể thức Nghị định 30/2020/NĐ-CP.</p>
-        </div>
+        <!-- SUBTAB 2: PHÁT SINH NGOÀI KẾ HOẠCH & NHIỆM VỤ ĐỘT XUẤT -->
+        ${activeTab === 'extra' ? `
+          <div class="space-y-4">
+            
+            <!-- Header Bar with Add Button -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60">
+              <div>
+                <b class="text-purple-900 dark:text-purple-200 text-xs block">Nhiệm vụ phát sinh & Chỉ đạo đột xuất năm 2026</b>
+                <span class="text-slate-600 dark:text-slate-400 text-xs mt-0.5 block">
+                  Bao gồm các giải cấp thành phố triệu tập, xã hội hóa và các nhiệm vụ chuyên trách CNTT - CĐS theo QĐ 01/QĐ-TT.DVTH.
+                </span>
+              </div>
+              <button onclick="window.openAddExtraTaskModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-purple-700 hover:bg-purple-800 shadow-sm flex items-center gap-1.5 shrink-0 self-start sm:self-auto btn-press cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                <span>Thêm nhiệm vụ phát sinh</span>
+              </button>
+            </div>
+
+            <!-- List of Special Ad-hoc Extra Tasks -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-purple-600">task_alt</span>
+                <span>Các nhiệm vụ trọng tâm theo Quyết định 01 (${extraTasks.length} nhiệm vụ)</span>
+              </h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${extraTasks.map((t, idx) => `
+                  <div class="p-3.5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col justify-between">
+                    <div>
+                      <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                          ${t.domainLabel || t.domain}
+                        </span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                          ${t.statusLabel || 'Hoàn thành'}
+                        </span>
+                      </div>
+                      <h5 class="text-xs font-bold text-slate-900 dark:text-white leading-snug">${t.title}</h5>
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1"><b>Căn cứ:</b> ${t.basis || 'Chỉ đạo Ban Giám đốc'}</p>
+                      <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium mt-1"><b>Kết quả:</b> ${t.result || 'Đã nghiệm thu'}</p>
+                    </div>
+                    <div class="pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400">
+                      <span>Thời hạn: ${t.deadline || '2026'}</span>
+                      <button onclick="window.deleteExtraTask('${t.id}')" class="text-rose-500 hover:text-rose-700 font-semibold cursor-pointer" title="Xóa nhiệm vụ này">Xóa</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- List of Extra Tournaments -->
+            <div class="pt-2">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-purple-600">sports_score</span>
+                <span>Các giải đấu phát sinh ngoài kế hoạch (${extraActs.length} giải)</span>
+              </h4>
+              <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 max-h-60 overflow-y-auto">
+                <table class="w-full text-xs text-left">
+                  <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase text-[10.5px] sticky top-0">
+                    <tr>
+                      <th class="py-2 px-3">Mã & Ngày</th>
+                      <th class="py-2 px-3">Tên giải đấu</th>
+                      <th class="py-2 px-3 text-center">Cấp độ</th>
+                      <th class="py-2 px-3">Nguồn việc</th>
+                      <th class="py-2 px-3 text-center">Huy chương</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                    ${extraActs.map(a => `
+                      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="py-2 px-3 whitespace-nowrap">
+                          <b class="font-mono text-slate-900 dark:text-white">${a.code}</b>
+                          <span class="text-slate-400 block text-[10px]">${a.date}</span>
+                        </td>
+                        <td class="py-2 px-3">
+                          <span class="font-semibold text-slate-900 dark:text-white">${a.title}</span>
+                          ${a.achievementNote ? `<span class="text-[10px] text-amber-600 dark:text-amber-400 block">🏆 ${a.achievementNote}</span>` : ''}
+                        </td>
+                        <td class="py-2 px-3 text-center whitespace-nowrap">
+                          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${a.category || 'Cấp TP'}</span>
+                        </td>
+                        <td class="py-2 px-3 text-slate-600 dark:text-slate-300 text-[11px] whitespace-nowrap">
+                          ${a.refPlan || 'Phát sinh'}
+                        </td>
+                        <td class="py-2 px-3 text-center font-mono font-bold text-amber-600 whitespace-nowrap">
+                          ${a.totalMedals > 0 ? `${a.totalMedals} HC` : '-'}
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        ` : ''}
+
+        <!-- SUBTAB 3: ĐÁNH GIÁ ĐẢNG VIÊN & BẢN KIỂM ĐIỂM -->
+        ${activeTab === 'party' ? `
+          <div class="space-y-4">
+            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <b class="text-amber-900 dark:text-amber-200 text-xs block">Bản kiểm điểm Đảng viên & Đánh giá công tác năm 2026</b>
+                <span class="text-slate-600 dark:text-slate-300 text-xs mt-0.5 block">
+                  Đã tự động trích xuất toàn bộ dữ liệu 30 giải đấu, 168 huy chương và các nhiệm vụ chuyên môn theo chuẩn mẫu hướng dẫn của Ban Tổ chức Trung ương.
+                </span>
+              </div>
+              <button onclick="window.exportPartyMemberReviewDoc()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-700 hover:bg-red-800 shadow-md flex items-center gap-1.5 shrink-0 self-start sm:self-auto btn-press cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">file_download</span>
+                <span>Tải bản Kiểm điểm (.doc)</span>
+              </button>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3 text-xs leading-relaxed">
+              <div>
+                <h5 class="font-bold text-slate-900 dark:text-white uppercase text-[11px] mb-1">1. Về tư tưởng chính trị, đạo đức, lối sống</h5>
+                <p class="text-slate-600 dark:text-slate-300">
+                  Kiên định chủ nghĩa Mác - Lênin, tư tưởng Hồ Chí Minh. Chấp hành nghiêm chỉnh Cương lĩnh, Điều lệ Đảng, chính sách pháp luật của Nhà nước. Giữ vững lối sống trung thực, giản dị, đoàn kết nội bộ.
+                </p>
+              </div>
+
+              <div>
+                <h5 class="font-bold text-slate-900 dark:text-white uppercase text-[11px] mb-1">2. Kết quả thực hiện nhiệm vụ chính trị được giao</h5>
+                <p class="text-slate-600 dark:text-slate-300">
+                  • <b>Kế hoạch năm (QĐ 161):</b> Hoàn thành 100% (8/8 hoạt động được giao, tổ chức thành công Đại hội TDTT phường lần thứ I).<br/>
+                  • <b>Khối lượng vượt kế hoạch:</b> Tham mưu tổ chức và đưa đoàn tham gia 22 giải thi đấu cấp thành phố và giải phong trào (vượt 280% chỉ tiêu).<br/>
+                  • <b>Thành tích thể thao:</b> Đạt 168 Huy chương (54 Vàng, 56 Bạc, 58 Đồng), xếp thứ hạng cao toàn đoàn.<br/>
+                  • <b>Chuyển đổi số & CNTT:</b> Xây dựng và vận hành Cổng điều hành số TDTT, số hóa 100% hồ sơ dữ liệu giải đấu và sân bãi.
+                </p>
+              </div>
+
+              <div>
+                <h5 class="font-bold text-slate-900 dark:text-white uppercase text-[11px] mb-1">3. Tự nhận mức xếp loại chất lượng</h5>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-xs">
+                  <span class="material-symbols-outlined text-[16px]">verified</span>
+                  HOÀN THÀNH XUẤT SẮC NHIỆM VỤ NĂM 2026
+                </span>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
       </div>
 
-      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-        <button onclick="document.getElementById('officerProfileModal').remove()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">
-          Đã hiểu
+      <!-- Modal Footer -->
+      <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-2">
+          <button onclick="window.backupSystemData()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 btn-press">
+            <span class="material-symbols-outlined text-[15px]">download</span>
+            <span class="hidden sm:inline">Sao lưu JSON</span>
+          </button>
+          <button onclick="window.exportPartyMemberReviewDoc()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 flex items-center gap-1 btn-press">
+            <span class="material-symbols-outlined text-[15px]">description</span>
+            <span class="hidden sm:inline">Xuất văn bản Word</span>
+          </button>
+        </div>
+        <button onclick="document.getElementById('officerProfileModal').remove()" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md btn-press">
+          Đóng hồ sơ
         </button>
       </div>
+
     </div>
   `;
   document.body.appendChild(modal);
 }
+
+// Modal thêm nhiệm vụ phát sinh ngoài kế hoạch
+export function openAddExtraTaskModal() {
+  const existing = document.getElementById('addExtraTaskModal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'addExtraTaskModal';
+  modal.className = 'fixed inset-0 z-60 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4';
+  modal.innerHTML = `
+    <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 modal-animate text-slate-800 dark:text-slate-100 text-left">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2 text-purple-700 dark:text-purple-400">
+          <span class="material-symbols-outlined text-[20px]">add_task</span>
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">Thêm nhiệm vụ phát sinh / đột xuất</h3>
+        </div>
+        <button onclick="document.getElementById('addExtraTaskModal').remove()" class="p-1 rounded-full text-slate-400 hover:text-slate-700">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <form id="addExtraTaskForm" onsubmit="window.handleAddExtraTaskSubmit(event)" class="py-3 space-y-3 text-xs">
+        <div>
+          <label class="block font-bold mb-1">Tên nhiệm vụ / Công việc phát sinh</label>
+          <input id="extra_title" required type="text" placeholder="VD: Hướng dẫn thành lập CLB Bơi lội..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold mb-1">Mảng phụ trách</label>
+            <select id="extra_domain" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+              <option value="tdtt">Phong trào TDTT</option>
+              <option value="thieunhi">TDTT Thanh thiếu nhi</option>
+              <option value="cntt">CNTT & Chuyển đổi số</option>
+              <option value="csvc">Quản lý CSVC</option>
+              <option value="khac">Nhiệm vụ đột xuất khác</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Thời hạn hoàn thành</label>
+            <input id="extra_deadline" type="text" placeholder="VD: 30/08/2026" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Căn cứ văn bản / Chỉ đạo giao việc</label>
+          <input id="extra_basis" type="text" placeholder="VD: QĐ 01/QĐ-TT.DVTH hoặc Chỉ đạo trực tiếp của BGĐ" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Kết quả đạt được / Tiến độ</label>
+          <input id="extra_result" type="text" placeholder="VD: Đã hoàn thành 100%, ban hành quyết định..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs" />
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+          <button type="button" onclick="document.getElementById('addExtraTaskModal').remove()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
+          <button type="submit" class="px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-purple-700 hover:bg-purple-800 shadow-sm btn-press">Lưu nhiệm vụ</button>
+        </div>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+export function handleAddExtraTaskSubmit(e) {
+  e.preventDefault();
+  const domainSelect = document.getElementById('extra_domain');
+  const domainText = domainSelect.options[domainSelect.selectedIndex].text;
+
+  const newTask = {
+    id: 'extra-' + Date.now(),
+    title: document.getElementById('extra_title').value.trim(),
+    domain: domainSelect.value,
+    domainLabel: domainText,
+    basis: document.getElementById('extra_basis').value.trim() || 'Chỉ đạo Ban Giám đốc',
+    deadline: document.getElementById('extra_deadline').value.trim() || 'Năm 2026',
+    status: 'completed',
+    statusLabel: 'Hoàn thành tốt',
+    result: document.getElementById('extra_result').value.trim() || 'Đã hoàn thành',
+    year: 2026
+  };
+
+  if (!state.extraTasks) state.extraTasks = [];
+  state.extraTasks.unshift(newTask);
+  saveAll();
+
+  document.getElementById('addExtraTaskModal')?.remove();
+  showOfficerProfileModal('extra');
+  showToast('Đã thêm nhiệm vụ', `Đã bổ sung nhiệm vụ "${newTask.title}" vào hồ sơ.`);
+}
+
+export function deleteExtraTask(taskId) {
+  if (!confirm('Đồng chí có chắc muốn xóa nhiệm vụ phát sinh này?')) return;
+  state.extraTasks = (state.extraTasks || []).filter(t => t.id !== taskId);
+  saveAll();
+  showOfficerProfileModal('extra');
+  showToast('Đã xóa', 'Đã gỡ bỏ nhiệm vụ khỏi danh sách.');
+}
+
+window.showOfficerProfileModal = showOfficerProfileModal;
+window.setOfficerProfileTab = setOfficerProfileTab;
+window.openAddExtraTaskModal = openAddExtraTaskModal;
+window.handleAddExtraTaskSubmit = handleAddExtraTaskSubmit;
+window.deleteExtraTask = deleteExtraTask;
 
 // Command K (#471) interactive click handler
 export function handleCommandKClick(e) {

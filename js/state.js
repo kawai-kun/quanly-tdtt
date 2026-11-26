@@ -10,7 +10,8 @@ import {
   INITIAL_FACILITIES,
   INITIAL_BUDGET_ITEMS,
   INITIAL_REPORTS,
-  INITIAL_TELEGRAM_SCHEDULES
+  INITIAL_TELEGRAM_SCHEDULES,
+  INITIAL_EXTRA_TASKS
 } from './data/initialData.js';
 import { DEFAULT_API_URL } from './data/constants.js';
 import { sortActivitiesByLatest } from './utils/formatters.js';
@@ -44,12 +45,20 @@ export const state = {
   selectedYear: lsGet('tk_selected_year', 'all'),
 
   // Data Collections - Tự động hợp nhất bảo toàn đủ 30 giải thực tế và xếp giải mới nhất ở vị trí #1
-  activities: sortActivitiesByLatest(mergeActivitiesSmartly(lsGet('tk_activities', []), INITIAL_ACTIVITIES)),
+  activities: sortActivitiesByLatest(mergeActivitiesSmartly(lsGet('tk_activities', []), INITIAL_ACTIVITIES)).map(a => {
+    if (!a.planType) {
+      const init = INITIAL_ACTIVITIES.find(ia => ia.id === a.id || (ia.title && a.title && ia.title.trim().toLowerCase() === a.title.trim().toLowerCase()));
+      a.planType = init?.planType || (a.category === 'Cấp phường' ? 'plan' : 'extra');
+      a.refPlan = a.refPlan || init?.refPlan || (a.planType === 'plan' ? 'QĐ 161/QĐ-UBND' : 'Phát sinh ngoài kế hoạch');
+    }
+    return a;
+  }),
   clubs: lsGet('tk_clubs', INITIAL_CLUBS),
   schedules: lsGet('tk_schedules', INITIAL_SCHEDULES),
   facilities: lsGet('tk_facilities', INITIAL_FACILITIES),
   budgetItems: lsGet('tk_budget', INITIAL_BUDGET_ITEMS),
   savedReports: lsGet('tk_saved_reports', INITIAL_REPORTS),
+  extraTasks: lsGet('tk_extra_tasks', INITIAL_EXTRA_TASKS),
 
   // Sync status
   syncStatus: 'idle',
@@ -80,6 +89,7 @@ export const state = {
   tournamentsFilter: {
     category: 'all',
     sport: 'all',
+    planType: 'all',
     reportStatus: 'all',
     search: '',
     viewMode: 'cards'
@@ -113,6 +123,7 @@ export function saveAll() {
   lsSet('tk_facilities', state.facilities);
   lsSet('tk_budget', state.budgetItems);
   lsSet('tk_saved_reports', state.savedReports);
+  lsSet('tk_extra_tasks', state.extraTasks);
   lsSet('tk_rep_mode', state.reportMode);
   lsSet('tk_rep_period', state.reportPeriod);
   lsSet('tk_rep_month', state.reportMonth);

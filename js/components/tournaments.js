@@ -15,6 +15,10 @@ export function getFilteredTournamentsList() {
     if (state.selectedYear !== 'all' && y !== String(state.selectedYear)) return false;
     if (f.category !== 'all' && a.category !== f.category) return false;
     if (f.sport !== 'all' && a.sport !== f.sport) return false;
+    if (f.planType && f.planType !== 'all') {
+      const pType = a.planType || 'extra';
+      if (pType !== f.planType) return false;
+    }
     if (f.reportStatus && f.reportStatus !== 'all') {
       const repStatus = getActivityReportStatus(a);
       if (f.reportStatus === 'reported' && !repStatus.isReported) return false;
@@ -26,7 +30,8 @@ export function getFilteredTournamentsList() {
       const matchCode = (a.code || '').toLowerCase().includes(q);
       const matchSport = (a.sport || '').toLowerCase().includes(q);
       const matchLoc = (a.location || '').toLowerCase().includes(q);
-      if (!matchTitle && !matchCode && !matchSport && !matchLoc) return false;
+      const matchRef = (a.refPlan || '').toLowerCase().includes(q);
+      if (!matchTitle && !matchCode && !matchSport && !matchLoc && !matchRef) return false;
     }
     return true;
   });
@@ -39,11 +44,21 @@ export function getTournamentsCountsHtml(acts) {
     : state.activities.filter(a => String(a.year || extractYearFromDate(a.date)) === String(state.selectedYear));
   const unreportedCount = allYearActs.filter(a => !getActivityReportStatus(a).isReported).length;
   const reportedCount = allYearActs.filter(a => getActivityReportStatus(a).isReported).length;
+  const planCount = allYearActs.filter(a => a.planType === 'plan').length;
+  const extraCount = allYearActs.filter(a => a.planType !== 'plan').length;
   const total = acts ? acts.length : allYearActs.length;
 
   return `
     <span class="text-slate-700 dark:text-slate-300 font-medium text-xs tracking-wide">
       Tổng cộng: <b class="font-mono text-sm text-slate-900 dark:text-white font-semibold">${total}</b> giải
+    </span>
+    <span class="text-slate-300 dark:text-slate-700">|</span>
+    <span class="inline-flex items-center gap-1 font-medium text-xs tracking-wide text-sky-700 dark:text-sky-400" title="Trong Kế hoạch năm (QĐ 161)">
+      <span class="material-symbols-outlined text-[14px]">assignment</span>Trong KH: ${planCount}
+    </span>
+    <span class="text-slate-300 dark:text-slate-700">|</span>
+    <span class="inline-flex items-center gap-1 font-medium text-xs tracking-wide text-purple-700 dark:text-purple-400" title="Phát sinh ngoài kế hoạch / Xã hội hóa">
+      <span class="material-symbols-outlined text-[14px]">bolt</span>Phát sinh: ${extraCount}
     </span>
     <span class="text-slate-300 dark:text-slate-700">|</span>
     <span class="inline-flex items-center gap-1.5 font-medium text-xs tracking-wide text-emerald-700 dark:text-emerald-400">
@@ -125,6 +140,14 @@ export function renderTournaments() {
               <select onchange="setTournamentsFilter('sport', this.value)" class="bg-transparent tracking-wider focus:outline-none cursor-pointer">
                 <option value="all">TẤT CẢ MÔN</option>
                 ${sportList.map(s => `<option value="${s}" ${f.sport === s ? 'selected' : ''}>${s.toUpperCase()}</option>`).join('')}
+              </select>
+            </div>
+
+            <div class="h-9 flex items-center px-2 rounded bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-xs font-sport font-bold text-slate-700 dark:text-slate-200">
+              <select onchange="setTournamentsFilter('planType', this.value)" class="bg-transparent tracking-wider focus:outline-none cursor-pointer">
+                <option value="all" ${f.planType === 'all' ? 'selected' : ''}>TẤT CẢ NGUỒN VIỆC</option>
+                <option value="plan" ${f.planType === 'plan' ? 'selected' : ''}>TRONG KẾ HOẠCH NĂM (QĐ 161)</option>
+                <option value="extra" ${f.planType === 'extra' ? 'selected' : ''}>PHÁT SINH NGOÀI KH</option>
               </select>
             </div>
 
@@ -323,12 +346,23 @@ export function renderTournamentsTable(acts) {
                   <div onclick="openActivityModal('${a.id}')" class="font-bold text-sm text-slate-900 dark:text-white leading-snug hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors" title="Bấm để xem và sửa chi tiết">
                     ${a.title}
                   </div>
-                  ${a.achievementNote ? `
-                    <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10.5px] font-sport font-bold badge-gold">
-                      <span>🏆</span>
-                      <span class="truncate">${a.achievementNote}</span>
-                    </div>
-                  ` : ''}
+                  <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                    ${a.planType === 'plan' ? `
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800" title="${a.refPlan || 'Nhiệm vụ theo Kế hoạch năm (QĐ 161)'}">
+                        <span class="material-symbols-outlined text-[11px]">assignment</span>Trong KH
+                      </span>
+                    ` : `
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800" title="${a.refPlan || 'Hoạt động phát sinh ngoài kế hoạch / Xã hội hóa'}">
+                        <span class="material-symbols-outlined text-[11px]">bolt</span>Phát sinh
+                      </span>
+                    `}
+                    ${a.achievementNote ? `
+                      <div class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-sport font-bold badge-gold">
+                        <span>🏆</span>
+                        <span class="truncate max-w-[200px]">${a.achievementNote}</span>
+                      </div>
+                    ` : ''}
+                  </div>
                 </td>
 
                 <!-- 4. Trạng thái BC -->
@@ -465,12 +499,23 @@ export function renderTournamentsGrid(acts) {
         return `
           <div class="${cardBorderCls} p-5 rounded-xl flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div>
-              <div class="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-slate-800">
-                <span class="px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 ${badge.bg} ${badge.text} border ${badge.border}">
-                  <span class="material-symbols-outlined text-[15px]">${badge.icon}</span>
-                  <span>${badge.label}</span>
-                </span>
-                <span class="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700">${a.code}</span>
+              <div class="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-slate-800 gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 ${badge.bg} ${badge.text} border ${badge.border}">
+                    <span class="material-symbols-outlined text-[15px]">${badge.icon}</span>
+                    <span>${badge.label}</span>
+                  </span>
+                  ${a.planType === 'plan' ? `
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800" title="${a.refPlan || 'Nhiệm vụ theo Kế hoạch năm (QĐ 161)'}">
+                      <span class="material-symbols-outlined text-[12px]">assignment</span>Trong KH
+                    </span>
+                  ` : `
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800" title="${a.refPlan || 'Hoạt động phát sinh ngoài kế hoạch / Xã hội hóa'}">
+                      <span class="material-symbols-outlined text-[12px]">bolt</span>Phát sinh
+                    </span>
+                  `}
+                </div>
+                <span class="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700 shrink-0">${a.code}</span>
               </div>
 
               <h3 

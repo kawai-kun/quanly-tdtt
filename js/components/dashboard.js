@@ -28,8 +28,36 @@ export function renderDashboard() {
   const bronzeMedals = filteredActs.reduce((acc, a) => acc + (parseInt(a.bronzeMedals) || 0), 0);
 
   return `
-    <div class="space-y-6 tab-pane-animate">
+    <div class="space-y-6 tab-pane-animate text-left">
       
+      <!-- Executive Priority Milestone Notice (QĐ 161/QĐ-UBND) -->
+      <div class="px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-transparent border border-emerald-500/30 dark:border-emerald-500/20 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-400 text-red-950 flex items-center justify-center shrink-0 shadow-sm font-bold">
+            <span class="material-symbols-outlined text-[24px]">flag</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white uppercase tracking-wide">
+                Nhiệm vụ trọng điểm Quý I/2026 (Kế hoạch QĐ 161/QĐ-UBND)
+              </span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Đang triển khai đúng tiến độ
+              </span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">
+              Tập trung cao độ tổ chức <b>Đại hội TDTT Phường Tân Khai lần thứ I</b> (6 môn: Bóng đá, Cờ tướng, Cầu lông, Bóng chuyền, Pickleball, Điền kinh) và <b>Ngày chạy Olympic vì sức khỏe toàn dân</b>.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0 self-end md:self-auto">
+          <button onclick="setTournamentsFilter('planType', 'plan'); window.switchTab && window.switchTab('quan-ly-giai-dau')" class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950 hover:bg-emerald-200 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5 btn-press cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span>Xem các giải trong KH</span>
+          </button>
+        </div>
+      </div>
+
       <!-- 1. STADIUM SCOREBOARD (BẢNG ĐIỂN TỬ SÂN VẬN ĐỘNG NGUYÊN KHỐI) -->
       <section class="stadium-scoreboard overflow-hidden">
         

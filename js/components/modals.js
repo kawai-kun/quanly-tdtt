@@ -74,6 +74,21 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
               </div>
             </div>
 
+            <!-- Nguồn nhiệm vụ & Căn cứ văn bản -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-2xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-800/50">
+              <div>
+                <label class="block text-xs font-bold mb-1 text-sky-900 dark:text-sky-200">Phân loại nguồn việc</label>
+                <select id="act_planType" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-700 font-semibold text-slate-800 dark:text-slate-100">
+                  <option value="plan" ${act && act.planType === 'plan' ? 'selected' : ''}>📋 Trong Kế hoạch năm (QĐ 161)</option>
+                  <option value="extra" ${!act || act.planType !== 'plan' ? 'selected' : ''}>⚡ Phát sinh ngoài KH (Xã hội hóa / Triệu tập)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1 text-sky-900 dark:text-sky-200">Căn cứ văn bản / Chỉ đạo</label>
+                <input id="act_refPlan" type="text" value="${act && act.refPlan ? act.refPlan : ''}" placeholder="VD: QĐ 161 (Mục IV.3) hoặc Triệu tập cấp TP" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-700" />
+              </div>
+            </div>
+
             <!-- Field: Ghi chú / Thành tích bổ sung -->
             <div>
               <label class="block text-xs font-bold mb-1 flex items-center justify-between">
@@ -186,6 +201,8 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
       const sport = rawSport.trim() ? normalizeTitle(rawSport) : autoDetectSport(cleanTitle);
 
       const rawNote = document.getElementById('act_note') ? document.getElementById('act_note').value.trim() : '';
+      const planTypeVal = document.getElementById('act_planType') ? document.getElementById('act_planType').value : 'plan';
+      const refPlanVal = document.getElementById('act_refPlan') ? document.getElementById('act_refPlan').value.trim() : '';
       const isReportedChecked = document.getElementById('act_isReported') ? document.getElementById('act_isReported').checked : false;
       const prevAct = id ? state.activities.find(a => a.id === id) : null;
       let reportedInReport = prevAct ? prevAct.reportedInReport : null;
@@ -201,6 +218,8 @@ import { requireAdminElevation } from '../utils/adminGuard.js';
         title: cleanTitle,
         sport: sport,
         category: document.getElementById('act_category').value,
+        planType: planTypeVal,
+        refPlan: refPlanVal || (planTypeVal === 'plan' ? 'QĐ 161/QĐ-UBND' : 'Phát sinh ngoài kế hoạch'),
         date: cleanDate,
         year: year,
         quarter: quarter,

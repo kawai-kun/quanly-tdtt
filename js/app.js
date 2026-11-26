@@ -71,7 +71,18 @@ import {
 } from './services/telegramService.js';
 
 // 4. UI COMPONENTS
-import { renderHeader, setGlobalYear, renderSyncPillHTML, renderSyncPill } from './components/header.js';
+import {
+  renderHeader,
+  setGlobalYear,
+  renderSyncPillHTML,
+  renderSyncPill,
+  showOfficerProfileModal,
+  setOfficerProfileTab,
+  openAddExtraTaskModal,
+  handleAddExtraTaskSubmit,
+  deleteExtraTask
+} from './components/header.js';
+import { exportBackupJSON, triggerRestoreSystemData, exportPartyMemberReviewDoc } from './services/backupService.js';
 import { switchTab, toggleMobileDrawer, renderSidebar, renderBottomNav, renderMobileDrawer } from './components/sidebar.js';
 import {
   renderDashboard,
@@ -202,6 +213,14 @@ const globalBindings = {
   toggleAccountMenu,
   closeAccountMenu,
   showOfficerProfileModal,
+  setOfficerProfileTab,
+  openAddExtraTaskModal,
+  handleAddExtraTaskSubmit,
+  deleteExtraTask,
+  backupSystemData: exportBackupJSON,
+  exportBackupJSON,
+  triggerRestoreSystemData,
+  exportPartyMemberReviewDoc,
   handleCommandKClick,
   openAdminElevationModal,
 
