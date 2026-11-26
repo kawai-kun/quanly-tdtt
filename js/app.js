@@ -76,6 +76,10 @@ import {
   setGlobalYear,
   renderSyncPillHTML,
   renderSyncPill,
+  toggleAccountMenu,
+  closeAccountMenu,
+  handleCommandKClick,
+  openAdminElevationModal,
   showOfficerProfileModal,
   setOfficerProfileTab,
   openAddExtraTaskModal,
@@ -163,7 +167,6 @@ import { openFullscreenMenu, closeFullscreenMenu, handleFullscreenNav } from './
 import { triggerSafeDelete, commitSafeDelete, cancelSafeDelete } from './utils/undoToast.js';
 import { openPinVerifyModal, closePinVerifyModal } from './components/pinVerify.js';
 import { renderPaginationHTML, initPagination } from './components/pagination.js';
-import { toggleAccountMenu, closeAccountMenu, showOfficerProfileModal, handleCommandKClick, openAdminElevationModal } from './components/header.js';
 import { requireAdminElevation, lockAdminScreen } from './utils/adminGuard.js';
 
 // ==============================================================================
