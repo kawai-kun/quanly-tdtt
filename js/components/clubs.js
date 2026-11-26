@@ -75,6 +75,12 @@ import { triggerSafeDelete } from '../utils/undoToast.js';
     }
 
     export function openClubModal(clubId = null) {
+      if (typeof window.requireAdminElevation === 'function' && !state.isAdminElevated) {
+        return window.requireAdminElevation(
+          () => openClubModal(clubId),
+          clubId ? 'chỉnh sửa thông tin CLB' : 'thêm CLB thể thao mới'
+        );
+      }
       const club = clubId ? state.clubs.find(c => c.id === clubId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';

@@ -63,6 +63,12 @@ import { showToast } from '../utils/toast.js';
     }
 
     export function openScheduleModal(schedId = null) {
+      if (typeof window.requireAdminElevation === 'function' && !state.isAdminElevated) {
+        return window.requireAdminElevation(
+          () => openScheduleModal(schedId),
+          schedId ? 'chỉnh sửa lịch tập luyện' : 'thêm lịch tập luyện mới'
+        );
+      }
       const sched = schedId ? state.schedules.find(s => s.id === schedId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';

@@ -8,8 +8,15 @@ import { normalizeTitle, normalizeCode, normalizeDate, extractYearFromDate, extr
 import { showToast } from '../utils/toast.js';
 import { animateModalOpen, animateModalClose } from '../utils/animations.js';
 import { triggerSafeDelete } from '../utils/undoToast.js';
+import { requireAdminElevation } from '../utils/adminGuard.js';
 
     export function openActivityModal(actId = null) {
+      if (!state.isAdminElevated) {
+        return requireAdminElevation(
+          () => openActivityModal(actId),
+          actId ? 'chỉnh sửa thông tin giải đấu' : 'thêm giải đấu mới'
+        );
+      }
       const act = actId ? state.activities.find(a => a.id === actId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';

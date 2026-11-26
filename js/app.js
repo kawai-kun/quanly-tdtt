@@ -153,6 +153,7 @@ import { triggerSafeDelete, commitSafeDelete, cancelSafeDelete } from './utils/u
 import { openPinVerifyModal, closePinVerifyModal } from './components/pinVerify.js';
 import { renderPaginationHTML, initPagination } from './components/pagination.js';
 import { toggleAccountMenu, closeAccountMenu, showOfficerProfileModal, handleCommandKClick, openAdminElevationModal } from './components/header.js';
+import { requireAdminElevation, lockAdminScreen } from './utils/adminGuard.js';
 
 // ==============================================================================
 // 5. GẮN TẤT CẢ HANDLER VÀO WINDOW CHO CÁC SỰ KIỆN INLINE HTML
@@ -215,7 +216,17 @@ const globalBindings = {
   handleSaveActivity,
   confirmDeleteActivity,
 
-  // Dashboard
+  // Dashboard & Views
+  renderDashboard,
+  renderClubs,
+  renderSchedules,
+  renderFacilities,
+  renderBudget,
+  renderReports,
+  initDashboardCharts,
+  initTournamentsAnimations,
+  requireAdminElevation,
+  lockAdminScreen,
   openKpiTargetsModal,
   handleSaveKpiTargets,
   handleDashboardSearch,
@@ -323,7 +334,7 @@ export function renderApp() {
   app.innerHTML = `
     <div class="min-h-screen flex flex-col w-full text-slate-800 dark:text-slate-100">
       ${renderHeader()}
-      <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto">
+      <main id="mainContentArea" class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-[1780px] w-full mx-auto tab-transition-active">
         ${contentHTML}
       </main>
     </div>

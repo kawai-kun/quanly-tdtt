@@ -74,6 +74,12 @@ import { triggerSafeDelete } from '../utils/undoToast.js';
     }
 
     export function openFacilityModal(facId = null) {
+      if (typeof window.requireAdminElevation === 'function' && !state.isAdminElevated) {
+        return window.requireAdminElevation(
+          () => openFacilityModal(facId),
+          facId ? 'chỉnh sửa sân bãi CSVC' : 'thêm sân bãi CSVC mới'
+        );
+      }
       const fac = facId ? state.facilities.find(f => f.id === facId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';

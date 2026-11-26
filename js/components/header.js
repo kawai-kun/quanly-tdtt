@@ -170,9 +170,14 @@ export function renderHeader() {
                     <span>Chia sẻ mã QR trang</span>
                   </button>
 
-                  <div class="u408-hr" role="separator" style="--i:5"></div>
+                  <button type="button" class="u408-it" role="menuitem" style="--i:5" onclick="window.lockAdminScreen && window.lockAdminScreen()">
+                    <span class="material-symbols-outlined text-amber-500">lock_clock</span>
+                    <span>Khóa màn hình (Mã PIN)</span>
+                  </button>
 
-                  <button type="button" class="u408-it is-out" role="menuitem" style="--i:6" onclick="window.handleLogout && window.handleLogout()">
+                  <div class="u408-hr" role="separator" style="--i:6"></div>
+
+                  <button type="button" class="u408-it is-out" role="menuitem" style="--i:7" onclick="window.handleLogout && window.handleLogout()">
                     <span class="material-symbols-outlined">logout</span>
                     <span>Đăng xuất hệ thống</span>
                   </button>
@@ -249,7 +254,7 @@ export function renderHeader() {
 
       <!-- Tier 2: Dedicated Navigation Tab Bar Strip (Deep Emerald #064e3b) -->
       <div class="hidden lg:flex w-full bg-[#064e3b] border-b border-emerald-600/80 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar shadow-inner">
-        <nav class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto">
+        <nav id="topNavDock" class="flex items-center justify-center gap-1.5 sm:gap-2 w-full max-w-[1780px] mx-auto">
           ${navs.map(item => {
             const isActive = state.currentTab === item.id;
             return `
@@ -486,8 +491,28 @@ export function openAdminElevationModal() {
   }
 }
 
+export function updateHeaderAdminBadge() {
+  const container = document.getElementById('accountMenuContainer');
+  if (!container) return;
+  const hd = container.querySelector('.u408-hd');
+  if (hd) {
+    const existingBadge = hd.querySelector('.admin-elevated-badge');
+    if (state.isAdminElevated) {
+      if (!existingBadge) {
+        const badge = document.createElement('span');
+        badge.className = 'admin-elevated-badge mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800';
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Đã xác thực Quản trị tối cao';
+        hd.appendChild(badge);
+      }
+    } else {
+      if (existingBadge) existingBadge.remove();
+    }
+  }
+}
+
 window.toggleAccountMenu = toggleAccountMenu;
 window.closeAccountMenu = closeAccountMenu;
 window.showOfficerProfileModal = showOfficerProfileModal;
 window.handleCommandKClick = handleCommandKClick;
 window.openAdminElevationModal = openAdminElevationModal;
+window.updateHeaderAdminBadge = updateHeaderAdminBadge;

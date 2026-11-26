@@ -115,6 +115,12 @@ import { triggerSafeDelete } from '../utils/undoToast.js';
     }
 
     export function openBudgetModal(budgetId = null) {
+      if (typeof window.requireAdminElevation === 'function' && !state.isAdminElevated) {
+        return window.requireAdminElevation(
+          () => openBudgetModal(budgetId),
+          budgetId ? 'chỉnh sửa hạng mục kinh phí' : 'thêm dự toán kinh phí mới'
+        );
+      }
       const b = budgetId ? state.budgetItems.find(item => item.id === budgetId) : null;
       const modal = document.createElement('div');
       modal.id = 'modalContainer';

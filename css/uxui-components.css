@@ -357,28 +357,47 @@
 
 .u403-go.is-busy, .u403-go.is-ok {
   width: 48px;
+  height: 48px;
   border-radius: 24px;
   cursor: default;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .u403-go.is-busy span, .u403-go.is-ok span {
   opacity: 0;
   transform: scale(0.8);
+  display: none !important;
 }
 
 .u403-go.is-busy i {
   opacity: 1;
   transform: none;
+  display: block;
+  margin: auto;
 }
 
 .u403-go.is-ok {
   background: var(--ux-mint);
   color: #ffffff;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.u403-go.is-ok i {
+  display: none !important;
 }
 
 .u403-go.is-ok svg {
   opacity: 1;
   transform: none;
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin: auto;
+  flex-shrink: 0;
 }
 
 .u403-go.is-ok svg path {

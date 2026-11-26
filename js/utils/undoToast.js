@@ -4,6 +4,8 @@
 // Hệ thống Quản lý TDTT - Phường Tân Khai
 // ==============================================================================
 
+import { state } from '../state.js';
+
 let activeUndoSlot = null;
 let rafId = 0;
 let lastTick = 0;
@@ -15,6 +17,12 @@ export function triggerSafeDelete({
   onCommit,
   duration = 5000
 }) {
+  if (typeof window.requireAdminElevation === 'function' && !state.isAdminElevated) {
+    return window.requireAdminElevation(
+      () => triggerSafeDelete({ itemName, onUndo, onCommit, duration }),
+      `xóa dữ liệu (${itemName})`
+    );
+  }
   // Commit any existing pending delete first
   if (activeUndoSlot) {
     commitSafeDelete();

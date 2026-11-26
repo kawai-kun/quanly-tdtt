@@ -5,10 +5,54 @@
 import { state } from '../state.js';
 
     export function switchTab(t) {
+      if (state.currentTab === t) return;
       state.currentTab = t;
       state.mobileDrawerOpen = false;
-      window.renderApp();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const mainArea = document.getElementById('mainContentArea');
+      if (mainArea && typeof window.renderDashboard === 'function') {
+        // Chuyển Tab siêu mượt: Giữ nguyên Header, áp dụng hiệu ứng mượt mà và hoán đổi nội dung
+        let contentHTML = '';
+        if (t === 'bang-dieu-khien') contentHTML = window.renderDashboard();
+        else if (t === 'quan-ly-giai-dau' && window.renderTournaments) contentHTML = window.renderTournaments();
+        else if (t === 'quan-ly-clb' && window.renderClubs) contentHTML = window.renderClubs();
+        else if (t === 'lich-sinh-hoat' && window.renderSchedules) contentHTML = window.renderSchedules();
+        else if (t === 'co-so-vat-chat' && window.renderFacilities) contentHTML = window.renderFacilities();
+        else if (t === 'kinh-phi' && window.renderBudget) contentHTML = window.renderBudget();
+        else if (t === 'bao-cao' && window.renderReports) contentHTML = window.renderReports();
+
+        mainArea.classList.remove('tab-transition-active');
+        void mainArea.offsetWidth; // force reflow for animation
+        mainArea.innerHTML = contentHTML;
+        mainArea.classList.add('tab-transition-active');
+
+        // Cập nhật trạng thái active trên thanh điều hướng Top Dock
+        const topNav = document.getElementById('topNavDock');
+        if (topNav) {
+          topNav.querySelectorAll('button').forEach(btn => {
+            const btnOnClick = btn.getAttribute('onclick') || '';
+            const isCurrent = btnOnClick.includes(`'${t}'`);
+            if (isCurrent) {
+              btn.className = 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer bg-white text-emerald-950 shadow-md font-semibold ring-2 ring-emerald-300 scale-102';
+            } else {
+              btn.className = 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm tracking-wide flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer text-emerald-100 hover:bg-emerald-800/80 hover:text-white font-medium';
+            }
+          });
+        }
+
+        // Kích hoạt biểu đồ / phân trang theo từng tab
+        if (t === 'bang-dieu-khien' && typeof window.initDashboardCharts === 'function') {
+          setTimeout(window.initDashboardCharts, 50);
+        } else if (t === 'quan-ly-giai-dau') {
+          if (typeof window.initTournamentsAnimations === 'function') setTimeout(window.initTournamentsAnimations, 50);
+          if (typeof window.initPagination === 'function') setTimeout(window.initPagination, 50);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.renderApp();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
     export function toggleMobileDrawer() {
